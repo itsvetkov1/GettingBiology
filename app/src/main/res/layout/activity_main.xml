@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="Question"
         android:textSize="18sp"
-        android:background="@android:color/white"
+        android:background="@color/transparent_white"
         android:padding="16dp"
         android:layout_margin="8dp"
         android:textColor="@android:color/black"/>
@@ -25,7 +25,7 @@
         android:orientation="vertical"
         android:layout_marginTop="16dp"
         android:textSize="18sp"
-        android:background="@android:color/white"
+        android:background="@color/transparent_white"
         android:padding="16dp"
         android:layout_margin="8dp"
         android:textColor="@android:color/black"/>
