@@ -1,15 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/startQuizButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Биология"
-        android:background="@color/green"
-        android:textColor="@android:color/white"
-        android:layout_centerInParent="true"/>
-</RelativeLayout>
+
+    <!-- GIF ImageView -->
+    <ImageView
+        android:id="@+id/welcomeAnimationView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+
+    <!-- Static Image and Button View -->
+    <RelativeLayout
+        android:id="@+id/staticImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"> <!-- Initially hidden -->
+        android:background="@drawable/background_image"
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/welcome_animation2"
+            android:scaleType="centerCrop"/>
+
+        <Button
+            android:id="@+id/startQuizButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Биология"
+            android:background="@color/green"
+            android:textColor="@android:color/white"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+</FrameLayout>

@@ -3,33 +3,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/background_image"> <!-- Background attribute should be here -->
 
     <TextView
         android:id="@+id/question_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Question"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        android:background="@android:color/white"
+        android:padding="16dp"
+        android:layout_margin="8dp"
+        android:textColor="@android:color/black"/>
+
 
     <RadioGroup
         android:id="@+id/options_radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:textSize="18sp"
+        android:background="@android:color/white"
+        android:padding="16dp"
+        android:layout_margin="8dp"
+        android:textColor="@android:color/black"/>
 
-    <!-- Hint TextView added here -->
     <TextView
         android:id="@+id/hint_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/holo_red_dark"
         android:visibility="gone"
-    android:textSize="16sp"
-    android:layout_marginTop="8dp"
-    android:layout_gravity="center_horizontal"
-    android:text="*Моля изберете отговор!"/>
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center_horizontal"
+        android:text="*Моля изберете отговор!"/>
 
     <Button
         android:id="@+id/submit_button"
