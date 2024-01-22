@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
+import androidx.room.Room
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,8 +17,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var submitButton: Button
     private lateinit var hintText: TextView
     private var currentQuestionIndex = 0
-    private val questions = QuizData.getRandomQuestions()
+    private lateinit var questions: List<Question>
     private var score = 0
+    private lateinit var db: AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,8 +30,23 @@ class MainActivity : AppCompatActivity() {
         submitButton = findViewById(R.id.submit_button)
         hintText = findViewById(R.id.hint_text_view)
 
-        loadQuestion()
-        submitButton.setOnClickListener { checkAnswer() }
+        db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, "quiz-database")
+            .createFromAsset("dbquestions.db")
+            .build()
+
+        fetchQuestions()
+    }
+
+    private fun fetchQuestions() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val dbQuestions = db.questionDao().getAllQuestions()
+            withContext(Dispatchers.Main) {
+                if (dbQuestions.isNotEmpty()) {
+                    questions = dbQuestions
+                    loadQuestion()
+                }
+            }
+        }
     }
 
     private fun loadQuestion() {
@@ -40,22 +58,24 @@ class MainActivity : AppCompatActivity() {
         val question = questions[currentQuestionIndex]
         questionTextView.text = question.questionText
         radioGroup.removeAllViews()
-        radioGroup.clearCheck()  // Clear any selection
-        hintText.visibility = View.GONE  // Reset/hide the hint text
+        radioGroup.clearCheck()
+        hintText.visibility = View.GONE
 
-        question.options.forEachIndexed { index, option ->
-            val radioButton = RadioButton(this)
-            radioButton.text = option
-            radioButton.id = index
+        question.options.split(";").forEachIndexed { index, option ->
+            val radioButton = RadioButton(this).apply {
+                text = option
+                id = index
+            }
             radioGroup.addView(radioButton)
         }
+
+        submitButton.setOnClickListener { checkAnswer() }
     }
 
     private fun checkAnswer() {
         val selectedOptionIndex = radioGroup.checkedRadioButtonId
-
         if (selectedOptionIndex == -1) {
-            hintText.text = "*Моля изберете отговор!"
+            hintText.text = "Please select an answer"
             hintText.setTextColor(Color.RED)
             hintText.visibility = View.VISIBLE
             return
@@ -63,14 +83,11 @@ class MainActivity : AppCompatActivity() {
 
         hintText.visibility = View.GONE
         val correctAnswer = questions[currentQuestionIndex].correctAnswer
-        val selectedOption =
-            radioGroup.findViewById<RadioButton>(selectedOptionIndex).text.toString()
+        val selectedOption = radioGroup.findViewById<RadioButton>(selectedOptionIndex).text.toString()
 
         if (correctAnswer == selectedOption) {
             score++
-            radioGroup.findViewById<RadioButton>(
-                selectedOptionIndex
-            ).setTextColor(Color.GREEN)
+            radioGroup.findViewById<RadioButton>(selectedOptionIndex).setTextColor(Color.GREEN)
         } else {
             radioGroup.children.forEach { button ->
                 if ((button as RadioButton).text == correctAnswer) {
@@ -79,6 +96,7 @@ class MainActivity : AppCompatActivity() {
             }
             radioGroup.findViewById<RadioButton>(selectedOptionIndex).setTextColor(Color.RED)
         }
+
         if (currentQuestionIndex < questions.size - 1) {
             currentQuestionIndex++
             radioGroup.postDelayed({ loadQuestion() }, 2000)
@@ -93,6 +111,6 @@ class MainActivity : AppCompatActivity() {
             putExtra("QUESTIONS", ArrayList(questions))
         }
         startActivity(intent)
-        finish() // Optionally, finish MainActivity
+        finish()
     }
 }
