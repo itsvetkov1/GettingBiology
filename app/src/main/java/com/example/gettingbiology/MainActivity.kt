@@ -9,6 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.room.Room
 import kotlinx.coroutines.*
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.AdError
+import android.util.Log
+import java.util.ArrayList
+import com.google.android.gms.ads.FullScreenContentCallback
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,10 +30,49 @@ class MainActivity : AppCompatActivity() {
     private lateinit var questions: List<Question>
     private var score = 0
     private lateinit var db: AppDatabase
+    private var mInterstitialAd: InterstitialAd? = null
+    private final var TAG = "MainActivity"
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        MobileAds.initialize(this) {}
+
+        var adRequest = AdRequest.Builder().build()
+
+        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                Log.d(TAG, adError?.toString() ?: "Unknown error")
+                mInterstitialAd = null
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                interstitialAd.fullScreenContentCallback = object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        // Code to be executed when the interstitial ad is dismissed.
+                        Log.d(TAG, "Ad was dismissed.")
+                        // Consider reloading the ad
+                    }
+
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                        // Code to be executed when the interstitial ad failed to show.
+                        Log.d(TAG, "Ad failed to show.")
+                    }
+
+                    override fun onAdShowedFullScreenContent() {
+                        // Code to be executed when the interstitial ad is shown.
+                        Log.d(TAG, "Ad showed fullscreen content.")
+                        mInterstitialAd = null
+                    }
+                }
+
+                Log.d(TAG, "Ad was loaded.")
+                mInterstitialAd = interstitialAd
+            }
+        })
 
         questionTextView = findViewById(R.id.question_text_view)
         radioGroup = findViewById(R.id.options_radio_group)
@@ -105,7 +154,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+// ...
+
     private fun navigateToResultActivity() {
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdDismissedFullScreenContent() {
+                    // Ad dismissed, proceed to result activity
+                    proceedToResultActivity()
+                }
+                // Include other callback methods if needed, like onAdFailedToShowFullScreenContent
+            }
+            mInterstitialAd?.show(this)
+        } else {
+            Log.d(TAG, "The interstitial ad wasn't ready yet.")
+            proceedToResultActivity()
+        }
+    }
+
+    private fun proceedToResultActivity() {
         val intent = Intent(this, ResultActivity::class.java).apply {
             putExtra("SCORE", score)
             putExtra("QUESTIONS", ArrayList(questions))
@@ -113,4 +180,8 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
+// ...
+
+
 }
