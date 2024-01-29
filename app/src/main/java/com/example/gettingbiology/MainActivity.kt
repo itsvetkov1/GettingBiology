@@ -18,6 +18,11 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.AdError
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.PrimaryKey
+import androidx.room.Query
 import java.util.ArrayList
 import com.google.android.gms.ads.FullScreenContentCallback
 
@@ -91,6 +96,26 @@ class MainActivity : AppCompatActivity() {
         fetchQuestions()
     }
 
+
+
+
+    override fun onResume() {
+        super.onResume()
+        CoroutineScope(Dispatchers.IO).launch {
+            val lastProgress = db.userProgressDao().getLastProgress()
+            withContext(Dispatchers.Main) {
+                // Use lastProgress to determine where to resume
+                // Example: currentQuestionIndex = lastProgress?.questionId ?: 0
+            }
+        }
+    }
+
+    private fun updateProgress(questionId: Int, isCompleted: Boolean) {
+        CoroutineScope(Dispatchers.IO).launch {
+            db.userProgressDao().insertProgress(UserProgress(questionId, isCompleted))
+        }
+    }
+
     private fun fetchQuestions() {
         CoroutineScope(Dispatchers.IO).launch {
             val dbQuestions = db.questionDao().getAllQuestions()
@@ -104,7 +129,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadQuestion() {
-        if (currentQuestionIndex >= questions.size) {
+        if (currentQuestionIndex >= questions.size || currentQuestionIndex >= 15) {
             navigateToResultActivity()
             return
         }

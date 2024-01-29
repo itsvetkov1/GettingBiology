@@ -27,10 +27,11 @@ class ResultActivity : AppCompatActivity() {
         val questionsLayout = findViewById<LinearLayout>(R.id.questions_layout)
 
         questions.forEachIndexed { index, question ->
-            if (question.correctAnswer != userAnswers[index]) {
+            if (index < userAnswers.size && question.correctAnswer != userAnswers[index]) {
                 questionsLayout.addView(createQuestionView(question, userAnswers[index]))
             }
         }
+
         val restartButton = findViewById<Button>(R.id.restart_quiz_button)
         restartButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
