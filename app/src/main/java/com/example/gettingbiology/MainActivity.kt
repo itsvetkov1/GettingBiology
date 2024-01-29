@@ -2,6 +2,7 @@ package com.example.gettingbiology
 
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.View
 import android.widget.*
@@ -16,6 +17,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.AdError
 import android.util.Log
+import androidx.core.content.ContextCompat
 import java.util.ArrayList
 import com.google.android.gms.ads.FullScreenContentCallback
 
@@ -29,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private var currentQuestionIndex = 0
     private lateinit var questions: List<Question>
     private var score = 0
+    private lateinit var userAnswers: MutableList<String>
     private lateinit var db: AppDatabase
     private var mInterstitialAd: InterstitialAd? = null
     private final var TAG = "MainActivity"
@@ -38,6 +41,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        userAnswers = mutableListOf()
 
         MobileAds.initialize(this) {}
 
@@ -105,7 +110,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         val question = questions[currentQuestionIndex]
-        questionTextView.text = question.questionText
+        questionTextView.apply {
+            text = question.questionText
+            setTextColor(Color.BLACK)
+            textSize = 18f
+            setTypeface(null, Typeface.BOLD)
+        }
         radioGroup.removeAllViews()
         radioGroup.clearCheck()
         hintText.visibility = View.GONE
@@ -113,6 +123,10 @@ class MainActivity : AppCompatActivity() {
         question.options.split(";").forEachIndexed { index, option ->
             val radioButton = RadioButton(this).apply {
                 text = option
+                setTextColor(Color.BLACK)
+                textSize = 18f
+                setTypeface(null, Typeface.BOLD)
+                buttonDrawable = ContextCompat.getDrawable(context, R.drawable.radio_button_custom)
                 id = index
             }
             radioGroup.addView(radioButton)
@@ -124,15 +138,18 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer() {
         val selectedOptionIndex = radioGroup.checkedRadioButtonId
         if (selectedOptionIndex == -1) {
-            hintText.text = "Please select an answer"
+            hintText.text = "Моля, изберете отговор!"
             hintText.setTextColor(Color.RED)
             hintText.visibility = View.VISIBLE
             return
         }
 
+        val selectedOption = radioGroup.findViewById<RadioButton>(selectedOptionIndex).text.toString()
+        userAnswers.add(selectedOption)
+
         hintText.visibility = View.GONE
         val correctAnswer = questions[currentQuestionIndex].correctAnswer
-        val selectedOption = radioGroup.findViewById<RadioButton>(selectedOptionIndex).text.toString()
+
 
         if (correctAnswer == selectedOption) {
             score++
@@ -176,12 +193,9 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent(this, ResultActivity::class.java).apply {
             putExtra("SCORE", score)
             putExtra("QUESTIONS", ArrayList(questions))
+            putExtra("USER_ANSWERS", ArrayList(userAnswers))
         }
         startActivity(intent)
         finish()
     }
-
-// ...
-
-
 }
