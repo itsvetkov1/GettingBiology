@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity() {
     private final var TAG = "MainActivity"
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -53,36 +52,41 @@ class MainActivity : AppCompatActivity() {
 
         var adRequest = AdRequest.Builder().build()
 
-        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                Log.d(TAG, adError?.toString() ?: "Unknown error")
-                mInterstitialAd = null
-            }
-
-            override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                interstitialAd.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        // Code to be executed when the interstitial ad is dismissed.
-                        Log.d(TAG, "Ad was dismissed.")
-                        // Consider reloading the ad
-                    }
-
-                    override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                        // Code to be executed when the interstitial ad failed to show.
-                        Log.d(TAG, "Ad failed to show.")
-                    }
-
-                    override fun onAdShowedFullScreenContent() {
-                        // Code to be executed when the interstitial ad is shown.
-                        Log.d(TAG, "Ad showed fullscreen content.")
-                        mInterstitialAd = null
-                    }
+        InterstitialAd.load(
+            this,
+            "ca-app-pub-3940256099942544/1033173712",
+            adRequest,
+            object : InterstitialAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d(TAG, adError?.toString() ?: "Unknown error")
+                    mInterstitialAd = null
                 }
 
-                Log.d(TAG, "Ad was loaded.")
-                mInterstitialAd = interstitialAd
-            }
-        })
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    interstitialAd.fullScreenContentCallback =
+                        object : FullScreenContentCallback() {
+                            override fun onAdDismissedFullScreenContent() {
+                                // Code to be executed when the interstitial ad is dismissed.
+                                Log.d(TAG, "Ad was dismissed.")
+                                // Consider reloading the ad
+                            }
+
+                            override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                                // Code to be executed when the interstitial ad failed to show.
+                                Log.d(TAG, "Ad failed to show.")
+                            }
+
+                            override fun onAdShowedFullScreenContent() {
+                                // Code to be executed when the interstitial ad is shown.
+                                Log.d(TAG, "Ad showed fullscreen content.")
+                                mInterstitialAd = null
+                            }
+                        }
+
+                    Log.d(TAG, "Ad was loaded.")
+                    mInterstitialAd = interstitialAd
+                }
+            })
 
         questionTextView = findViewById(R.id.question_text_view)
         radioGroup = findViewById(R.id.options_radio_group)
@@ -97,130 +101,133 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     override fun onResume() {
         super.onResume()
         CoroutineScope(Dispatchers.IO).launch {
             val lastProgress = db.userProgressDao().getLastProgress()
             withContext(Dispatchers.Main) {
-                // Use lastProgress to determine where to resume
-                // Example: currentQuestionIndex = lastProgress?.questionId ?: 0
-            }
-        }
-    }
-
-    private fun updateProgress(questionId: Int, isCompleted: Boolean) {
-        CoroutineScope(Dispatchers.IO).launch {
-            db.userProgressDao().insertProgress(UserProgress(questionId, isCompleted))
-        }
-    }
-
-    private fun fetchQuestions() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val dbQuestions = db.questionDao().getAllQuestions()
-            withContext(Dispatchers.Main) {
-                if (dbQuestions.isNotEmpty()) {
-                    questions = dbQuestions
-                    loadQuestion()
+                if (lastProgress != null) {
+                    currentQuestionIndex = lastProgress.questionId
+                    // Additional logic to resume the quiz
                 }
             }
         }
     }
 
-    private fun loadQuestion() {
-        if (currentQuestionIndex >= questions.size || currentQuestionIndex >= 15) {
-            navigateToResultActivity()
-            return
+
+        private fun updateProgress(questionId: Int, isCompleted: Boolean) {
+            CoroutineScope(Dispatchers.IO).launch {
+                db.userProgressDao().insertProgress(UserProgress(questionId, isCompleted))
+            }
         }
 
-        val question = questions[currentQuestionIndex]
-        questionTextView.apply {
-            text = question.questionText
-            setTextColor(Color.BLACK)
-            textSize = 18f
-            setTypeface(null, Typeface.BOLD)
+        private fun fetchQuestions() {
+            CoroutineScope(Dispatchers.IO).launch {
+                val dbQuestions = db.questionDao().getAllQuestions()
+                withContext(Dispatchers.Main) {
+                    if (dbQuestions.isNotEmpty()) {
+                        questions = dbQuestions
+                        loadQuestion()
+                    }
+                }
+            }
         }
-        radioGroup.removeAllViews()
-        radioGroup.clearCheck()
-        hintText.visibility = View.GONE
 
-        question.options.split(";").forEachIndexed { index, option ->
-            val radioButton = RadioButton(this).apply {
-                text = option
+        private fun loadQuestion() {
+            if (currentQuestionIndex >= questions.size || currentQuestionIndex >= 15) {
+                navigateToResultActivity()
+                return
+            }
+
+            val question = questions[currentQuestionIndex]
+            questionTextView.apply {
+                text = question.questionText
                 setTextColor(Color.BLACK)
                 textSize = 18f
                 setTypeface(null, Typeface.BOLD)
-                buttonDrawable = ContextCompat.getDrawable(context, R.drawable.radio_button_custom)
-                id = index
             }
-            radioGroup.addView(radioButton)
-        }
+            radioGroup.removeAllViews()
+            radioGroup.clearCheck()
+            hintText.visibility = View.GONE
 
-        submitButton.setOnClickListener { checkAnswer() }
-    }
-
-    private fun checkAnswer() {
-        val selectedOptionIndex = radioGroup.checkedRadioButtonId
-        if (selectedOptionIndex == -1) {
-            hintText.text = "Моля, изберете отговор!"
-            hintText.setTextColor(Color.RED)
-            hintText.visibility = View.VISIBLE
-            return
-        }
-
-        val selectedOption = radioGroup.findViewById<RadioButton>(selectedOptionIndex).text.toString()
-        userAnswers.add(selectedOption)
-
-        hintText.visibility = View.GONE
-        val correctAnswer = questions[currentQuestionIndex].correctAnswer
-
-
-        if (correctAnswer == selectedOption) {
-            score++
-            radioGroup.findViewById<RadioButton>(selectedOptionIndex).setTextColor(Color.GREEN)
-        } else {
-            radioGroup.children.forEach { button ->
-                if ((button as RadioButton).text == correctAnswer) {
-                    button.setTextColor(Color.GREEN)
+            question.options.split(";").forEachIndexed { index, option ->
+                val radioButton = RadioButton(this).apply {
+                    text = option
+                    setTextColor(Color.BLACK)
+                    textSize = 18f
+                    setTypeface(null, Typeface.BOLD)
+                    buttonDrawable =
+                        ContextCompat.getDrawable(context, R.drawable.radio_button_custom)
+                    id = index
                 }
+                radioGroup.addView(radioButton)
             }
-            radioGroup.findViewById<RadioButton>(selectedOptionIndex).setTextColor(Color.RED)
+
+            submitButton.setOnClickListener { checkAnswer() }
         }
 
-        if (currentQuestionIndex < questions.size - 1) {
-            currentQuestionIndex++
-            radioGroup.postDelayed({ loadQuestion() }, 2000)
-        } else {
-            navigateToResultActivity()
+        private fun checkAnswer() {
+            val selectedOptionIndex = radioGroup.checkedRadioButtonId
+            if (selectedOptionIndex == -1) {
+                hintText.text = "Моля, изберете отговор!"
+                hintText.setTextColor(Color.RED)
+                hintText.visibility = View.VISIBLE
+                return
+            }
+
+            val selectedOption =
+                radioGroup.findViewById<RadioButton>(selectedOptionIndex).text.toString()
+            userAnswers.add(selectedOption)
+
+            if (questions[currentQuestionIndex].correctAnswer == selectedOption) {
+                score++
+                radioGroup.findViewById<RadioButton>(selectedOptionIndex).setTextColor(Color.GREEN)
+            } else {
+                radioGroup.children.forEach { button ->
+                    if ((button as RadioButton).text == questions[currentQuestionIndex].correctAnswer) {
+                        button.setTextColor(Color.GREEN)
+                    }
+                }
+                radioGroup.findViewById<RadioButton>(selectedOptionIndex).setTextColor(Color.RED)
+            }
+
+            updateProgress(currentQuestionIndex, true) // Update progress here
+
+            if (currentQuestionIndex < questions.size - 1) {
+                currentQuestionIndex++
+                radioGroup.postDelayed({ loadQuestion() }, 2000)
+            } else {
+                navigateToResultActivity()
+            }
         }
-    }
+
 
 // ...
 
-    private fun navigateToResultActivity() {
-        if (mInterstitialAd != null) {
-            mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
-                override fun onAdDismissedFullScreenContent() {
-                    // Ad dismissed, proceed to result activity
-                    proceedToResultActivity()
+        private fun navigateToResultActivity() {
+            if (mInterstitialAd != null) {
+                mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        // Ad dismissed, proceed to result activity
+                        proceedToResultActivity()
+                    }
+                    // Include other callback methods if needed, like onAdFailedToShowFullScreenContent
                 }
-                // Include other callback methods if needed, like onAdFailedToShowFullScreenContent
+                mInterstitialAd?.show(this)
+            } else {
+                Log.d(TAG, "The interstitial ad wasn't ready yet.")
+                proceedToResultActivity()
             }
-            mInterstitialAd?.show(this)
-        } else {
-            Log.d(TAG, "The interstitial ad wasn't ready yet.")
-            proceedToResultActivity()
+        }
+
+        private fun proceedToResultActivity() {
+            val intent = Intent(this, ResultActivity::class.java).apply {
+                putExtra("SCORE", score)
+                putExtra("QUESTIONS", ArrayList(questions))
+                putExtra("USER_ANSWERS", ArrayList(userAnswers))
+            }
+            startActivity(intent)
+            finish()
         }
     }
 
-    private fun proceedToResultActivity() {
-        val intent = Intent(this, ResultActivity::class.java).apply {
-            putExtra("SCORE", score)
-            putExtra("QUESTIONS", ArrayList(questions))
-            putExtra("USER_ANSWERS", ArrayList(userAnswers))
-        }
-        startActivity(intent)
-        finish()
-    }
-}
