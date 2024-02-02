@@ -34,11 +34,22 @@ class ResultActivity : AppCompatActivity() {
 
         val restartButton = findViewById<Button>(R.id.restart_quiz_button)
         restartButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val answeredQuestionIds = ArrayList<Int>()
+            // Assuming each Question object has an 'id' field
+            questions.forEach { question ->
+                answeredQuestionIds.add(question.id)
+            }
+
+            val intent = Intent(this, MainActivity::class.java).apply {
+                // Pass the list of answered question IDs
+                putIntegerArrayListExtra("ANSWERED_QUESTION_IDS", answeredQuestionIds)
+            }
             startActivity(intent)
-            finish()
+            finish() // Finish ResultActivity to remove it from the back stack.
         }
-    }
+
+
+   }
 
     private fun createQuestionView(question: Question, userAnswer: String): LinearLayout {
         val layout = LinearLayout(this)

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/background_image">
+
+    <Button
+        android:id="@+id/btnClass8"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="8-ми клас"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnClass9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="9-ти клас"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnClass10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="10-ти клас"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnEntranceExam"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Кандидатстудентски изпит"/>
+
+</LinearLayout>

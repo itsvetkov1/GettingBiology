@@ -39,7 +39,8 @@ class WelcomeActivity : AppCompatActivity() {
     }
 
     private fun navigateToQuiz() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, SelectQuizActivity::class.java)
         startActivity(intent)
     }
+
 }
