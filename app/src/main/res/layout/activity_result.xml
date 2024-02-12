@@ -29,12 +29,14 @@
             <!-- Dynamic content will be added here -->
         </LinearLayout>
     </ScrollView>
+
     <Button
         android:id="@+id/restart_quiz_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Нов тест"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:background="@color/turquoise"
+        android:text="Нов тест" />
 
 </LinearLayout>

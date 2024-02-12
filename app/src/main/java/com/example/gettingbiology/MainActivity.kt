@@ -26,6 +26,8 @@ import androidx.room.Query
 import java.util.ArrayList
 import com.google.android.gms.ads.FullScreenContentCallback
 
+import com.google.android.gms.ads.AdView
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,34 +44,39 @@ class MainActivity : AppCompatActivity() {
     private final var TAG = "MainActivity"
     private lateinit var quizType: String
     private var answeredQuestionIds = arrayListOf<Int>()
+    private lateinit var mAdView: AdView
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Initialize Mobile Ads first to avoid any initialization delay later on
+        MobileAds.initialize(this) {}
+
         // Retrieve the quiz type from intent or SharedPreferences as a fallback.
-        quizType = intent.getStringExtra("QUIZ_TYPE")
-            ?: getSharedPreferences("QuizPrefs", MODE_PRIVATE)
-                .getString("LAST_QUIZ_TYPE", "default") ?: "default"
+        quizType = intent.getStringExtra("QUIZ_TYPE") ?: getSharedPreferences("QuizPrefs", MODE_PRIVATE)
+            .getString("LAST_QUIZ_TYPE", "default") ?: "default"
 
-        val answeredQuestionIds = intent.getIntegerArrayListExtra("ANSWERED_QUESTION_IDS") ?: ArrayList()
+        // Load answeredQuestionIds from SharedPreferences
+        val sharedPrefs = getSharedPreferences("QuizPrefs", MODE_PRIVATE)
+        val savedIds = sharedPrefs.getStringSet("AnsweredQuestionIds", null)
+        answeredQuestionIds = if (savedIds != null) savedIds.map { it.toInt() }.toCollection(ArrayList()) else ArrayList()
 
-        // Initialize the database with the retrieved quiz type.
+        // Initialize the database with the retrieved quiz type and previously answered question IDs.
         initializeDatabase(quizType, answeredQuestionIds)
 
         // Initialize user answers list.
         userAnswers = mutableListOf()
 
-
-
-
-        // Initialize Mobile Ads.
-        MobileAds.initialize(this) {}
+        // Ad request and InterstitialAd load block.
+        mAdView = findViewById(R.id.adView)
         val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
         InterstitialAd.load(
             this,
-            "ca-app-pub-3940256099942544/1033173712",
+            "ca-app-pub-3551035007628625/7595976845",
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -82,7 +89,6 @@ class MainActivity : AppCompatActivity() {
                         fullScreenContentCallback = object : FullScreenContentCallback() {
                             override fun onAdDismissedFullScreenContent() {
                                 Log.d(TAG, "Ad was dismissed.")
-                                // Optionally, reload the ad or handle ad dismissal.
                             }
 
                             override fun onAdFailedToShowFullScreenContent(adError: AdError) {
@@ -91,8 +97,7 @@ class MainActivity : AppCompatActivity() {
 
                             override fun onAdShowedFullScreenContent() {
                                 Log.d(TAG, "Ad showed fullscreen content.")
-                                mInterstitialAd =
-                                    null // Ensure the reference is cleared once the ad is shown.
+                                mInterstitialAd = null // Ensure the reference is cleared once the ad is shown.
                             }
                         }
                     }
@@ -100,10 +105,26 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
+
+
         // Initialize UI components.
         initializeComponents()
-
     }
+
+
+    override fun onPause() {
+        mAdView.pause()
+        super.onPause()
+    }
+
+
+
+    override fun onDestroy() {
+        mAdView.destroy()
+        super.onDestroy()
+    }
+
+
 
     private fun initializeComponents() {
         // Initialize your UI components here
@@ -146,13 +167,14 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-//    private fun initializeComponents() {
-//        userAnswers = mutableListOf()
-//        questionTextView = findViewById(R.id.question_text_view)
-//        radioGroup = findViewById(R.id.options_radio_group)
-//        submitButton = findViewById(R.id.submit_button)
-//        hintText = findViewById(R.id.hint_text_view)
-//    }
+    private fun saveProgress() {
+        val sharedPref = getSharedPreferences("QuizPrefs", MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putStringSet("AnsweredQuestionIds", answeredQuestionIds.map { it.toString() }.toSet())
+            apply()
+        }
+    }
+
 
 
         private fun startNewQuiz() {
@@ -185,6 +207,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        mAdView.resume()
 
         // Retrieve the potentially updated quiz type from SharedPreferences.
         val sharedPref = getSharedPreferences("QuizPrefs", MODE_PRIVATE)
@@ -220,25 +243,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-//    private fun initializeDatabase(quizType: String) {
-//        val dbName = when (quizType) {
-//            "class8.db" -> "class8.db"
-//            "class9.db" -> "class9.db"
-//            "class10.db" -> "class10.db"
-//            "db_entrance_exam.db" -> "db_entrance_exam.db"
-//            else -> "dbquestions.db" // Fallback to default database
-//        }
-//        db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, dbName)
-//            .createFromAsset(dbName)
-//            .fallbackToDestructiveMigration()
-//            .build()
-//
-//        fetchQuestions()
-//
-//        initializeComponents()
-//
-//    }
 
 
         private fun updateProgress(questionId: Int, isCompleted: Boolean) {
@@ -282,68 +286,87 @@ class MainActivity : AppCompatActivity() {
             submitButton.setOnClickListener { checkAnswer() }
         }
 
-        private fun checkAnswer() {
-            val selectedOptionIndex = radioGroup.checkedRadioButtonId
-            if (selectedOptionIndex == -1) {
-                hintText.text = "Моля, изберете отговор!"
-                hintText.setTextColor(Color.RED)
-                hintText.visibility = View.VISIBLE
-                return
-            }
+    private fun checkAnswer() {
+        val selectedOptionIndex = radioGroup.checkedRadioButtonId
+        if (selectedOptionIndex == -1) {
+            hintText.text = "Моля, изберете отговор!"
+            hintText.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent_white)) // Assuming this color is defined
+            hintText.visibility = View.VISIBLE
+            return
+        }
 
-            val selectedOption =
-                radioGroup.findViewById<RadioButton>(selectedOptionIndex).text.toString()
-            userAnswers.add(selectedOption)
+        val selectedOption = radioGroup.findViewById<RadioButton>(selectedOptionIndex).text.toString()
+        val correctAnswer = questions[currentQuestionIndex].correctAnswer
+        userAnswers.add(selectedOption)
+        answeredQuestionIds.add(questions[currentQuestionIndex].id)
+        saveProgress()
 
-            if (questions[currentQuestionIndex].correctAnswer == selectedOption) {
-                score++
-                radioGroup.findViewById<RadioButton>(selectedOptionIndex).setTextColor(Color.GREEN)
-            } else {
-                radioGroup.children.forEach { button ->
-                    if ((button as RadioButton).text == questions[currentQuestionIndex].correctAnswer) {
-                        button.setTextColor(Color.GREEN)
-                    }
+        val isCorrect = selectedOption == correctAnswer
+        if (isCorrect) {
+            score++
+        }
+        Log.d("ScoreUpdate", "Current score: $score") // Log to verify score increment
+
+        // Reset backgrounds and update accordingly
+        radioGroup.children.forEach { child ->
+            if (child is RadioButton) {
+                val layoutParams = child.layoutParams as RadioGroup.LayoutParams
+                layoutParams.width = RadioGroup.LayoutParams.MATCH_PARENT
+                child.layoutParams = layoutParams
+
+                child.background = if (child.text == correctAnswer) {
+                    ContextCompat.getDrawable(this, R.drawable.correct_answer_background)
+                } else if (!isCorrect && child.text == selectedOption) {
+                    ContextCompat.getDrawable(this, R.drawable.incorrect_answer_background)
+                } else {
+                    null // No background for unselected options
                 }
-                radioGroup.findViewById<RadioButton>(selectedOptionIndex).setTextColor(Color.RED)
-            }
-
-            updateProgress(currentQuestionIndex, true) // Update progress here
-
-            if (currentQuestionIndex < questions.size - 1) {
-                currentQuestionIndex++
-                radioGroup.postDelayed({ loadQuestion() }, 2000)
-            } else {
-                navigateToResultActivity()
+                child.setTextColor(Color.BLACK) // Keep text color unchanged
             }
         }
 
+        updateProgress(currentQuestionIndex, true)
 
-// ...
-
-        private fun navigateToResultActivity() {
-            if (mInterstitialAd != null) {
-                mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        // Ad dismissed, proceed to result activity
-                        proceedToResultActivity()
-                    }
-                    // Include other callback methods if needed, like onAdFailedToShowFullScreenContent
-                }
-                mInterstitialAd?.show(this)
-            } else {
-                Log.d(TAG, "The interstitial ad wasn't ready yet.")
-                proceedToResultActivity()
-            }
-        }
-
-        private fun proceedToResultActivity() {
-            val intent = Intent(this, ResultActivity::class.java).apply {
-                putExtra("SCORE", score)
-                putExtra("QUESTIONS", ArrayList(questions))
-                putExtra("USER_ANSWERS", ArrayList(userAnswers))
-            }
-            startActivity(intent)
-            finish()
+        if (currentQuestionIndex < questions.size - 1) {
+            currentQuestionIndex++
+            radioGroup.postDelayed({ loadQuestion() }, 2000)
+        } else {
+            navigateToResultActivity()
         }
     }
+
+
+
+
+    private fun navigateToResultActivity() {
+        // Populate QuizResultsHolder with the current quiz results
+        QuizResultsHolder.score = score
+        QuizResultsHolder.questions = questions
+        // Convert MutableList to ArrayList
+        QuizResultsHolder.userAnswers = ArrayList(userAnswers)
+
+        // Navigate to ResultActivity
+        if (mInterstitialAd != null) {
+            mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+                override fun onAdDismissedFullScreenContent() {
+                    // Ad dismissed, proceed to result activity
+                    proceedToResultActivity()
+                }
+                // Include other callback methods if needed
+            }
+            mInterstitialAd?.show(this)
+        } else {
+            Log.d(TAG, "The interstitial ad wasn't ready yet.")
+            proceedToResultActivity()
+        }
+    }
+
+    private fun proceedToResultActivity() {
+        // Intent to launch ResultActivity without passing quiz results as extras
+        val intent = Intent(this, ResultActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+}
+
 

@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 
 class ResultActivity : AppCompatActivity() {
@@ -17,83 +18,68 @@ class ResultActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
 
-        val score = intent.getIntExtra("SCORE", 0)
-        val questions = intent.getSerializableExtra("QUESTIONS") as List<Question>
-        val userAnswers = intent.getStringArrayListExtra("USER_ANSWERS") as List<String>
+        // Use QuizResultsHolder to get the data
+        val score = QuizResultsHolder.score
+        val questions = QuizResultsHolder.questions
+        val userAnswers = QuizResultsHolder.userAnswers
 
         val resultTextView = findViewById<TextView>(R.id.result_text_view)
-        resultTextView.text = "Score: $score/${questions.size}"
+        resultTextView.text = "Резултат: $score/15"
+        resultTextView.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent_white))
+        resultTextView.setTextColor(Color.BLACK)
+        resultTextView.setTypeface(null, Typeface.BOLD)
 
         val questionsLayout = findViewById<LinearLayout>(R.id.questions_layout)
 
         questions.forEachIndexed { index, question ->
-            if (index < userAnswers.size && question.correctAnswer != userAnswers[index]) {
+            if (index < userAnswers.size) {
                 questionsLayout.addView(createQuestionView(question, userAnswers[index]))
             }
         }
 
         val restartButton = findViewById<Button>(R.id.restart_quiz_button)
         restartButton.setOnClickListener {
-            val answeredQuestionIds = ArrayList<Int>()
-            // Assuming each Question object has an 'id' field
-            questions.forEach { question ->
-                answeredQuestionIds.add(question.id)
-            }
-
-            val intent = Intent(this, MainActivity::class.java).apply {
-                // Pass the list of answered question IDs
-                putIntegerArrayListExtra("ANSWERED_QUESTION_IDS", answeredQuestionIds)
-            }
+            QuizResultsHolder.clear() // Clear the results before starting a new quiz
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
-            finish() // Finish ResultActivity to remove it from the back stack.
+            finish() // Finish ResultActivity to remove it from the back stack
         }
-
-
-   }
+    }
 
     private fun createQuestionView(question: Question, userAnswer: String): LinearLayout {
-        val layout = LinearLayout(this)
-        layout.orientation = LinearLayout.VERTICAL
-        layout.layoutParams = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply {
-            bottomMargin = 30 // Add bottom margin for spacing between blocks
+        val layout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                bottomMargin = 30
+            }
         }
 
+        val questionTextView = TextView(this).apply {
+            text = question.questionText
+            setTextColor(Color.BLACK)
+            textSize = 18f
+            setTypeface(null, Typeface.BOLD)
+            setPadding(16)
+            setBackgroundColor(Color.parseColor("#D3D3D3"))
+        }
 
-        val questionTextView = TextView(this)
-        questionTextView.text = question.questionText
-        questionTextView.setTextColor(Color.BLACK)
-        questionTextView.textSize = 18f // Increase text size
-        questionTextView.setTypeface(null, Typeface.BOLD) // Set text to bold
-        questionTextView.setPadding(16)
-        questionTextView.setBackgroundColor(Color.parseColor("#D3D3D3"))
-        questionTextView.setBackgroundColor(Color.parseColor("#D3D3D3"))
+        val correctAnswerTextView = TextView(this).apply {
+            text = "Правилен отговор: ${question.correctAnswer}"
+            setTextColor(Color.BLACK)
+            textSize = 18f
+            setTypeface(null, Typeface.BOLD)
+            setPadding(16)
+            setBackgroundColor(Color.parseColor("#4CAF50"))
+        }
 
-        val correctAnswerTextView = TextView(this)
-        correctAnswerTextView.text = "Правилен отговор: ${question.correctAnswer}"
-        correctAnswerTextView.setTextColor(Color.BLACK) // Set text color
-        correctAnswerTextView.textSize = 18f // Increase text size
-        correctAnswerTextView.setTypeface(null, Typeface.BOLD) // Set text to bold
-        correctAnswerTextView.setBackgroundColor(Color.parseColor("#4CAF50")) // Always green for correct answer
-        correctAnswerTextView.setPadding(16)
-        correctAnswerTextView.layoutParams = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-
-        val userAnswerTextView = TextView(this)
-        userAnswerTextView.text = "Вашият отговор: $userAnswer"
-        userAnswerTextView.setTextColor(Color.BLACK)
-        userAnswerTextView.textSize = 18f // Increase text size
-        userAnswerTextView.setTypeface(null, Typeface.BOLD) // Set text to bold
-        userAnswerTextView.setBackgroundColor(if (question.correctAnswer != userAnswer) Color.parseColor("#F44336") else Color.TRANSPARENT)
-        userAnswerTextView.setPadding(16)
-        userAnswerTextView.layoutParams = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
+        val userAnswerTextView = TextView(this).apply {
+            text = "Вашият отговор: $userAnswer"
+            setTextColor(Color.BLACK)
+            textSize = 18f
+            setTypeface(null, Typeface.BOLD)
+            setPadding(16)
+            setBackgroundColor(if (question.correctAnswer == userAnswer) Color.parseColor("#4CAF50") else Color.parseColor("#F44336"))
+        }
 
         layout.addView(questionTextView)
         layout.addView(correctAnswerTextView)
@@ -101,6 +87,4 @@ class ResultActivity : AppCompatActivity() {
 
         return layout
     }
-
-
 }

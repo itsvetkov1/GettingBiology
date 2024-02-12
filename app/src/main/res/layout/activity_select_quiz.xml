@@ -10,27 +10,31 @@
         android:id="@+id/btnClass8"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="8-ми клас"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"
+        android:background="@color/turquoise"
+        android:text="8-ми клас" />
 
     <Button
         android:id="@+id/btnClass9"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="9-ти клас"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"
+        android:background="@color/turquoise"
+        android:text="9-ти клас" />
 
     <Button
         android:id="@+id/btnClass10"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="10-ти клас"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"
+        android:background="@color/turquoise"
+        android:text="10-ти клас" />
 
     <Button
         android:id="@+id/btnEntranceExam"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Кандидатстудентски изпит"/>
+        android:background="@color/turquoise"
+        android:text="Кандидатстудентски изпит" />
 
 </LinearLayout>

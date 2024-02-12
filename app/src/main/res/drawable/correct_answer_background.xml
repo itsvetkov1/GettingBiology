@@ -1,0 +1,5 @@
+<!-- Correct Answer Background -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#4CAF50"/> <!-- Green background for correct answers -->
+</shape>

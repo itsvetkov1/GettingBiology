@@ -1,51 +1,68 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@drawable/background_image"> <!-- Background attribute should be here -->
+    android:background="@drawable/background_image">
 
-    <TextView
-        android:id="@+id/question_text_view"
+    <!-- Use a wrapper LinearLayout to hold the content and give it weight -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/question_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Question"
+            android:textSize="18sp"
+            android:background="@color/transparent_white"
+            android:padding="16dp"
+            android:layout_margin="8dp"
+            android:textColor="@android:color/black"/>
+
+        <RadioGroup
+            android:id="@+id/options_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:textSize="18sp"
+            android:background="@color/transparent_white"
+            android:padding="16dp"
+            android:layout_margin="8dp"
+            android:textColor="@android:color/black"/>
+
+        <TextView
+            android:id="@+id/hint_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="gone"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal"
+            android:text="*Моля изберете отговор!"/>
+
+        <Button
+            android:id="@+id/submit_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:background="@color/turquoise"
+            android:text="Избери" />
+    </LinearLayout>
+
+    <!-- AdView placed outside the wrapper to ensure it stays at the bottom -->
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Question"
-        android:textSize="18sp"
-        android:background="@color/transparent_white"
-        android:padding="16dp"
-        android:layout_margin="8dp"
-        android:textColor="@android:color/black"/>
-
-
-    <RadioGroup
-        android:id="@+id/options_radio_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginTop="16dp"
-        android:textSize="18sp"
-        android:background="@color/transparent_white"
-        android:padding="16dp"
-        android:layout_margin="8dp"
-        android:textColor="@android:color/black"/>
-
-    <TextView
-        android:id="@+id/hint_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_red_dark"
-        android:visibility="gone"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center_horizontal"
-        android:text="*Моля изберете отговор!"/>
-
-    <Button
-        android:id="@+id/submit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Избери"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="24dp"/>
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-3551035007628625/8032474007">
+    </com.google.android.gms.ads.AdView>
 </LinearLayout>
