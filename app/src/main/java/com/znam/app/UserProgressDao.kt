@@ -1,4 +1,4 @@
-package com.example.gettingbiology
+package com.znam.app
 
 import androidx.room.Dao
 import androidx.room.Insert

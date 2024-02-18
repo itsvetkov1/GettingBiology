@@ -1,4 +1,4 @@
-package com.example.gettingbiology
+package com.znam.app
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

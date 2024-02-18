@@ -1,4 +1,4 @@
-package com.example.gettingbiology
+package com.znam.app
 
 object QuizResultsHolder {
     var score: Int = 0

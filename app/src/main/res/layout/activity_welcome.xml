@@ -9,30 +9,30 @@
         android:id="@+id/welcomeAnimationView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
 
     <!-- Static Image and Button View -->
     <RelativeLayout
         android:id="@+id/staticImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"> <!-- Initially hidden -->
         android:background="@drawable/background_image"
+        android:visibility="gone">
 
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/welcome_animation2"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            android:src="@drawable/welcome_animation2" />
 
         <Button
             android:id="@+id/startQuizButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Биология"
+            android:layout_centerInParent="true"
             android:background="@color/green"
-            android:textColor="@android:color/white"
-            android:layout_centerInParent="true"/>
+            android:text="Биология"
+            android:textColor="@android:color/white" />
     </RelativeLayout>
 </FrameLayout>
