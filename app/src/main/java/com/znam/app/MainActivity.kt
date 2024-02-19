@@ -254,6 +254,8 @@ class MainActivity : AppCompatActivity() {
                 return
             }
 
+            submitButton.isEnabled = true
+
             val question = questions[currentQuestionIndex]
             questionTextView.apply {
                 text = question.questionText
@@ -278,7 +280,9 @@ class MainActivity : AppCompatActivity() {
                 radioGroup.addView(radioButton)
             }
 
-            submitButton.setOnClickListener { checkAnswer() }
+            submitButton.setOnClickListener { checkAnswer()
+
+            }
         }
 
     private fun checkAnswer() {
@@ -287,38 +291,59 @@ class MainActivity : AppCompatActivity() {
             hintText.text = "Моля, изберете отговор!"
             hintText.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent_white)) // Assuming this color is defined
             hintText.visibility = View.VISIBLE
-            return
+            submitButton.isEnabled = true
+            // Don't disable the submit button here to allow re-selection
+        } else {
+            val selectedRadioButton = radioGroup.findViewById<RadioButton>(selectedOptionIndex)
+            val selectedOption = selectedRadioButton.text.toString()
+            val correctAnswer = questions[currentQuestionIndex].correctAnswer
+            userAnswers.add(selectedOption)
+            answeredQuestionIds.add(questions[currentQuestionIndex].id)
+            saveProgress()
+
+            val isCorrect = selectedOption == correctAnswer
+            if (isCorrect) {
+                score++
+            }
+
+            // Reset backgrounds and update accordingly
+            updateAnswerBackgrounds(selectedRadioButton, correctAnswer, isCorrect)
+
+            // Only disable the button after a valid selection has been made and processed
+            submitButton.isEnabled = false
+
+            // Decide whether to load the next question or navigate to the result activity
+            proceedToNextQuestionOrFinish()
         }
+    }
 
-        val selectedOption = radioGroup.findViewById<RadioButton>(selectedOptionIndex).text.toString()
-        val correctAnswer = questions[currentQuestionIndex].correctAnswer
-        userAnswers.add(selectedOption)
-        answeredQuestionIds.add(questions[currentQuestionIndex].id)
-        saveProgress()
-
-        val isCorrect = selectedOption == correctAnswer
-        if (isCorrect) {
-            score++
+    private fun proceedToNextQuestionOrFinish() {
+        if (currentQuestionIndex < questions.size - 1) {
+            currentQuestionIndex++
+            radioGroup.postDelayed({ loadQuestion() }, 2000)
+        } else {
+            navigateToResultActivity()
         }
-        Log.d("ScoreUpdate", "Current score: $score") // Log to verify score increment
+    }
 
-        // Reset backgrounds and update accordingly
+
+    private fun updateAnswerBackgrounds(selectedRadioButton: RadioButton, correctAnswer: String, isCorrect: Boolean) {
         radioGroup.children.forEach { child ->
             if (child is RadioButton) {
                 val layoutParams = child.layoutParams as RadioGroup.LayoutParams
                 layoutParams.width = RadioGroup.LayoutParams.MATCH_PARENT
                 child.layoutParams = layoutParams
 
-                child.background = if (child.text == correctAnswer) {
-                    ContextCompat.getDrawable(this, R.drawable.correct_answer_background)
-                } else if (!isCorrect && child.text == selectedOption) {
-                    ContextCompat.getDrawable(this, R.drawable.incorrect_answer_background)
-                } else {
-                    null // No background for unselected options
+                child.background = when {
+                    child.text == correctAnswer -> ContextCompat.getDrawable(this, R.drawable.correct_answer_background)
+                    !isCorrect && child == selectedRadioButton -> ContextCompat.getDrawable(this, R.drawable.incorrect_answer_background)
+                    else -> null // No background for unselected options
                 }
                 child.setTextColor(Color.BLACK) // Keep text color unchanged
             }
         }
+
+
 
         updateProgress(currentQuestionIndex, true)
 
