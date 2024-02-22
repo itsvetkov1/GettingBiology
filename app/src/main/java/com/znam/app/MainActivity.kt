@@ -20,7 +20,11 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import java.util.ArrayList
 import com.google.android.gms.ads.FullScreenContentCallback
-
+import com.google.android.ump.ConsentInformation
+import com.google.android.ump.ConsentInformation.OnConsentInfoUpdateFailureListener
+import com.google.android.ump.ConsentInformation.OnConsentInfoUpdateSuccessListener
+import com.google.android.ump.ConsentRequestParameters
+import com.google.android.ump.UserMessagingPlatform
 import com.google.android.gms.ads.AdView
 
 
@@ -40,12 +44,40 @@ class MainActivity : AppCompatActivity() {
     private lateinit var quizType: String
     private var answeredQuestionIds = arrayListOf<Int>()
     private lateinit var mAdView: AdView
-
+    private lateinit var consentInformation: ConsentInformation
+    private lateinit var questionCounterTextView: TextView
+    private lateinit var skipButton: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+        val params = ConsentRequestParameters.Builder()
+            .setTagForUnderAgeOfConsent(false)
+            .build()
+
+
+        consentInformation = UserMessagingPlatform.getConsentInformation(this)
+        consentInformation.requestConsentInfoUpdate(
+            this,
+            params,
+            ConsentInformation.OnConsentInfoUpdateSuccessListener {
+                Log.d(TAG, "Consent status: ${consentInformation.consentStatus}")
+                if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
+                loadAndShowConsentForm()
+            } else {
+                    Log.d(TAG, "Consent form not required. Current status: ${consentInformation.consentStatus}")
+            }
+            },
+            ConsentInformation.OnConsentInfoUpdateFailureListener {
+                    requestConsentError ->
+                // Consent gathering failed.
+                Log.w(TAG, String.format("%s: %s", requestConsentError.errorCode, requestConsentError.message))
+
+            })
+
 
         // Initialize Mobile Ads first to avoid any initialization delay later on
         MobileAds.initialize(this) {}
@@ -100,11 +132,44 @@ class MainActivity : AppCompatActivity() {
                 }
             })
 
+        questionCounterTextView = findViewById(R.id.question_counter_text_view)
 
+        skipButton = findViewById(R.id.skip_button)
+        skipButton.setOnClickListener {
+            proceedToNextQuestionOrFinish()
+        }
 
         // Initialize UI components.
         initializeComponents()
     }
+
+    private fun loadAndShowConsentForm() {
+        UserMessagingPlatform.loadConsentForm(
+            this,
+            { consentForm ->
+                if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
+                    consentForm.show(
+                        this@MainActivity,
+                        { formError ->
+                            // Handle dismissal or error in showing the form
+                            Log.e(TAG, "Consent form error: $formError")
+                        }
+                    )
+                }
+            },
+            { formError ->
+                // Handle loading error
+                Log.e(TAG, "Consent form loading error: $formError")
+            }
+        )
+    }
+
+    private fun skipQuestion() {
+        // Use null or a specific value to indicate a skipped question
+        userAnswers.add(currentQuestionIndex, null.toString()) // or "SKIPPED"
+        proceedToNextQuestionOrFinish()
+    }
+
 
 
     override fun onPause() {
@@ -256,6 +321,10 @@ class MainActivity : AppCompatActivity() {
 
             submitButton.isEnabled = true
 
+            val questionCounterTextView = findViewById<TextView>(R.id.question_counter_text_view)
+            questionCounterTextView.text = getString(R.string.question_counter_format, currentQuestionIndex + 1, 15)
+
+
             val question = questions[currentQuestionIndex]
             questionTextView.apply {
                 text = question.questionText
@@ -342,20 +411,8 @@ class MainActivity : AppCompatActivity() {
                 child.setTextColor(Color.BLACK) // Keep text color unchanged
             }
         }
-
-
-
         updateProgress(currentQuestionIndex, true)
-
-        if (currentQuestionIndex < questions.size - 1) {
-            currentQuestionIndex++
-            radioGroup.postDelayed({ loadQuestion() }, 2000)
-        } else {
-            navigateToResultActivity()
-        }
     }
-
-
 
 
     private fun navigateToResultActivity() {

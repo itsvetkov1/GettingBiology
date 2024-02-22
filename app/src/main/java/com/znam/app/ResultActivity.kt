@@ -10,7 +10,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.setPadding
 
 class ResultActivity : AppCompatActivity() {
 
@@ -18,39 +17,39 @@ class ResultActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
 
-        // Use QuizResultsHolder to get the data
         val score = QuizResultsHolder.score
         val questions = QuizResultsHolder.questions
         val userAnswers = QuizResultsHolder.userAnswers
 
-        val resultTextView = findViewById<TextView>(R.id.result_text_view)
-        resultTextView.text = "Резултат: $score/15"
-        resultTextView.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent_white))
-        resultTextView.setTextColor(Color.BLACK)
-        resultTextView.setTypeface(null, Typeface.BOLD)
+        val resultTextView = findViewById<TextView>(R.id.result_text_view).apply {
+            text = "Резултат: $score/15"
+            setBackgroundColor(ContextCompat.getColor(this@ResultActivity, R.color.transparent_white))
+            setTextColor(Color.BLACK)
+            setTypeface(null, Typeface.BOLD)
+        }
 
         val questionsLayout = findViewById<LinearLayout>(R.id.questions_layout)
 
         questions.forEachIndexed { index, question ->
-            if (index < userAnswers.size) {
-                questionsLayout.addView(createQuestionView(question, userAnswers[index]))
+            if (index < 15) {
+                val userAnswer = userAnswers.getOrNull(index) ?: "Question Skipped"
+                questionsLayout.addView(createQuestionView(question, userAnswer))
             }
         }
 
-        val restartButton = findViewById<Button>(R.id.restart_quiz_button)
-        restartButton.setOnClickListener {
+
+        findViewById<Button>(R.id.restart_quiz_button).setOnClickListener {
             QuizResultsHolder.clear() // Clear the results before starting a new quiz
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, MainActivity::class.java))
             finish() // Finish ResultActivity to remove it from the back stack
         }
     }
 
-    private fun createQuestionView(question: Question, userAnswer: String): LinearLayout {
+    private fun createQuestionView(question: Question, userAnswer: String?): LinearLayout {
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                bottomMargin = 30
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also {
+                (it as LinearLayout.LayoutParams).bottomMargin = 30
             }
         }
 
@@ -58,8 +57,8 @@ class ResultActivity : AppCompatActivity() {
             text = question.questionText
             setTextColor(Color.BLACK)
             textSize = 18f
-            setTypeface(null, Typeface.BOLD)
-            setPadding(16)
+            typeface = Typeface.create("", Typeface.BOLD)
+            setPadding(16, 16, 16, 16) // Left, Top, Right, Bottom padding
             setBackgroundColor(Color.parseColor("#D3D3D3"))
         }
 
@@ -67,18 +66,19 @@ class ResultActivity : AppCompatActivity() {
             text = "Правилен отговор: ${question.correctAnswer}"
             setTextColor(Color.BLACK)
             textSize = 18f
-            setTypeface(null, Typeface.BOLD)
-            setPadding(16)
+            typeface = Typeface.create("", Typeface.BOLD)
+            setPadding(16, 16, 16, 16) // Left, Top, Right, Bottom padding
             setBackgroundColor(Color.parseColor("#4CAF50"))
         }
 
+
         val userAnswerTextView = TextView(this).apply {
-            text = "Вашият отговор: $userAnswer"
+            text = if (userAnswer == "Question Skipped") "Въпросът е пропуснат" else "Вашият отговор: $userAnswer"
             setTextColor(Color.BLACK)
             textSize = 18f
-            setTypeface(null, Typeface.BOLD)
-            setPadding(16)
-            setBackgroundColor(if (question.correctAnswer == userAnswer) Color.parseColor("#4CAF50") else Color.parseColor("#F44336"))
+            typeface = Typeface.create("", Typeface.BOLD)
+            setPadding(16, 16, 16, 16) // Left, Top, Right, Bottom padding
+            setBackgroundColor(if (userAnswer == null || question.correctAnswer == userAnswer) Color.TRANSPARENT else Color.parseColor("#F44336"))
         }
 
         layout.addView(questionTextView)
