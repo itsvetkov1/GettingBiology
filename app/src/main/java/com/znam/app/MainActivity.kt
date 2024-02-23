@@ -136,6 +136,8 @@ class MainActivity : AppCompatActivity() {
 
         skipButton = findViewById(R.id.skip_button)
         skipButton.setOnClickListener {
+            skipButton.isEnabled = false
+            submitButton.isEnabled = false
             proceedToNextQuestionOrFinish()
         }
 
@@ -167,6 +169,8 @@ class MainActivity : AppCompatActivity() {
     private fun skipQuestion() {
         // Use null or a specific value to indicate a skipped question
         userAnswers.add(currentQuestionIndex, null.toString()) // or "SKIPPED"
+        skipButton.isEnabled = false
+        submitButton.isEnabled = false
         proceedToNextQuestionOrFinish()
     }
 
@@ -320,6 +324,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             submitButton.isEnabled = true
+            skipButton.isEnabled = true
 
             val questionCounterTextView = findViewById<TextView>(R.id.question_counter_text_view)
             questionCounterTextView.text = getString(R.string.question_counter_format, currentQuestionIndex + 1, 15)
@@ -361,6 +366,7 @@ class MainActivity : AppCompatActivity() {
             hintText.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent_white)) // Assuming this color is defined
             hintText.visibility = View.VISIBLE
             submitButton.isEnabled = true
+            skipButton.isEnabled = true
             // Don't disable the submit button here to allow re-selection
         } else {
             val selectedRadioButton = radioGroup.findViewById<RadioButton>(selectedOptionIndex)
@@ -380,6 +386,7 @@ class MainActivity : AppCompatActivity() {
 
             // Only disable the button after a valid selection has been made and processed
             submitButton.isEnabled = false
+            skipButton.isEnabled = false
 
             // Decide whether to load the next question or navigate to the result activity
             proceedToNextQuestionOrFinish()

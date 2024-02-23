@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"
-            android:background="@color/turquoise"
+            android:background="@color/dim_orange"
             android:text="Пропусни" />
 
     </LinearLayout>

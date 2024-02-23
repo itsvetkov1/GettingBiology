@@ -10,4 +10,5 @@
     <color name="green">#1AA637</color>
     <color name="turquoise">#00BCD4</color>
     <color name="transparent_white">#CCFFFFFF</color>
+    <color name="dim_orange">#C56600</color>
 </resources>
