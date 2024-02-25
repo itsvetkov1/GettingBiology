@@ -326,6 +326,9 @@ class MainActivity : AppCompatActivity() {
             submitButton.isEnabled = true
             skipButton.isEnabled = true
 
+            val adRequest = AdRequest.Builder().build()
+            mAdView.loadAd(adRequest)
+
             val questionCounterTextView = findViewById<TextView>(R.id.question_counter_text_view)
             questionCounterTextView.text = getString(R.string.question_counter_format, currentQuestionIndex + 1, 15)
 
