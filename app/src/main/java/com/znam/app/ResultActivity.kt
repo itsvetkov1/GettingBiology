@@ -71,20 +71,25 @@ class ResultActivity : AppCompatActivity() {
             setBackgroundColor(Color.parseColor("#4CAF50"))
         }
 
-
-        val userAnswerTextView = TextView(this).apply {
-            text = if (userAnswer == "Question Skipped") "Въпросът е пропуснат" else "Вашият отговор: $userAnswer"
-            setTextColor(Color.BLACK)
-            textSize = 18f
-            typeface = Typeface.create("", Typeface.BOLD)
-            setPadding(16, 16, 16, 16) // Left, Top, Right, Bottom padding
-            setBackgroundColor(if (userAnswer == null || question.correctAnswer == userAnswer) Color.TRANSPARENT else Color.parseColor("#F44336"))
-        }
-
         layout.addView(questionTextView)
         layout.addView(correctAnswerTextView)
-        layout.addView(userAnswerTextView)
 
+
+        if (userAnswer != question.correctAnswer) {
+            val userAnswerTextView = TextView(this).apply {
+                text = if (userAnswer == "Question Skipped") {
+                    "Въпросът е пропуснат"
+                } else {
+                    "Вашият отговор: $userAnswer"
+                }
+                setTextColor(Color.BLACK)
+                textSize = 18f
+                typeface = Typeface.create("", Typeface.BOLD)
+                setPadding(16, 16, 16, 16) // Left, Top, Right, Bottom padding
+                setBackgroundColor(if (userAnswer == null || question.correctAnswer == userAnswer) Color.TRANSPARENT else Color.parseColor("#F44336"))
+            }
+            layout.addView(userAnswerTextView) // Add this view only if the condition above is met
+        }
         return layout
     }
 }
