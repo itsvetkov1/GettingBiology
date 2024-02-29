@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun skipQuestion() {
         // Use null or a specific value to indicate a skipped question
-        userAnswers.add(currentQuestionIndex, null.toString()) // or "SKIPPED"
+        userAnswers.add(currentQuestionIndex, "SKIPPED") // or "SKIPPED"
         skipButton.isEnabled = false
         submitButton.isEnabled = false
         proceedToNextQuestionOrFinish()
@@ -224,6 +224,7 @@ class MainActivity : AppCompatActivity() {
                 questions = filteredQuestions
                 // Proceed to load the first question or handle UI updates accordingly
                 if (questions.isNotEmpty()) {
+                    userAnswers = MutableList(questions.size) { "Въпросът е пропуснат." }
                     loadQuestion()
                 }
             }
@@ -366,16 +367,17 @@ class MainActivity : AppCompatActivity() {
         val selectedOptionIndex = radioGroup.checkedRadioButtonId
         if (selectedOptionIndex == -1) {
             hintText.text = "Моля, изберете отговор!"
-            hintText.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent_white)) // Assuming this color is defined
+            hintText.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent_white))
             hintText.visibility = View.VISIBLE
-            submitButton.isEnabled = true
-            skipButton.isEnabled = true
-            // Don't disable the submit button here to allow re-selection
+            // Note: No change needed here as you want to prompt the user to select an option.
         } else {
             val selectedRadioButton = radioGroup.findViewById<RadioButton>(selectedOptionIndex)
             val selectedOption = selectedRadioButton.text.toString()
             val correctAnswer = questions[currentQuestionIndex].correctAnswer
-            userAnswers.add(selectedOption)
+
+            // Update the userAnswers list at the current question index with the selected option.
+            userAnswers[currentQuestionIndex] = selectedOption
+
             answeredQuestionIds.add(questions[currentQuestionIndex].id)
             saveProgress()
 

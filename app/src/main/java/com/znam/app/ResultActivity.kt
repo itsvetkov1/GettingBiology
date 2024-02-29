@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
@@ -30,9 +31,12 @@ class ResultActivity : AppCompatActivity() {
 
         val questionsLayout = findViewById<LinearLayout>(R.id.questions_layout)
 
+
+
         questions.forEachIndexed { index, question ->
             if (index < 15) {
                 val userAnswer = userAnswers.getOrNull(index) ?: "Question Skipped"
+                Log.d("QuizDebug", "Displaying Question ${index + 1}: Correct Answer: ${question.correctAnswer}, User Answer: $userAnswer")
                 questionsLayout.addView(createQuestionView(question, userAnswer))
             }
         }
@@ -78,7 +82,7 @@ class ResultActivity : AppCompatActivity() {
         if (userAnswer != question.correctAnswer) {
             val userAnswerTextView = TextView(this).apply {
                 text = if (userAnswer == "Question Skipped") {
-                    "Въпросът е пропуснат"
+                    "Въпросът е пропуснат."
                 } else {
                     "Вашият отговор: $userAnswer"
                 }
