@@ -81,7 +81,7 @@ class ResultActivity : AppCompatActivity() {
 
         if (userAnswer != question.correctAnswer) {
             val userAnswerTextView = TextView(this).apply {
-                text = if (userAnswer == "Question Skipped") {
+                text = if (userAnswer == "SKIPPED") {
                     "Въпросът е пропуснат."
                 } else {
                     "Вашият отговор: $userAnswer"

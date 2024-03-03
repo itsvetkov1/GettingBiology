@@ -136,9 +136,10 @@ class MainActivity : AppCompatActivity() {
 
         skipButton = findViewById(R.id.skip_button)
         skipButton.setOnClickListener {
-            skipButton.isEnabled = false
-            submitButton.isEnabled = false
-            proceedToNextQuestionOrFinish()
+            skipQuestion()
+//            skipButton.isEnabled = false
+//            submitButton.isEnabled = false
+//            proceedToNextQuestionOrFinish()
         }
 
         // Initialize UI components.
@@ -168,7 +169,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun skipQuestion() {
         // Use null or a specific value to indicate a skipped question
-        userAnswers.add(currentQuestionIndex, "SKIPPED") // or "SKIPPED"
+        userAnswers[currentQuestionIndex] = "SKIPPED"
+        answeredQuestionIds.add(questions[currentQuestionIndex].id)
+        saveProgress()
         skipButton.isEnabled = false
         submitButton.isEnabled = false
         proceedToNextQuestionOrFinish()
@@ -369,7 +372,7 @@ class MainActivity : AppCompatActivity() {
             hintText.text = "Моля, изберете отговор!"
             hintText.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent_white))
             hintText.visibility = View.VISIBLE
-            // Note: No change needed here as you want to prompt the user to select an option.
+
         } else {
             val selectedRadioButton = radioGroup.findViewById<RadioButton>(selectedOptionIndex)
             val selectedOption = selectedRadioButton.text.toString()
