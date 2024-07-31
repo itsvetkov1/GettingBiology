@@ -6,6 +6,7 @@
     <!-- Permissions outside and above the application tag -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 
     <application
         android:allowBackup="true"
@@ -16,25 +17,24 @@
         android:label="3HAM"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-        tools:targetApi="31">
-
-
+        android:targetSdkVersion="34"
+        tools:targetApi="34">
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3551035007628625~1796855252"/>
 
-        <activity android:name="com.znam.app.MainActivity"></activity>
-        <activity android:name="com.znam.app.ResultActivity"></activity>
-        <activity android:name="com.znam.app.WelcomeActivity"
+        <activity android:name=".MainActivity" />
+        <activity android:name=".ResultActivity" />
+        <activity
+            android:name=".WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.znam.app.SelectQuizActivity"></activity>
+        <activity android:name=".SelectQuizActivity" />
     </application>
 
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 </manifest>
