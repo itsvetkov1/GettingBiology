@@ -4,21 +4,20 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.room.Room
 import kotlinx.coroutines.*
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.AdError
-import android.util.Log
-import androidx.core.content.ContextCompat
-import java.util.ArrayList
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentInformation.OnConsentInfoUpdateFailureListener
@@ -26,13 +25,14 @@ import com.google.android.ump.ConsentInformation.OnConsentInfoUpdateSuccessListe
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
 import com.google.android.gms.ads.AdView
-
+import java.util.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var questionTextView: TextView
     private lateinit var radioGroup: RadioGroup
     private lateinit var submitButton: Button
+    private lateinit var skipButton: Button
     private lateinit var hintText: TextView
     private var currentQuestionIndex = 0
     private lateinit var questions: List<Question>
@@ -46,18 +46,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mAdView: AdView
     private lateinit var consentInformation: ConsentInformation
     private lateinit var questionCounterTextView: TextView
-    private lateinit var skipButton: Button
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
         val params = ConsentRequestParameters.Builder()
             .setTagForUnderAgeOfConsent(false)
             .build()
-
 
         consentInformation = UserMessagingPlatform.getConsentInformation(this)
         consentInformation.requestConsentInfoUpdate(
@@ -66,18 +62,15 @@ class MainActivity : AppCompatActivity() {
             ConsentInformation.OnConsentInfoUpdateSuccessListener {
                 Log.d(TAG, "Consent status: ${consentInformation.consentStatus}")
                 if (consentInformation.consentStatus == ConsentInformation.ConsentStatus.REQUIRED) {
-                loadAndShowConsentForm()
-            } else {
+                    loadAndShowConsentForm()
+                } else {
                     Log.d(TAG, "Consent form not required. Current status: ${consentInformation.consentStatus}")
-            }
+                }
             },
-            ConsentInformation.OnConsentInfoUpdateFailureListener {
-                    requestConsentError ->
+            ConsentInformation.OnConsentInfoUpdateFailureListener { requestConsentError ->
                 // Consent gathering failed.
                 Log.w(TAG, String.format("%s: %s", requestConsentError.errorCode, requestConsentError.message))
-
             })
-
 
         // Initialize Mobile Ads first to avoid any initialization delay later on
         MobileAds.initialize(this) {}
@@ -137,9 +130,6 @@ class MainActivity : AppCompatActivity() {
         skipButton = findViewById(R.id.skip_button)
         skipButton.setOnClickListener {
             skipQuestion()
-//            skipButton.isEnabled = false
-//            submitButton.isEnabled = false
-//            proceedToNextQuestionOrFinish()
         }
 
         // Initialize UI components.
@@ -177,21 +167,15 @@ class MainActivity : AppCompatActivity() {
         proceedToNextQuestionOrFinish()
     }
 
-
-
     override fun onPause() {
         mAdView.pause()
         super.onPause()
     }
 
-
-
     override fun onDestroy() {
         mAdView.destroy()
         super.onDestroy()
     }
-
-
 
     private fun initializeComponents() {
         // Initialize your UI components here
@@ -219,6 +203,7 @@ class MainActivity : AppCompatActivity() {
         // Assuming fetchQuestions is correctly implemented to load questions from the database
         fetchQuestions(answeredQuestionIds)
     }
+
     private fun fetchQuestions(answeredQuestionIds: ArrayList<Int>) {
         CoroutineScope(Dispatchers.IO).launch {
             val allQuestions = db.questionDao().getAllQuestions()
@@ -234,7 +219,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun saveProgress() {
         val sharedPref = getSharedPreferences("QuizPrefs", MODE_PRIVATE)
         with(sharedPref.edit()) {
@@ -243,35 +227,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun startNewQuiz() {
+        // Reset the current question index to 0 for a new quiz
+        currentQuestionIndex = 0
 
+        // Optionally, reset userAnswers if you want a fresh start for answers
+        userAnswers.clear()
 
-        private fun startNewQuiz() {
-            // Reset the current question index to 0 for a new quiz
-            currentQuestionIndex = 0
+        // Reload the questions from the database
+        fetchQuestions(answeredQuestionIds)
 
-            // Optionally, reset userAnswers if you want a fresh start for answers
-            userAnswers.clear()
+        // Otherwise, keep the score as is, assuming you're tracking progress across quizzes
 
-            // Reload the questions from the database
-            fetchQuestions(answeredQuestionIds)
-
-
-            // Otherwise, keep the score as is, assuming you're tracking progress across quizzes
-
-            // Update UI or SharedPreferences as needed to reflect the new quiz state
-            val sharedPref = getSharedPreferences("QuizPrefs", MODE_PRIVATE)
-            with(sharedPref.edit()) {
-                putBoolean("NewQuizStarted", true)
-                apply()
-            }
-
-            // Load the first question of the new quiz
-            loadQuestion()
+        // Update UI or SharedPreferences as needed to reflect the new quiz state
+        val sharedPref = getSharedPreferences("QuizPrefs", MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putBoolean("NewQuizStarted", true)
+            apply()
         }
 
-
-
-
+        // Load the first question of the new quiz
+        loadQuestion()
+    }
 
     override fun onResume() {
         super.onResume()
@@ -311,60 +288,53 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateProgress(questionId: Int, isCompleted: Boolean) {
+        CoroutineScope(Dispatchers.IO).launch {
+            db.userProgressDao().insertProgress(UserProgress(questionId, isCompleted))
+        }
+    }
 
-
-        private fun updateProgress(questionId: Int, isCompleted: Boolean) {
-            CoroutineScope(Dispatchers.IO).launch {
-                db.userProgressDao().insertProgress(UserProgress(questionId, isCompleted))
-            }
+    private fun loadQuestion() {
+        if (currentQuestionIndex >= questions.size || currentQuestionIndex >= 15) {
+            navigateToResultActivity()
+            return
         }
 
+        submitButton.isEnabled = true
+        skipButton.isEnabled = true
 
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
 
-        private fun loadQuestion() {
-            if (currentQuestionIndex >= questions.size || currentQuestionIndex >= 15) {
-                navigateToResultActivity()
-                return
-            }
+        val questionCounterTextView = findViewById<TextView>(R.id.question_counter_text_view)
+        questionCounterTextView.text = getString(R.string.question_counter_format, currentQuestionIndex + 1, 15)
 
-            submitButton.isEnabled = true
-            skipButton.isEnabled = true
+        val question = questions[currentQuestionIndex]
+        questionTextView.apply {
+            text = question.questionText
+            setTextColor(Color.BLACK)
+            textSize = 18f
+            setTypeface(null, Typeface.BOLD)
+        }
+        radioGroup.removeAllViews()
+        radioGroup.clearCheck()
+        hintText.visibility = View.GONE
 
-            val adRequest = AdRequest.Builder().build()
-            mAdView.loadAd(adRequest)
-
-            val questionCounterTextView = findViewById<TextView>(R.id.question_counter_text_view)
-            questionCounterTextView.text = getString(R.string.question_counter_format, currentQuestionIndex + 1, 15)
-
-
-            val question = questions[currentQuestionIndex]
-            questionTextView.apply {
-                text = question.questionText
+        question.options.split(";").forEachIndexed { index, option ->
+            val radioButton = RadioButton(this).apply {
+                text = option
                 setTextColor(Color.BLACK)
                 textSize = 18f
                 setTypeface(null, Typeface.BOLD)
+                buttonDrawable =
+                    ContextCompat.getDrawable(context, R.drawable.radio_button_custom)
+                id = index
             }
-            radioGroup.removeAllViews()
-            radioGroup.clearCheck()
-            hintText.visibility = View.GONE
-
-            question.options.split(";").forEachIndexed { index, option ->
-                val radioButton = RadioButton(this).apply {
-                    text = option
-                    setTextColor(Color.BLACK)
-                    textSize = 18f
-                    setTypeface(null, Typeface.BOLD)
-                    buttonDrawable =
-                        ContextCompat.getDrawable(context, R.drawable.radio_button_custom)
-                    id = index
-                }
-                radioGroup.addView(radioButton)
-            }
-
-            submitButton.setOnClickListener { checkAnswer()
-
-            }
+            radioGroup.addView(radioButton)
         }
+
+        submitButton.setOnClickListener { checkAnswer() }
+    }
 
     private fun checkAnswer() {
         val selectedOptionIndex = radioGroup.checkedRadioButtonId
@@ -372,33 +342,31 @@ class MainActivity : AppCompatActivity() {
             hintText.text = "Моля, изберете отговор!"
             hintText.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent_white))
             hintText.visibility = View.VISIBLE
-
-        } else {
-            val selectedRadioButton = radioGroup.findViewById<RadioButton>(selectedOptionIndex)
-            val selectedOption = selectedRadioButton.text.toString()
-            val correctAnswer = questions[currentQuestionIndex].correctAnswer
-
-            // Update the userAnswers list at the current question index with the selected option.
-            userAnswers[currentQuestionIndex] = selectedOption
-
-            answeredQuestionIds.add(questions[currentQuestionIndex].id)
-            saveProgress()
-
-            val isCorrect = selectedOption == correctAnswer
-            if (isCorrect) {
-                score++
-            }
-
-            // Reset backgrounds and update accordingly
-            updateAnswerBackgrounds(selectedRadioButton, correctAnswer, isCorrect)
-
-            // Only disable the button after a valid selection has been made and processed
-            submitButton.isEnabled = false
-            skipButton.isEnabled = false
-
-            // Decide whether to load the next question or navigate to the result activity
-            proceedToNextQuestionOrFinish()
+            return
         }
+
+        val selectedRadioButton = radioGroup.findViewById<RadioButton>(selectedOptionIndex)
+        val selectedOption = selectedRadioButton.text.toString().trim()
+        val correctAnswer = questions[currentQuestionIndex].correctAnswer.trim()
+
+        userAnswers[currentQuestionIndex] = selectedOption
+        answeredQuestionIds.add(questions[currentQuestionIndex].id)
+        saveProgress()
+
+        val isCorrect = selectedOption.equals(correctAnswer, ignoreCase = true)
+        if (isCorrect) {
+            score++
+        }
+
+        updateAnswerBackgrounds(selectedRadioButton, correctAnswer, isCorrect)
+
+        submitButton.isEnabled = false
+        skipButton.isEnabled = false
+
+        Log.d("AnswerCheck", "Question: ${questions[currentQuestionIndex].questionText}")
+        Log.d("AnswerCheck", "Selected: $selectedOption, Correct: $correctAnswer, IsCorrect: $isCorrect")
+
+        proceedToNextQuestionOrFinish()
     }
 
     private fun proceedToNextQuestionOrFinish() {
@@ -410,25 +378,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun updateAnswerBackgrounds(selectedRadioButton: RadioButton, correctAnswer: String, isCorrect: Boolean) {
         radioGroup.children.forEach { child ->
             if (child is RadioButton) {
-                val layoutParams = child.layoutParams as RadioGroup.LayoutParams
-                layoutParams.width = RadioGroup.LayoutParams.MATCH_PARENT
-                child.layoutParams = layoutParams
+                val optionText = child.text.toString().trim()
+                val isCorrectOption = optionText.equals(correctAnswer, ignoreCase = true)
+                val isSelectedOption = child == selectedRadioButton
+
+                Log.d("BackgroundUpdate", "Option: $optionText")
+                Log.d("BackgroundUpdate", "IsCorrect: $isCorrectOption")
+                Log.d("BackgroundUpdate", "IsSelected: $isSelectedOption")
 
                 child.background = when {
-                    child.text == correctAnswer -> ContextCompat.getDrawable(this, R.drawable.correct_answer_background)
-                    !isCorrect && child == selectedRadioButton -> ContextCompat.getDrawable(this, R.drawable.incorrect_answer_background)
-                    else -> null // No background for unselected options
+                    isCorrectOption -> {
+                        Log.d("BackgroundUpdate", "Setting correct background for: $optionText")
+                        ContextCompat.getDrawable(this, R.drawable.correct_answer_background)
+                    }
+                    !isCorrect && isSelectedOption -> {
+                        Log.d("BackgroundUpdate", "Setting incorrect background for: $optionText")
+                        ContextCompat.getDrawable(this, R.drawable.incorrect_answer_background)
+                    }
+                    else -> {
+                        Log.d("BackgroundUpdate", "No background change for: $optionText")
+                        null
+                    }
                 }
                 child.setTextColor(Color.BLACK) // Keep text color unchanged
             }
         }
         updateProgress(currentQuestionIndex, true)
     }
-
 
     private fun navigateToResultActivity() {
         // Populate QuizResultsHolder with the current quiz results
@@ -460,5 +439,3 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 }
-
-
