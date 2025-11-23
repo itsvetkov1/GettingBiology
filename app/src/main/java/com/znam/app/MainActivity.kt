@@ -240,9 +240,6 @@ class MainActivity : AppCompatActivity() {
         val question = questions[currentQuestionIndex]
         questionTextView.apply {
             text = question.questionText
-            setTextColor(Color.BLACK)
-            textSize = 18f
-            setTypeface(null, Typeface.BOLD)
         }
 
         // Set options text
@@ -385,6 +382,7 @@ class MainActivity : AppCompatActivity() {
     private fun proceedToResultActivity() {
         val intent = Intent(this, ResultActivity::class.java)
         startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
     }
 

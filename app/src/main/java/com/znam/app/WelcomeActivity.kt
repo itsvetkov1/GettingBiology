@@ -41,6 +41,7 @@ class WelcomeActivity : AppCompatActivity() {
     private fun navigateToQuiz() {
         val intent = Intent(this, SelectQuizActivity::class.java)
         startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 
 }

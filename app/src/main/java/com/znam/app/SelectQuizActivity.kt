@@ -35,6 +35,7 @@ class SelectQuizActivity : AppCompatActivity() {
             apply()
         }
         startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 
 }

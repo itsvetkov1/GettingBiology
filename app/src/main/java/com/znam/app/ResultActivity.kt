@@ -27,6 +27,8 @@ class ResultActivity : AppCompatActivity() {
             setBackgroundColor(ContextCompat.getColor(this@ResultActivity, R.color.transparent_white))
             setTextColor(Color.BLACK)
             setTypeface(null, Typeface.BOLD)
+            alpha = 0f
+            animate().alpha(1f).setDuration(1000).start()
         }
 
         val questionsLayout = findViewById<LinearLayout>(R.id.questions_layout)
@@ -45,6 +47,7 @@ class ResultActivity : AppCompatActivity() {
         findViewById<Button>(R.id.restart_quiz_button).setOnClickListener {
             QuizResultsHolder.clear() // Clear the results before starting a new quiz
             startActivity(Intent(this, MainActivity::class.java))
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish() // Finish ResultActivity to remove it from the back stack
         }
     }
