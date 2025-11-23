@@ -1,92 +1,217 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@drawable/background_image">
+    android:layout_height="match_parent">
 
-    <!-- Use a wrapper LinearLayout to hold the content and give it weight -->
-    <LinearLayout
+    <!-- AppBarLayout containing the Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
+
+        <!-- Toolbar -->
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/blue_500"
+            app:title="Biology Quiz"
+            app:titleTextAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
+            app:navigationIcon="@drawable/ic_chevron_left"
+            app:menu="@menu/quiz_menu" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:padding="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/question_counter_text_view"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:background="@color/transparent_white"
-            android:padding="8dp"
-            android:layout_margin="8dp"
-            android:textColor="@android:color/black"/>
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/question_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Question"
-            android:textSize="18sp"
-            android:background="@color/transparent_white"
-            android:padding="16dp"
-            android:layout_margin="8dp"
-            android:textColor="@android:color/black"/>
+            <!-- Question Counter -->
+            <TextView
+                android:id="@+id/question_counter_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Question 1 of 15"
+                android:textSize="14sp"
+                android:textColor="@color/gray_600"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:layout_gravity="center_horizontal"
+                android:textStyle="bold" />
 
-        <RadioGroup
-            android:id="@+id/options_radio_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="16dp"
-            android:textSize="18sp"
-            android:background="@color/transparent_white"
-            android:padding="16dp"
-            android:layout_margin="8dp"
-            android:textColor="@android:color/black"/>
+            <!-- Question Text -->
+            <TextView
+                android:id="@+id/question_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Question"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginBottom="16dp"
+                android:background="@color/transparent_white"
+                android:padding="16dp"
+                android:layout_margin="8dp" />
 
-        <TextView
-            android:id="@+id/hint_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_red_dark"
-            android:visibility="gone"
-            android:textSize="16sp"
-            android:layout_marginTop="8dp"
-            android:layout_gravity="center_horizontal"
-            android:text="*Моля изберете отговор!"/>
+            <!-- Answer Options -->
+            <!-- Option 1 -->
+            <Button
+                android:id="@+id/btn_option_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Option 1"
+                android:background="@drawable/option_button_background"
+                android:textColor="@color/gray_800"
+                android:layout_marginBottom="8dp" />
 
-        <Button
-            android:id="@+id/submit_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="24dp"
-            android:background="@color/turquoise"
-            android:text="Избери" />
+            <!-- Option 2 -->
+            <Button
+                android:id="@+id/btn_option_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Option 2"
+                android:background="@drawable/option_button_background"
+                android:textColor="@color/gray_800"
+                android:layout_marginBottom="8dp" />
 
-        <Button
-            android:id="@+id/skip_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:background="@color/dim_orange"
-            android:text="Пропусни" />
+            <!-- Option 3 -->
+            <Button
+                android:id="@+id/btn_option_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Option 3"
+                android:background="@drawable/option_button_background"
+                android:textColor="@color/gray_800"
+                android:layout_marginBottom="8dp" />
 
-    </LinearLayout>
+            <!-- Option 4 -->
+            <Button
+                android:id="@+id/btn_option_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Option 4"
+                android:background="@drawable/option_button_background"
+                android:textColor="@color/gray_800"
+                android:layout_marginBottom="8dp" />
 
-    <!-- AdView placed outside the wrapper to ensure it stays at the bottom -->
+            <!-- Hint TextView -->
+            <TextView
+                android:id="@+id/hint_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/holo_red_dark"
+                android:visibility="gone"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center_horizontal"
+                android:text="*Моля изберете отговор!" />
+
+            <!-- Next Button -->
+            <Button
+                android:id="@+id/btn_next"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="NEXT"
+                android:backgroundTint="@color/blue_500"
+                android:textColor="@android:color/white"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="24dp"
+                android:elevation="2dp"
+                android:stateListAnimator="@null" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- AdView -->
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         ads:adSize="BANNER"
         ads:adUnitId="ca-app-pub-3551035007628625/8032474007">
     </com.google.android.gms.ads.AdView>
-</LinearLayout>
+
+    <!-- Bottom Navigation -->
+    <LinearLayout
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@android:color/white"
+        android:padding="8dp"
+        android:layout_gravity="bottom"
+        android:weightSum="2"
+        android:elevation="4dp"
+        android:layout_marginBottom="50dp"> <!-- Adjusted margin to account for AdView -->
+
+        <!-- Score Section -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_score_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Score"
+                android:textSize="12sp"
+                android:textColor="@color/gray_600" />
+
+            <TextView
+                android:id="@+id/tv_score"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 / 1"
+                android:textSize="18sp"
+                android:textColor="@color/blue_500"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Time Section -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tv_time_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time"
+                android:textSize="12sp"
+                android:textColor="@color/gray_600" />
+
+            <TextView
+                android:id="@+id/tv_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:45"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
