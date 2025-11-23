@@ -18,7 +18,7 @@ class WelcomeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_welcome)
 
         val welcomeAnimationView = findViewById<ImageView>(R.id.welcomeAnimationView)
-        val staticImageView = findViewById<RelativeLayout>(R.id.staticImageView)
+        val staticImageView = findViewById<View>(R.id.staticImageView)
         val startQuizButton = findViewById<Button>(R.id.startQuizButton)
 
         // Load the GIF animation

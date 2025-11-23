@@ -59,24 +59,30 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Set the updated layout
-        setContentView(R.layout.activity_main)
+        try {
+            // Set the updated layout
+            setContentView(R.layout.activity_main)
 
-        // Initialize Consent and Ads
-        initializeConsent()
-        initializeAds()
+            // Initialize Consent and Ads
+            initializeConsent()
+            initializeAds()
 
-        // Retrieve Quiz Type and Answered Question IDs
-        retrieveQuizPreferences()
+            // Retrieve Quiz Type and Answered Question IDs
+            retrieveQuizPreferences()
 
-        // Initialize the database with the retrieved quiz type and previously answered question IDs
-        initializeDatabase(quizType, answeredQuestionIds)
+            // Initialize the database with the retrieved quiz type and previously answered question IDs
+            initializeDatabase(quizType, answeredQuestionIds)
 
-        // Initialize UI components
-        initializeComponents()
+            // Initialize UI components
+            initializeComponents()
 
-        // Load Questions
-        fetchQuestions(answeredQuestionIds)
+            // Load Questions
+            fetchQuestions(answeredQuestionIds)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in onCreate", e)
+            Toast.makeText(this, "Error starting quiz: ${e.message}", Toast.LENGTH_LONG).show()
+            finish()
+        }
     }
 
     private fun initializeConsent() {
@@ -205,16 +211,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchQuestions(answeredQuestionIds: ArrayList<Int>) {
         CoroutineScope(Dispatchers.IO).launch {
-            val allQuestions = db.questionDao().getAllQuestions()
-            val filteredQuestions = allQuestions.filterNot { it.id in answeredQuestionIds }
-            withContext(Dispatchers.Main) {
-                questions = filteredQuestions
-                if (questions.isNotEmpty()) {
-                    userAnswers = MutableList(questions.size) { "Въпросът е пропуснат." }
-                    loadQuestion()
-                } else {
-                    // Handle case where no questions are available
-                    Toast.makeText(this@MainActivity, "No questions available.", Toast.LENGTH_LONG).show()
+            try {
+                val allQuestions = db.questionDao().getAllQuestions()
+                val filteredQuestions = allQuestions.filterNot { it.id in answeredQuestionIds }
+                withContext(Dispatchers.Main) {
+                    questions = filteredQuestions
+                    if (questions.isNotEmpty()) {
+                        userAnswers = MutableList(questions.size) { "Въпросът е пропуснат." }
+                        loadQuestion()
+                    } else {
+                        // Handle case where no questions are available
+                        Toast.makeText(this@MainActivity, "No questions available.", Toast.LENGTH_LONG).show()
+                        finish()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.e(TAG, "Error fetching questions", e)
+                    Toast.makeText(this@MainActivity, "Error loading questions: ${e.message}", Toast.LENGTH_LONG).show()
                     finish()
                 }
             }
@@ -252,20 +266,14 @@ class MainActivity : AppCompatActivity() {
         // Hide hint text view and Next button
         hintTextView.visibility = View.GONE
         nextButton.visibility = View.GONE
-
-        // Enable option buttons
-        option1Button.isEnabled = true
-        option2Button.isEnabled = true
-        option3Button.isEnabled = true
-        option4Button.isEnabled = true
     }
 
     private fun resetOptionButtons() {
         // Enable all option buttons
-        option1Button.isEnabled = true
-        option2Button.isEnabled = true
-        option3Button.isEnabled = true
-        option4Button.isEnabled = true
+        option1Button.isClickable = true
+        option2Button.isClickable = true
+        option3Button.isClickable = true
+        option4Button.isClickable = true
 
         // Reset background to default
         option1Button.setBackgroundResource(R.drawable.option_button_background)
@@ -278,10 +286,10 @@ class MainActivity : AppCompatActivity() {
         selectedOption = optionNumber
 
         // Disable all option buttons after selection
-        option1Button.isEnabled = false
-        option2Button.isEnabled = false
-        option3Button.isEnabled = false
-        option4Button.isEnabled = false
+        option1Button.isClickable = false
+        option2Button.isClickable = false
+        option3Button.isClickable = false
+        option4Button.isClickable = false
 
         // Highlight selected option
         getOptionButton(optionNumber).setBackgroundResource(R.drawable.option_button_background_selected)

@@ -94,7 +94,8 @@
                     android:layout_marginBottom="8dp"
                     android:padding="12dp"
                     android:textSize="16sp"
-                    app:strokeColor="?attr/colorOutline" />
+                    app:strokeColor="?attr/colorOutline"
+                    android:theme="@style/Theme.Material3.DayNight.NoActionBar"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_option_2"
@@ -105,7 +106,8 @@
                     android:layout_marginBottom="8dp"
                     android:padding="12dp"
                     android:textSize="16sp"
-                    app:strokeColor="?attr/colorOutline" />
+                    app:strokeColor="?attr/colorOutline"
+                    android:theme="@style/Theme.Material3.DayNight.NoActionBar"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_option_3"
@@ -116,7 +118,8 @@
                     android:layout_marginBottom="8dp"
                     android:padding="12dp"
                     android:textSize="16sp"
-                    app:strokeColor="?attr/colorOutline" />
+                    app:strokeColor="?attr/colorOutline"
+                    android:theme="@style/Theme.Material3.DayNight.NoActionBar"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_option_4"
@@ -127,7 +130,8 @@
                     android:layout_marginBottom="8dp"
                     android:padding="12dp"
                     android:textSize="16sp"
-                    app:strokeColor="?attr/colorOutline" />
+                    app:strokeColor="?attr/colorOutline"
+                    android:theme="@style/Theme.Material3.DayNight.NoActionBar"/>
             </LinearLayout>
 
              <!-- Hint TextView -->
@@ -154,7 +158,8 @@
                 android:padding="12dp"
                 app:layout_constraintTop_toBottomOf="@id/hint_text_view"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                android:theme="@style/Theme.Material3.DayNight.NoActionBar"/>
             
             <!-- Spacer for Ad and Bottom Nav -->
             <View
@@ -186,6 +191,7 @@
             <!-- Score Section -->
             <LinearLayout
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center">
@@ -210,6 +216,7 @@
             <!-- Time Section -->
             <LinearLayout
                 android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center">
