@@ -280,6 +280,13 @@ class MainActivity : AppCompatActivity() {
         option2Button.setBackgroundResource(R.drawable.option_button_background)
         option3Button.setBackgroundResource(R.drawable.option_button_background)
         option4Button.setBackgroundResource(R.drawable.option_button_background)
+
+        // Reset text color to default
+        val defaultTextColor = ContextCompat.getColor(this, R.color.md_theme_light_onSurface)
+        option1Button.setTextColor(defaultTextColor)
+        option2Button.setTextColor(defaultTextColor)
+        option3Button.setTextColor(defaultTextColor)
+        option4Button.setTextColor(defaultTextColor)
     }
 
     private fun onOptionSelected(optionNumber: Int) {
@@ -291,8 +298,10 @@ class MainActivity : AppCompatActivity() {
         option3Button.isClickable = false
         option4Button.isClickable = false
 
-        // Highlight selected option
-        getOptionButton(optionNumber).setBackgroundResource(R.drawable.option_button_background_selected)
+        // Highlight selected option with blue background
+        val selectedButton = getOptionButton(optionNumber)
+        selectedButton.setBackgroundResource(R.drawable.option_button_background_selected)
+        selectedButton.setTextColor(Color.BLACK)
 
         // Check the answer
         checkAnswer()
@@ -329,11 +338,20 @@ class MainActivity : AppCompatActivity() {
 
         // Change background of selected option
         if (isCorrect) {
-            getOptionButton(selectedOption).setBackgroundResource(R.drawable.option_button_background_correct)
+            // Subtle green for correct answer
+            val selectedButton = getOptionButton(selectedOption)
+            selectedButton.setBackgroundResource(R.drawable.option_button_background_correct)
+            selectedButton.setTextColor(Color.BLACK)
         } else {
-            getOptionButton(selectedOption).setBackgroundResource(R.drawable.option_button_background_incorrect)
-            // Highlight the correct answer
-            getOptionButton(correctOptionNumber).setBackgroundResource(R.drawable.option_button_background_correct)
+            // Subtle red for incorrect answer
+            val selectedButton = getOptionButton(selectedOption)
+            selectedButton.setBackgroundResource(R.drawable.option_button_background_incorrect)
+            selectedButton.setTextColor(Color.BLACK)
+
+            // Highlight the correct answer in green
+            val correctButton = getOptionButton(correctOptionNumber)
+            correctButton.setBackgroundResource(R.drawable.option_button_background_correct)
+            correctButton.setTextColor(Color.BLACK)
         }
     }
 
