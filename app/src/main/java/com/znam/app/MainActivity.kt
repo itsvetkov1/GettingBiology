@@ -62,6 +62,15 @@ class MainActivity : AppCompatActivity() {
         // Set the updated layout
         setContentView(R.layout.activity_main)
 
+        // Enable edge-to-edge display and handle system window insets
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
+        // Apply window insets to root view
+        findViewById<View>(android.R.id.content).setOnApplyWindowInsetsListener { view, insets ->
+            view.setPadding(0, insets.systemWindowInsetTop, 0, insets.systemWindowInsetBottom)
+            insets
+        }
+
         // Initialize Consent and Ads
         initializeConsent()
         initializeAds()

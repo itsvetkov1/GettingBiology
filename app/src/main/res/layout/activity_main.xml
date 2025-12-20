@@ -4,13 +4,15 @@
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <!-- AppBarLayout containing the Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar">
 
         <!-- Toolbar -->
@@ -137,28 +139,24 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- AdView -->
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3551035007628625/8032474007">
-    </com.google.android.gms.ads.AdView>
-
-    <!-- Bottom Navigation -->
+    <!-- Bottom container for navigation and ad -->
     <LinearLayout
-        android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@android:color/white"
-        android:padding="8dp"
+        android:orientation="vertical"
         android:layout_gravity="bottom"
-        android:weightSum="2"
-        android:elevation="4dp"
-        android:layout_marginBottom="50dp"> <!-- Adjusted margin to account for AdView -->
+        android:fitsSystemWindows="true">
+
+        <!-- Bottom Navigation -->
+        <LinearLayout
+            android:id="@+id/bottom_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@android:color/white"
+            android:padding="8dp"
+            android:weightSum="2"
+            android:elevation="4dp">
 
         <!-- Score Section -->
         <LinearLayout
@@ -211,6 +209,17 @@
                 android:textColor="@color/black"
                 android:fontFamily="sans-serif-medium" />
         </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- AdView -->
+        <com.google.android.gms.ads.AdView
+            android:id="@+id/adView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            ads:adSize="BANNER"
+            ads:adUnitId="ca-app-pub-3551035007628625/8032474007">
+        </com.google.android.gms.ads.AdView>
 
     </LinearLayout>
 
