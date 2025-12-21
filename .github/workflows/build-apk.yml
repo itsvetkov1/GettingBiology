@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - claude/add-apk-build-id-fZtAy  # Testing branch
   pull_request:
     branches:
       - main
