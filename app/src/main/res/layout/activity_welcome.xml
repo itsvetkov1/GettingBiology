@@ -1,46 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Background DNA Image -->
+    <!-- Layer 1: DNA Background -->
     <ImageView
         android:id="@+id/backgroundImageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:src="@drawable/welcome_animation2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:src="@drawable/welcome_animation2" />
 
-    <!-- Logo ImageView -->
+    <!-- Layer 2: Gradient Frost Overlay -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/gradient_frost_overlay" />
+
+    <!-- Layer 3: Semi-transparent Logo -->
     <ImageView
         android:id="@+id/logoImageView"
         android:layout_width="250dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="120dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/logo"
-        android:elevation="4dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.2"
-        app:layout_constraintBottom_toTopOf="@+id/bottomSheetCard" />
+        android:alpha="0.85"
+        android:src="@drawable/logo" />
 
-    <!-- Bottom Sheet Card -->
+    <!-- Layer 4: Bottom Sheet Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottomSheetCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         app:cardBackgroundColor="@color/white_90_opacity"
         app:cardElevation="8dp"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.TopRounded"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.TopRounded">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -87,12 +84,10 @@
                     app:backgroundTint="@color/md_theme_light_primary"
                     app:cornerRadius="12dp"
                     app:elevation="2dp"
-                    app:icon="@drawable/ic_chevron_left"
-                    app:iconGravity="textStart"
                     android:layout_marginBottom="8dp" />
 
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>
