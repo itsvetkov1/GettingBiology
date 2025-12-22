@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
     private var score = 0
     private lateinit var userAnswers: MutableList<String>
     private var selectedOption = -1
+    private var isAnswered = false
 
     // Timer
     private var startTime: Long = 0
@@ -82,15 +83,6 @@ class MainActivity : AppCompatActivity() {
         try {
             // Set the updated layout
             setContentView(R.layout.activity_main)
-
-            // Enable edge-to-edge display and handle system window insets
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-
-            // Apply window insets to root view
-            findViewById<View>(android.R.id.content).setOnApplyWindowInsetsListener { view, insets ->
-                view.setPadding(0, insets.systemWindowInsetTop, 0, insets.systemWindowInsetBottom)
-                insets
-            }
 
             // Initialize Consent and Ads
             initializeConsent()
@@ -296,6 +288,7 @@ class MainActivity : AppCompatActivity() {
 
         // Reset selected option
         selectedOption = -1
+        isAnswered = false
 
         // Reset option buttons
         resetOptionButtons()
@@ -343,6 +336,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onOptionSelected(optionNumber: Int) {
+        if (isAnswered) return
+        isAnswered = true
         selectedOption = optionNumber
 
         // Disable all option buttons after selection
