@@ -17,11 +17,8 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_welcome)
 
-        // Enable edge-to-edge display and handle system window insets
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-
         val welcomeAnimationView = findViewById<ImageView>(R.id.welcomeAnimationView)
-        val staticImageView = findViewById<RelativeLayout>(R.id.staticImageView)
+        val staticImageView = findViewById<View>(R.id.staticImageView)
         val startQuizButton = findViewById<Button>(R.id.startQuizButton)
 
         // Load the GIF animation
@@ -44,6 +41,7 @@ class WelcomeActivity : AppCompatActivity() {
     private fun navigateToQuiz() {
         val intent = Intent(this, SelectQuizActivity::class.java)
         startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 
 }

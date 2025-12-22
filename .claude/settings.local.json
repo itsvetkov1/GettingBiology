@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(keytool -list -v -keystore keystore.jks -storepass Kopale12 -alias key0:*)",
+      "Bash(gradlew.bat bundleRelease:*)",
+      "Bash(./gradlew bundleRelease:*)",
+      "Bash(unzip:*)",
+      "Bash(./gradlew:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

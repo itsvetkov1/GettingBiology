@@ -1,41 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp"
-    android:background="@drawable/background_image"
+    android:background="?attr/colorSurface"
     android:fitsSystemWindows="true">
 
-    <Button
-        android:id="@+id/btnClass8"
+    <TextView
+        android:id="@+id/title_select_quiz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Изберете Тест"
+        android:textAppearance="?attr/textAppearanceHeadlineMedium"
+        android:textColor="?attr/colorOnSurface"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/buttons_container"
+        app:layout_constraintVertical_chainStyle="packed"
+        android:layout_marginBottom="32dp"/>
+
+    <LinearLayout
+        android:id="@+id/buttons_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@color/turquoise"
-        android:text="8-ми клас" />
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/title_select_quiz"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/btnClass9"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@color/turquoise"
-        android:text="9-ти клас" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClass8"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:padding="16dp"
+            android:text="8-ми клас"
+            android:textSize="18sp"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar"/>
 
-    <Button
-        android:id="@+id/btnClass10"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:background="@color/turquoise"
-        android:text="10-ти клас" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClass9"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:padding="16dp"
+            android:text="9-ти клас"
+            android:textSize="18sp"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar"/>
 
-    <Button
-        android:id="@+id/btnEntranceExam"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/turquoise"
-        android:text="Кандидатстудентски изпит" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClass10"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:padding="16dp"
+            android:text="10-ти клас"
+            android:textSize="18sp"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar"/>
 
-</LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEntranceExam"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="Кандидатстудентски изпит"
+            android:textSize="18sp"
+            android:theme="@style/Theme.Material3.DayNight.NoActionBar"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

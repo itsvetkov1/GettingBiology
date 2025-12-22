@@ -25,12 +25,20 @@ class ResultActivity : AppCompatActivity() {
         val score = QuizResultsHolder.score
         val questions = QuizResultsHolder.questions
         val userAnswers = QuizResultsHolder.userAnswers
+        val elapsedTimeInSeconds = QuizResultsHolder.elapsedTimeInSeconds
+
+        // Format the elapsed time
+        val minutes = elapsedTimeInSeconds / 60
+        val seconds = elapsedTimeInSeconds % 60
+        val timeString = String.format("%02d:%02d", minutes, seconds)
 
         val resultTextView = findViewById<TextView>(R.id.result_text_view).apply {
-            text = "Резултат: $score/15"
+            text = "Резултат: $score/15\nВреме: $timeString"
             setBackgroundColor(ContextCompat.getColor(this@ResultActivity, R.color.transparent_white))
             setTextColor(Color.BLACK)
             setTypeface(null, Typeface.BOLD)
+            alpha = 0f
+            animate().alpha(1f).setDuration(1000).start()
         }
 
         val questionsLayout = findViewById<LinearLayout>(R.id.questions_layout)
@@ -49,6 +57,7 @@ class ResultActivity : AppCompatActivity() {
         findViewById<Button>(R.id.restart_quiz_button).setOnClickListener {
             QuizResultsHolder.clear() // Clear the results before starting a new quiz
             startActivity(Intent(this, MainActivity::class.java))
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish() // Finish ResultActivity to remove it from the back stack
         }
     }
