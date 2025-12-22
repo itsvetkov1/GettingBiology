@@ -15,12 +15,13 @@
     <!-- Layer 3: Logo -->
     <ImageView
         android:id="@+id/logoImageView"
-        android:layout_width="250dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_marginHorizontal="32dp"
         android:layout_marginTop="120dp"
         android:adjustViewBounds="true"
         android:elevation="8dp"
+        android:alpha="0.8"
         android:src="@drawable/logo" />
 
     <!-- Layer 4: Bottom Sheet Card -->
