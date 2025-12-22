@@ -1,15 +1,19 @@
 package com.znam.app
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.room.Room
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.*
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -32,12 +36,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var questionTextView: TextView
     private lateinit var questionCounterTextView: TextView
     private lateinit var hintTextView: TextView
-    private lateinit var option1Button: Button
-    private lateinit var option2Button: Button
-    private lateinit var option3Button: Button
-    private lateinit var option4Button: Button
+    private lateinit var option1Button: MaterialButton
+    private lateinit var option2Button: MaterialButton
+    private lateinit var option3Button: MaterialButton
+    private lateinit var option4Button: MaterialButton
     private lateinit var nextButton: Button
     private lateinit var mAdView: AdView
+    private lateinit var timerTextView: TextView
+    private lateinit var scoreTextView: TextView
 
     // Quiz Data
     private var currentQuestionIndex = 0
@@ -45,6 +51,20 @@ class MainActivity : AppCompatActivity() {
     private var score = 0
     private lateinit var userAnswers: MutableList<String>
     private var selectedOption = -1
+
+    // Timer
+    private var startTime: Long = 0
+    private val handler = Handler(Looper.getMainLooper())
+    private val timerRunnable = object : Runnable {
+        override fun run() {
+            val elapsedMillis = System.currentTimeMillis() - startTime
+            val elapsedSeconds = (elapsedMillis / 1000).toInt()
+            val minutes = elapsedSeconds / 60
+            val seconds = elapsedSeconds % 60
+            timerTextView.text = String.format("%02d:%02d", minutes, seconds)
+            handler.postDelayed(this, 1000)
+        }
+    }
 
     // Database and Ads
     private lateinit var db: AppDatabase
@@ -62,6 +82,15 @@ class MainActivity : AppCompatActivity() {
         try {
             // Set the updated layout
             setContentView(R.layout.activity_main)
+
+            // Enable edge-to-edge display and handle system window insets
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
+            // Apply window insets to root view
+            findViewById<View>(android.R.id.content).setOnApplyWindowInsetsListener { view, insets ->
+                view.setPadding(0, insets.systemWindowInsetTop, 0, insets.systemWindowInsetBottom)
+                insets
+            }
 
             // Initialize Consent and Ads
             initializeConsent()
@@ -181,6 +210,8 @@ class MainActivity : AppCompatActivity() {
         option3Button = findViewById(R.id.btn_option_3)
         option4Button = findViewById(R.id.btn_option_4)
         nextButton = findViewById(R.id.btn_next)
+        timerTextView = findViewById(R.id.tv_time)
+        scoreTextView = findViewById(R.id.tv_score)
 
         // Set click listeners for option buttons
         option1Button.setOnClickListener { onOptionSelected(1) }
@@ -193,6 +224,9 @@ class MainActivity : AppCompatActivity() {
 
         // Hide Next button initially
         nextButton.visibility = View.GONE
+
+        // Initialize score display
+        updateScoreDisplay()
     }
 
     private fun initializeDatabase(quizType: String, answeredQuestionIds: ArrayList<Int>) {
@@ -218,6 +252,7 @@ class MainActivity : AppCompatActivity() {
                     questions = filteredQuestions
                     if (questions.isNotEmpty()) {
                         userAnswers = MutableList(questions.size) { "Въпросът е пропуснат." }
+                        startTimer()
                         loadQuestion()
                     } else {
                         // Handle case where no questions are available
@@ -233,6 +268,24 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun startTimer() {
+        startTime = System.currentTimeMillis()
+        handler.post(timerRunnable)
+    }
+
+    private fun stopTimer() {
+        handler.removeCallbacks(timerRunnable)
+    }
+
+    private fun getElapsedTimeInSeconds(): Int {
+        val elapsedMillis = System.currentTimeMillis() - startTime
+        return (elapsedMillis / 1000).toInt()
+    }
+
+    private fun updateScoreDisplay() {
+        scoreTextView.text = "$score / 15"
     }
 
     private fun loadQuestion() {
@@ -320,6 +373,7 @@ class MainActivity : AppCompatActivity() {
         val isCorrect = selectedOptionText.equals(correctAnswer, ignoreCase = true)
         if (isCorrect) {
             score++
+            updateScoreDisplay()
         }
 
         updateAnswerBackgrounds(isCorrect)
@@ -367,7 +421,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getOptionButton(optionNumber: Int): Button {
+    private fun getOptionButton(optionNumber: Int): MaterialButton {
         return when (optionNumber) {
             1 -> option1Button
             2 -> option2Button
@@ -386,10 +440,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigateToResultActivity() {
+        // Stop the timer
+        stopTimer()
+
         // Populate QuizResultsHolder with the current quiz results
         QuizResultsHolder.score = score
         QuizResultsHolder.questions = questions
         QuizResultsHolder.userAnswers = ArrayList(userAnswers)
+        QuizResultsHolder.elapsedTimeInSeconds = getElapsedTimeInSeconds()
 
         // Navigate to ResultActivity
         if (mInterstitialAd != null) {
@@ -424,6 +482,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        stopTimer()
         mAdView.destroy()
         super.onDestroy()
     }

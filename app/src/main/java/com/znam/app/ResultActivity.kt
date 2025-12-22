@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
@@ -18,12 +19,21 @@ class ResultActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
 
+        // Enable edge-to-edge display and handle system window insets
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
         val score = QuizResultsHolder.score
         val questions = QuizResultsHolder.questions
         val userAnswers = QuizResultsHolder.userAnswers
+        val elapsedTimeInSeconds = QuizResultsHolder.elapsedTimeInSeconds
+
+        // Format the elapsed time
+        val minutes = elapsedTimeInSeconds / 60
+        val seconds = elapsedTimeInSeconds % 60
+        val timeString = String.format("%02d:%02d", minutes, seconds)
 
         val resultTextView = findViewById<TextView>(R.id.result_text_view).apply {
-            text = "Резултат: $score/15"
+            text = "Резултат: $score/15\nВреме: $timeString"
             setBackgroundColor(ContextCompat.getColor(this@ResultActivity, R.color.transparent_white))
             setTextColor(Color.BLACK)
             setTypeface(null, Typeface.BOLD)
