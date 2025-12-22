@@ -67,6 +67,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Auto-Advance
+    private val autoAdvanceHandler = Handler(Looper.getMainLooper())
+    private var autoAdvanceRunnable: Runnable? = null
+    private val AUTO_ADVANCE_DELAY = 1500L // 1.5 seconds
+
     // Database and Ads
     private lateinit var db: AppDatabase
     private var mInterstitialAd: InterstitialAd? = null
@@ -210,12 +215,6 @@ class MainActivity : AppCompatActivity() {
         option2Button.setOnClickListener { onOptionSelected(2) }
         option3Button.setOnClickListener { onOptionSelected(3) }
         option4Button.setOnClickListener { onOptionSelected(4) }
-
-        // Set click listener for the Next button
-        nextButton.setOnClickListener { onNextClicked() }
-
-        // Hide Next button initially
-        nextButton.visibility = View.GONE
 
         // Initialize score display
         updateScoreDisplay()
@@ -373,8 +372,8 @@ class MainActivity : AppCompatActivity() {
 
         updateAnswerBackgrounds(isCorrect)
 
-        // Show Next button
-        nextButton.visibility = View.VISIBLE
+        // Schedule auto-advance
+        scheduleAutoAdvance()
 
         Log.d("AnswerCheck", "Question: ${currentQuestion.questionText}")
         Log.d("AnswerCheck", "Selected: $selectedOptionText, Correct: $correctAnswer, IsCorrect: $isCorrect")
@@ -404,16 +403,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onNextClicked() {
-        if (selectedOption == -1) {
-            // No option selected, show a hint
-            hintTextView.text = "Моля, изберете отговор!"
-            hintTextView.visibility = View.VISIBLE
-        } else {
-            // Move to the next question
-            currentQuestionIndex++
-            loadQuestion()
+    private fun scheduleAutoAdvance() {
+        // Cancel any previously pending auto-advance runnable
+        autoAdvanceRunnable?.let { autoAdvanceHandler.removeCallbacks(it) }
+
+        autoAdvanceRunnable = Runnable {
+            if (isFinishing || isDestroyed) return@Runnable
+
+            if (currentQuestionIndex >= 14 || currentQuestionIndex >= questions.size - 1) {
+                // Last question, navigate to results
+                navigateToResultActivity()
+            } else {
+                // Move to the next question
+                currentQuestionIndex++
+                loadQuestion()
+                isAnswered = false // Reset for the next question
+            }
         }
+
+        autoAdvanceHandler.postDelayed(autoAdvanceRunnable!!, AUTO_ADVANCE_DELAY)
     }
 
     private fun getOptionButton(optionNumber: Int): MaterialButton {
@@ -473,12 +481,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         mAdView.pause()
+        // Cancel auto-advance if the activity is paused
+        autoAdvanceRunnable?.let { autoAdvanceHandler.removeCallbacks(it) }
         super.onPause()
     }
 
     override fun onDestroy() {
         stopTimer()
         mAdView.destroy()
+        // Cancel auto-advance to prevent memory leaks
+        autoAdvanceRunnable?.let { autoAdvanceHandler.removeCallbacks(it) }
         super.onDestroy()
     }
 }

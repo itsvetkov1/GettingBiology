@@ -30,6 +30,10 @@ data class Question(
         return 0
     }
 
+    fun getParsedOptions(): List<String> {
+        return options.split(";").map { it.trim() }.filter { it.isNotEmpty() }
+    }
+
     companion object CREATOR : Parcelable.Creator<Question> {
         override fun createFromParcel(parcel: Parcel): Question {
             return Question(parcel)

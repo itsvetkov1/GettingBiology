@@ -2,11 +2,7 @@ package com.znam.app
 
 import org.junit.Test
 import org.junit.Assert.*
-import android.os.Parcel
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-@RunWith(RobolectricTestRunner::class)
 class QuestionTest {
     @Test
     fun getParsedOptions_splitsCorrectly() {
