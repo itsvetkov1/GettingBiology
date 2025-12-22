@@ -7,6 +7,21 @@
     android:background="@color/background_teal_tint"
     android:fitsSystemWindows="true">
 
+    <ImageView
+        android:id="@+id/logo_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="48dp"
+        android:layout_marginBottom="24dp"
+        android:adjustViewBounds="true"
+        android:alpha="0.8"
+        android:src="@drawable/logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/title_select_quiz"
+        app:layout_constraintVertical_chainStyle="packed" />
+
     <TextView
         android:id="@+id/title_select_quiz"
         android:layout_width="wrap_content"
@@ -15,11 +30,10 @@
         android:textAppearance="?attr/textAppearanceHeadlineMedium"
         android:textColor="@color/md_theme_light_primary"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo_header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/buttons_container"
-        app:layout_constraintVertical_chainStyle="packed"
         android:layout_marginBottom="32dp"/>
 
     <LinearLayout
