@@ -10,8 +10,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.material.card.MaterialCardView
 
 class ResultActivity : AppCompatActivity() {
 
@@ -32,24 +36,37 @@ class ResultActivity : AppCompatActivity() {
         val seconds = elapsedTimeInSeconds % 60
         val timeString = String.format("%02d:%02d", minutes, seconds)
 
-        val resultTextView = findViewById<TextView>(R.id.result_text_view).apply {
-            text = "Резултат: $score/15\nВреме: $timeString"
-            setBackgroundColor(ContextCompat.getColor(this@ResultActivity, R.color.transparent_white))
-            setTextColor(Color.BLACK)
-            setTypeface(null, Typeface.BOLD)
+        findViewById<TextView>(R.id.result_text_view).apply {
+            val fullText = "Резултат: $score/15"
+            val spannable = SpannableString(fullText)
+            val tealColor = ContextCompat.getColor(this@ResultActivity, R.color.md_theme_light_primary)
+            val scoreStart = fullText.indexOf("$score/15")
+            if (scoreStart != -1) {
+                spannable.setSpan(
+                    ForegroundColorSpan(tealColor),
+                    scoreStart,
+                    fullText.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+            text = spannable
+            alpha = 0f
+            animate().alpha(1f).setDuration(1000).start()
+        }
+
+        findViewById<TextView>(R.id.time_text_view).apply {
+            text = "Време: $timeString"
             alpha = 0f
             animate().alpha(1f).setDuration(1000).start()
         }
 
         val questionsLayout = findViewById<LinearLayout>(R.id.questions_layout)
 
-
-
         questions.forEachIndexed { index, question ->
             if (index < 15) {
                 val userAnswer = userAnswers.getOrNull(index) ?: "Question Skipped"
                 Log.d("QuizDebug", "Displaying Question ${index + 1}: Correct Answer: ${question.correctAnswer}, User Answer: $userAnswer")
-                questionsLayout.addView(createQuestionView(question, userAnswer))
+                questionsLayout.addView(createQuestionView(questionsLayout, question, userAnswer))
             }
         }
 
@@ -62,51 +79,27 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 
-    private fun createQuestionView(question: Question, userAnswer: String?): LinearLayout {
-        val layout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).also {
-                (it as LinearLayout.LayoutParams).bottomMargin = 30
-            }
-        }
+    private fun createQuestionView(parent: ViewGroup, question: Question, userAnswer: String?): View {
+        val view = layoutInflater.inflate(R.layout.item_question_result, parent, false)
+        
+        val questionTextView = view.findViewById<TextView>(R.id.tv_question_text)
+        val correctAnswerTextView = view.findViewById<TextView>(R.id.tv_correct_answer)
+        val userAnswerTextView = view.findViewById<TextView>(R.id.tv_user_answer)
 
-        val questionTextView = TextView(this).apply {
-            text = question.questionText
-            setTextColor(Color.BLACK)
-            textSize = 18f
-            typeface = Typeface.create("", Typeface.BOLD)
-            setPadding(16, 16, 16, 16) // Left, Top, Right, Bottom padding
-            setBackgroundColor(Color.parseColor("#D3D3D3"))
-        }
-
-        val correctAnswerTextView = TextView(this).apply {
-            text = "Правилен отговор: ${question.correctAnswer}"
-            setTextColor(Color.BLACK)
-            textSize = 18f
-            typeface = Typeface.create("", Typeface.BOLD)
-            setPadding(16, 16, 16, 16) // Left, Top, Right, Bottom padding
-            setBackgroundColor(Color.parseColor("#4CAF50"))
-        }
-
-        layout.addView(questionTextView)
-        layout.addView(correctAnswerTextView)
-
+        questionTextView.text = question.questionText
+        correctAnswerTextView.text = "Правилен отговор: ${question.correctAnswer}"
 
         if (userAnswer != question.correctAnswer) {
-            val userAnswerTextView = TextView(this).apply {
-                text = if (userAnswer == "SKIPPED") {
-                    "Въпросът е пропуснат."
-                } else {
-                    "Вашият отговор: $userAnswer"
-                }
-                setTextColor(Color.BLACK)
-                textSize = 18f
-                typeface = Typeface.create("", Typeface.BOLD)
-                setPadding(16, 16, 16, 16) // Left, Top, Right, Bottom padding
-                setBackgroundColor(if (userAnswer == null || question.correctAnswer == userAnswer) Color.TRANSPARENT else Color.parseColor("#F44336"))
+            userAnswerTextView.visibility = View.VISIBLE
+            userAnswerTextView.text = if (userAnswer == "SKIPPED") {
+                "Въпросът е пропуснат."
+            } else {
+                "Вашият отговор: $userAnswer"
             }
-            layout.addView(userAnswerTextView) // Add this view only if the condition above is met
+        } else {
+            userAnswerTextView.visibility = View.GONE
         }
-        return layout
+        
+        return view
     }
 }

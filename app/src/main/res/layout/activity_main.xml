@@ -6,31 +6,13 @@
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="@color/background_teal_tint"
     android:fitsSystemWindows="true">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/app_bar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:title="Biology Quiz"
-            app:titleTextColor="?attr/colorOnPrimary"
-            app:navigationIcon="@drawable/ic_chevron_left"
-            app:menu="@menu/quiz_menu" />
-
-    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:fillViewport="true"
         android:clipToPadding="false"
         android:paddingBottom="120dp">
@@ -61,7 +43,7 @@
                 android:layout_marginTop="16dp"
                 app:cardElevation="2dp"
                 app:cardCornerRadius="16dp"
-                app:cardBackgroundColor="?attr/colorSurfaceContainer"
+                app:cardBackgroundColor="@color/white"
                 app:layout_constraintTop_toBottomOf="@id/question_counter_text_view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
@@ -179,7 +161,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="bottom"
-        android:background="?attr/colorSurface"
+        android:background="@color/md_theme_light_primary"
         android:elevation="8dp">
 
         <!-- Stats Area -->
@@ -187,7 +169,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardBackgroundColor="@color/md_theme_light_primary"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.MediumComponent">
             
             <LinearLayout
@@ -212,7 +194,7 @@
                         android:layout_height="wrap_content"
                         android:text="Score"
                         android:textAppearance="?attr/textAppearanceLabelMedium"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
+                        android:textColor="@color/md_theme_light_onPrimary" />
 
                     <TextView
                         android:id="@+id/tv_score"
@@ -220,7 +202,7 @@
                         android:layout_height="wrap_content"
                         android:text="0 / 1"
                         android:textAppearance="?attr/textAppearanceTitleLarge"
-                        android:textColor="?attr/colorPrimary" />
+                        android:textColor="@color/md_theme_light_onPrimary" />
                 </LinearLayout>
 
                 <!-- Time Section -->
@@ -237,7 +219,7 @@
                         android:layout_height="wrap_content"
                         android:text="Time"
                         android:textAppearance="?attr/textAppearanceLabelMedium"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
+                        android:textColor="@color/md_theme_light_onPrimary" />
 
                     <TextView
                         android:id="@+id/tv_time"
@@ -245,7 +227,7 @@
                         android:layout_height="wrap_content"
                         android:text="00:45"
                         android:textAppearance="?attr/textAppearanceTitleLarge"
-                        android:textColor="?attr/colorOnSurface" />
+                        android:textColor="@color/md_theme_light_onPrimary" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -257,7 +239,7 @@
             android:layout_height="wrap_content"
             ads:adSize="BANNER"
             ads:adUnitId="ca-app-pub-3551035007628625/8032474007"
-            android:background="?attr/colorSurface"/>
+            android:background="@color/md_theme_light_primary"/>
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
