@@ -12,13 +12,7 @@
         android:scaleType="centerCrop"
         android:src="@drawable/welcome_animation2" />
 
-    <!-- Layer 2: Gradient Frost Overlay -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/gradient_frost_overlay" />
-
-    <!-- Layer 3: Semi-transparent Logo -->
+    <!-- Layer 3: Logo -->
     <ImageView
         android:id="@+id/logoImageView"
         android:layout_width="250dp"
@@ -26,7 +20,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="120dp"
         android:adjustViewBounds="true"
-        android:alpha="0.85"
+        android:elevation="8dp"
         android:src="@drawable/logo" />
 
     <!-- Layer 4: Bottom Sheet Card -->
