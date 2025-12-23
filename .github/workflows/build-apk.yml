@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'claude/**'
+      - 'fix/**'
       - master
   workflow_dispatch:
 
@@ -24,7 +25,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -39,13 +40,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Run Gradle checks
-        run: ./gradlew check
-        continue-on-error: true
-
       - name: Run tests
-        run: ./gradlew test
-        continue-on-error: true
+        run: ./gradlew testDebugUnitTest
 
       - name: Build debug APK
         run: ./gradlew assembleDebug
