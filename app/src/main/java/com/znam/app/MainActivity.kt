@@ -302,11 +302,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Set options text
-        val options = question.options.split(";")
-        option1Button.text = options.getOrNull(0)?.trim() ?: ""
-        option2Button.text = options.getOrNull(1)?.trim() ?: ""
-        option3Button.text = options.getOrNull(2)?.trim() ?: ""
-        option4Button.text = options.getOrNull(3)?.trim() ?: ""
+        val options = question.getParsedOptions()
+        option1Button.text = options.getOrNull(0) ?: ""
+        option2Button.text = options.getOrNull(1) ?: ""
+        option3Button.text = options.getOrNull(2) ?: ""
+        option4Button.text = options.getOrNull(3) ?: ""
+
+        // Hide buttons if they have no text
+        option1Button.visibility = if (option1Button.text.isEmpty()) View.GONE else View.VISIBLE
+        option2Button.visibility = if (option2Button.text.isEmpty()) View.GONE else View.VISIBLE
+        option3Button.visibility = if (option3Button.text.isEmpty()) View.GONE else View.VISIBLE
+        option4Button.visibility = if (option4Button.text.isEmpty()) View.GONE else View.VISIBLE
 
         // Hide hint text view and Next button
         hintTextView.visibility = View.GONE
@@ -347,8 +353,8 @@ class MainActivity : AppCompatActivity() {
 
         // Highlight selected option with blue background
         val selectedButton = getOptionButton(optionNumber)
-        selectedButton.setBackgroundResource(R.drawable.option_button_background_selected)
-        selectedButton.setTextColor(Color.BLACK)
+        selectedButton?.setBackgroundResource(R.drawable.option_button_background_selected)
+        selectedButton?.setTextColor(Color.BLACK)
 
         // Check the answer
         checkAnswer()
@@ -356,8 +362,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkAnswer() {
         val currentQuestion = questions[currentQuestionIndex]
-        val options = currentQuestion.options.split(";")
-        val selectedOptionText = options.getOrNull(selectedOption - 1)?.trim() ?: ""
+        val options = currentQuestion.getParsedOptions()
+        val selectedOptionText = options.getOrNull(selectedOption - 1) ?: ""
         val correctAnswer = currentQuestion.correctAnswer.trim()
 
         userAnswers[currentQuestionIndex] = selectedOptionText
@@ -381,25 +387,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateAnswerBackgrounds(isCorrect: Boolean) {
         val currentQuestion = questions[currentQuestionIndex]
-        val options = currentQuestion.options.split(";")
-        val correctOptionNumber = options.indexOfFirst { it.trim().equals(currentQuestion.correctAnswer.trim(), ignoreCase = true) } + 1
+        val options = currentQuestion.getParsedOptions()
+        val correctOptionNumber = options.indexOfFirst { it.equals(currentQuestion.correctAnswer.trim(), ignoreCase = true) } + 1
 
         // Change background of selected option
         if (isCorrect) {
             // Subtle green for correct answer
             val selectedButton = getOptionButton(selectedOption)
-            selectedButton.setBackgroundResource(R.drawable.option_button_background_correct)
-            selectedButton.setTextColor(Color.BLACK)
+            selectedButton?.setBackgroundResource(R.drawable.option_button_background_correct)
+            selectedButton?.setTextColor(Color.BLACK)
         } else {
             // Subtle red for incorrect answer
             val selectedButton = getOptionButton(selectedOption)
-            selectedButton.setBackgroundResource(R.drawable.option_button_background_incorrect)
-            selectedButton.setTextColor(Color.BLACK)
+            selectedButton?.setBackgroundResource(R.drawable.option_button_background_incorrect)
+            selectedButton?.setTextColor(Color.BLACK)
 
             // Highlight the correct answer in green
             val correctButton = getOptionButton(correctOptionNumber)
-            correctButton.setBackgroundResource(R.drawable.option_button_background_correct)
-            correctButton.setTextColor(Color.BLACK)
+            correctButton?.setBackgroundResource(R.drawable.option_button_background_correct)
+            correctButton?.setTextColor(Color.BLACK)
         }
     }
 
@@ -424,13 +430,13 @@ class MainActivity : AppCompatActivity() {
         autoAdvanceHandler.postDelayed(autoAdvanceRunnable!!, AUTO_ADVANCE_DELAY)
     }
 
-    private fun getOptionButton(optionNumber: Int): MaterialButton {
+    private fun getOptionButton(optionNumber: Int): MaterialButton? {
         return when (optionNumber) {
             1 -> option1Button
             2 -> option2Button
             3 -> option3Button
             4 -> option4Button
-            else -> throw IllegalArgumentException("Invalid option number")
+            else -> null
         }
     }
 

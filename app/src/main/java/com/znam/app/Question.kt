@@ -31,7 +31,7 @@ data class Question(
     }
 
     fun getParsedOptions(): List<String> {
-        return options.split(";").map { it.trim() }.filter { it.isNotEmpty() }
+        return options.split(";").map { it.trim() }.filter { it.isNotEmpty() }.distinct()
     }
 
     companion object CREATOR : Parcelable.Creator<Question> {

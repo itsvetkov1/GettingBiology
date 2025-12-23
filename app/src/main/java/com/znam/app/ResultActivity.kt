@@ -89,9 +89,11 @@ class ResultActivity : AppCompatActivity() {
         questionTextView.text = question.questionText
         correctAnswerTextView.text = "Правилен отговор: ${question.correctAnswer}"
 
-        if (userAnswer != question.correctAnswer) {
+        val isCorrect = userAnswer?.trim()?.equals(question.correctAnswer.trim(), ignoreCase = true) == true
+
+        if (!isCorrect) {
             userAnswerTextView.visibility = View.VISIBLE
-            userAnswerTextView.text = if (userAnswer == "SKIPPED") {
+            userAnswerTextView.text = if (userAnswer == "Въпросът е пропуснат.") {
                 "Въпросът е пропуснат."
             } else {
                 "Вашият отговор: $userAnswer"
