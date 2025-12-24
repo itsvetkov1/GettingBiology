@@ -163,3 +163,5 @@ The project uses a GitHub Actions pipeline (`.github/workflows/android-ci.yml`) 
 - Use `[build]` when working on feature branches to verify the build and get downloadable APKs.
 - Use `[test]` frequently to ensure code changes don't break existing logic.
 
+<!-- Trigger build for test branch -->
+
