@@ -2,7 +2,7 @@ name: Android CI
 
 on:
   push:
-    branches: [ main, master, develop, 'release/*', 'feat/*', 'fix/*', 'claude/*' ]
+    branches: [ main, master, develop, 'release/*', 'feat/*', 'fix/*', 'claude/*', 'test' ]
   pull_request:
     branches: [ main, master, develop ]
   workflow_dispatch: # Allow manual triggers
