@@ -869,6 +869,25 @@ mkdir -p app/schemas
 
 ---
 
+## CI/CD Pipeline & Commit Flags
+
+The project uses a GitHub Actions pipeline (`.github/workflows/android-ci.yml`) that responds to specific flags in commit messages.
+
+| Flag | Behavior |
+|------|----------|
+| `[test]` | Runs all unit tests and generates a test report. |
+| `[build]` | Forces the creation of APK artifacts (Debug and Release) on any branch. |
+| `[ignore]` | Skips APK artifact creation (overrides all other conditions). |
+| `[test][build]` | Runs tests AND creates APK artifacts. |
+
+**Usage Notes:**
+- Flags are case-insensitive (e.g., `[TEST]` works).
+- By default, APKs are built automatically on `master` and `release/*` branches unless `[ignore]` is present.
+- Use `[build]` when working on feature branches to verify the build and get downloadable APKs.
+- Use `[test]` frequently to ensure code changes don't break existing logic.
+
+---
+
 ## Contact & Support
 
 For questions about this codebase or project, refer to:
