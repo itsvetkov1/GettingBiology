@@ -1,5 +1,6 @@
 name: Android CI
 
+# Workflow to build Android APK and run tests with commit message flags
 on:
   push:
     branches:
