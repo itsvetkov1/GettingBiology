@@ -333,11 +333,10 @@ class MainActivity : AppCompatActivity() {
         option4Button.setBackgroundResource(R.drawable.option_button_background)
 
         // Reset text color to default
-        val defaultTextColor = ContextCompat.getColor(this, R.color.md_theme_light_onSurface)
-        option1Button.setTextColor(defaultTextColor)
-        option2Button.setTextColor(defaultTextColor)
-        option3Button.setTextColor(defaultTextColor)
-        option4Button.setTextColor(defaultTextColor)
+        option1Button.setTextColor(Color.BLACK)
+        option2Button.setTextColor(Color.BLACK)
+        option3Button.setTextColor(Color.BLACK)
+        option4Button.setTextColor(Color.BLACK)
     }
 
     private fun onOptionSelected(optionNumber: Int) {

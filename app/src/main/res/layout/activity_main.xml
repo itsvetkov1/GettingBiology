@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:text="Question 1 of 15"
                 android:textAppearance="?attr/textAppearanceLabelLarge"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textColor="@color/black"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -54,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:text="Question Text"
                     android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textColor="@color/black"
                     android:padding="24dp"
                     android:gravity="center" />
             </com.google.android.material.card.MaterialCardView>
@@ -78,7 +78,7 @@
                     android:layout_marginBottom="8dp"
                     android:padding="12dp"
                     android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textColor="@color/black"
                     app:backgroundTint="@null"
                     android:background="@drawable/option_button_background"
                     style="@style/Widget.Material3.Button.TextButton"/>
@@ -91,7 +91,7 @@
                     android:layout_marginBottom="8dp"
                     android:padding="12dp"
                     android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textColor="@color/black"
                     app:backgroundTint="@null"
                     android:background="@drawable/option_button_background"
                     style="@style/Widget.Material3.Button.TextButton"/>
@@ -104,7 +104,7 @@
                     android:layout_marginBottom="8dp"
                     android:padding="12dp"
                     android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textColor="@color/black"
                     app:backgroundTint="@null"
                     android:background="@drawable/option_button_background"
                     style="@style/Widget.Material3.Button.TextButton"/>
@@ -117,7 +117,7 @@
                     android:layout_marginBottom="8dp"
                     android:padding="12dp"
                     android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textColor="@color/black"
                     app:backgroundTint="@null"
                     android:background="@drawable/option_button_background"
                     style="@style/Widget.Material3.Button.TextButton"/>
