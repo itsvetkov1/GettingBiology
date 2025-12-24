@@ -35,8 +35,9 @@ jobs:
     steps:
       - name: Parse commit message flags
         id: flags
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
-          COMMIT_MSG="${{ github.event.head_commit.message || github.event.pull_request.title }}"
           COMMIT_MSG_LOWER=$(echo "$COMMIT_MSG" | tr '[:upper:]' '[:lower:]')
           
           echo "Commit message: $COMMIT_MSG"
