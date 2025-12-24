@@ -3,20 +3,25 @@ name: Android CI
 on:
   push:
     branches:
-      - main
-      - master
-      - develop
-      - 'release/*'
-      - 'feat/*'
-      - 'fix/*'
-      - 'claude/*'
+      - 'main'
+      - 'master'
+      - 'develop'
+      - 'release/**'
+      - 'feat/**'
+      - 'fix/**'
+      - 'claude/**'
       - 'test'
   pull_request:
     branches:
-      - main
-      - master
-      - develop
-  workflow_dispatch: # Allow manual triggers
+      - 'main'
+      - 'master'
+      - 'develop'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  actions: read
 
 env:
   JAVA_VERSION: '17'
@@ -35,36 +40,48 @@ jobs:
     steps:
       - name: Parse commit message flags
         id: flags
-        env:
-          COMMIT_MSG: ${{ github.event.head_commit.message || github.event.pull_request.title }}
         run: |
+          # Get commit message from push or pull request
+          if [ "${{ github.event_name }}" == "push" ]; then
+            COMMIT_MSG=$(cat << 'EOF'
+          ${{ github.event.head_commit.message }}
+          EOF
+          )
+          else
+            COMMIT_MSG=$(cat << 'EOF'
+          ${{ github.event.pull_request.title }}
+          EOF
+          )
+          fi
+          
           COMMIT_MSG_LOWER=$(echo "$COMMIT_MSG" | tr '[:upper:]' '[:lower:]')
+          echo "Parsed commit message: $COMMIT_MSG"
           
-          echo "Commit message: $COMMIT_MSG"
+          # Initialize outputs
+          RUN_TESTS="false"
+          FORCE_BUILD="false"
+          IGNORE_BUILD="false"
           
-          # Check for [test] flag
+          # Check for flags
           if [[ "$COMMIT_MSG_LOWER" == *"[test]"* ]]; then
-            echo "run_tests=true" >> $GITHUB_OUTPUT
+            RUN_TESTS="true"
             echo "✓ [test] flag detected"
-          else
-            echo "run_tests=false" >> $GITHUB_OUTPUT
           fi
           
-          # Check for [build] flag
           if [[ "$COMMIT_MSG_LOWER" == *"[build]"* ]]; then
-            echo "force_build=true" >> $GITHUB_OUTPUT
+            FORCE_BUILD="true"
             echo "✓ [build] flag detected"
-          else
-            echo "force_build=false" >> $GITHUB_OUTPUT
           fi
           
-          # Check for [ignore] flag
           if [[ "$COMMIT_MSG_LOWER" == *"[ignore]"* ]]; then
-            echo "ignore_build=true" >> $GITHUB_OUTPUT
+            IGNORE_BUILD="true"
             echo "✓ [ignore] flag detected"
-          else
-            echo "ignore_build=false" >> $GITHUB_OUTPUT
           fi
+          
+          # Set outputs
+          echo "run_tests=$RUN_TESTS" >> $GITHUB_OUTPUT
+          echo "force_build=$FORCE_BUILD" >> $GITHUB_OUTPUT
+          echo "ignore_build=$IGNORE_BUILD" >> $GITHUB_OUTPUT
 
   # ===========================================
   # Job 2: Run Unit Tests (when [test] flag present)
