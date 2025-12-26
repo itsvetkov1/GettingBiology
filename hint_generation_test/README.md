@@ -20,11 +20,15 @@ This directory contains the tools and results for the AI-powered hint generation
     *   Generated 5 additional batches (`hints_batch_2.xlsx` to `hints_batch_6.xlsx`).
     *   Each batch contains 10 questions, covering IDs 12 to 61 from `class8.db`.
     *   Maintained the 6.6s delay and `gemini-2.0-flash` model for consistency.
+5.  **Model Upgrade Testing**:
+    *   Switched to **Gemini 3 Flash (Preview)** for Batch 7 to evaluate improved reasoning and Bulgarian linguistic accuracy.
+    *   Generated `hints_batch_7.xlsx` (IDs 62-71) using the new model.
 
 ## Files:
 *   `generate_hints_to_excel.py`: The main automation script (updated to support batching and offsets).
 *   `hints_batch_1_v4.xlsx`: Results from the first verification batch.
-*   `hints_batch_2.xlsx` - `hints_batch_6.xlsx`: Extended test batches for evaluation.
+*   `hints_batch_2.xlsx` - `hints_batch_6.xlsx`: Extended test batches for evaluation (Gemini 2.0 Flash).
+*   `hints_batch_7.xlsx`: Comparison batch generated with Gemini 3 Flash (Preview).
 *   `README.md`: This documentation file.
 
 ## Next Steps:

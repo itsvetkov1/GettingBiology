@@ -16,7 +16,7 @@ if not GEMINI_API_KEY:
 
 # Configure Gemini
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-2.0-flash')
+model = genai.GenerativeModel('gemini-3-flash-preview')
 
 # Constants
 DATABASES = [
@@ -126,12 +126,11 @@ def run_batch(batch_num, start_offset, batch_size):
     return total_processed
 
 def main():
-    # We already did batch 1 (offset 0, size 10)
-    # Now we do 5 more batches of 10 questions each
+    # We already did batches 1-6
+    # Now we do Batch 7 with Gemini 3 Flash (Preview)
     batch_size = 10
-    for i in range(2, 7):
-        offset = (i - 1) * batch_size
-        run_batch(i, offset, batch_size)
+    offset = 60
+    run_batch(7, offset, batch_size)
 
 if __name__ == "__main__":
     main()
