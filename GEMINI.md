@@ -43,7 +43,10 @@ GettingBiology/
 │   └── schemas/                          # Room schemas
 ├── gradle/                               # Gradle wrapper
 ├── build.gradle                          # Project-level build config
-└── settings.gradle                       # Project settings
+├── settings.gradle                       # Project settings
+├── .env                                  # Environment variables (local only)
+└── modifyDB/                             # Database project files
+    └── assets/                           # .sqbpro project files
 ```
 
 ---
@@ -143,6 +146,15 @@ Triggers auto-export to `app/schemas` if version changes.
 *   **Ads**: Need `INTERNET` permission. Test IDs used in development.
 *   **Database**: If questions don't load, check `assets/` for the `.db` file and ensure `options` are properly `;` delimited.
 *   **Progress**: Stored in `SharedPreferences` ("AnsweredQuestionIds") and local Room DB (`user_progress`).
+
+---
+
+## Environment Variables & API Keys
+
+- **`.env` File**: Stores local environment variables.
+- **`GEMINI_API_KEY`**: The API key for Google Gemini services.
+- **Usage**: Access via `BuildConfig` (if using Secrets Gradle Plugin) or local property loading.
+- **Security**: Ensure `.env` remains in `.gitignore`.
 
 ---
 

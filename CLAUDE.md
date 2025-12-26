@@ -16,9 +16,9 @@ This document provides comprehensive guidance for AI assistants working with the
 **Key Metadata:**
 - **Package**: `com.znam.app`
 - **Language**: Kotlin
-- **Min SDK**: 24 (Android 8.0)
-- **Target SDK**: 33 (Android 13)
-- **Current Version**: 1.1 (versionCode 2)
+- **Min SDK**: 28 (Android 9.0)
+- **Target SDK**: 34 (Android 14)
+- **Current Version**: 4 (versionCode 4)
 - **Primary Language**: Bulgarian (UI text)
 
 ---
@@ -65,7 +65,11 @@ GettingBiology/
 ├── gradle.properties                     # Gradle configuration properties
 ├── gradlew                               # Gradle wrapper script (Unix)
 ├── gradlew.bat                           # Gradle wrapper script (Windows)
-└── .gitignore                            # Git ignore patterns
+├── .gitignore                            # Git ignore patterns
+├── .env                                  # Environment variables (local only)
+├── keystore.jks                          # Android release signing keystore
+└── modifyDB/                             # Database project files (SQLiteStudio/DB Browser)
+    └── assets/                           # .sqbpro project files for each database
 ```
 
 ---
@@ -73,8 +77,8 @@ GettingBiology/
 ## Key Technologies & Dependencies
 
 ### Core Framework
-- **Kotlin**: 1.9.20
-- **Android Gradle Plugin**: 8.2.1
+- **Kotlin**: 1.9.24
+- **Android Gradle Plugin**: 8.5.1
 - **Compile SDK**: 34
 - **Java Compatibility**: 1.8
 
@@ -89,6 +93,7 @@ GettingBiology/
 | Room KTX | 2.6.1 | Kotlin coroutines support for Room |
 | Glide | 4.12.0 | Image loading (for welcome GIF) |
 | Google Play Services Ads | 22.6.0 | Banner and interstitial ads |
+| User Messaging Platform (UMP) | 1.0.0 | GDPR/Consent management |
 
 ### Build Plugins
 - `com.android.application`
@@ -865,7 +870,15 @@ mkdir -p app/schemas
 3. App installs: `./gradlew installDebug`
 4. Manual test: Complete one quiz end-to-end
 5. Verify ads display (if modified)
-6. Check progress persists across app restarts
+- Check progress persists across app restarts
+
+---
+
+## Environment Variables & API Keys
+
+- **`.env` File**: Used for local development to store sensitive keys.
+- **`GEMINI_API_KEY`**: Used for Gemini AI integration.
+- **Security**: Never commit the `.env` file (it is ignored via `.gitignore`).
 
 ---
 
