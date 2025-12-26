@@ -1,5 +1,7 @@
 package com.znam.app
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -9,11 +11,13 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.animation.OvershootInterpolator
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.room.Room
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.*
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -45,6 +49,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var timerTextView: TextView
     private lateinit var scoreTextView: TextView
 
+    // Hint UI Components
+    private lateinit var hintButton: MaterialCardView
+    private lateinit var hintLabel: TextView
+    private lateinit var hintBubblesContainer: LinearLayout
+    private lateinit var hint1Bubble: View
+    private lateinit var hint2Bubble: View
+    private lateinit var hint1Text: TextView
+    private lateinit var hint2Text: TextView
+
     // Quiz Data
     private var currentQuestionIndex = 0
     private lateinit var questions: List<Question>
@@ -52,6 +65,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userAnswers: MutableList<String>
     private var selectedOption = -1
     private var isAnswered = false
+    private var hintsShown = 0
 
     // Timer
     private var startTime: Long = 0
@@ -210,11 +224,23 @@ class MainActivity : AppCompatActivity() {
         timerTextView = findViewById(R.id.tv_time)
         scoreTextView = findViewById(R.id.tv_score)
 
+        // Initialize Hint UI
+        hintButton = findViewById(R.id.hintButton)
+        hintLabel = findViewById(R.id.hintLabel)
+        hintBubblesContainer = findViewById(R.id.hintBubblesContainer)
+        hint1Bubble = findViewById(R.id.hint1Bubble)
+        hint2Bubble = findViewById(R.id.hint2Bubble)
+        hint1Text = hint1Bubble.findViewById(R.id.hintText)
+        hint2Text = hint2Bubble.findViewById(R.id.hintText)
+
         // Set click listeners for option buttons
         option1Button.setOnClickListener { onOptionSelected(1) }
         option2Button.setOnClickListener { onOptionSelected(2) }
         option3Button.setOnClickListener { onOptionSelected(3) }
         option4Button.setOnClickListener { onOptionSelected(4) }
+
+        // Set click listener for hint button
+        hintButton.setOnClickListener { onHintRequested() }
 
         // Initialize score display
         updateScoreDisplay()
@@ -279,6 +305,75 @@ class MainActivity : AppCompatActivity() {
         scoreTextView.text = "$score / 15"
     }
 
+    private fun onHintRequested() {
+        if (currentQuestionIndex >= questions.size) return
+        val currentQuestion = questions[currentQuestionIndex]
+
+        when (hintsShown) {
+            0 -> {
+                if (!currentQuestion.hint1.isNullOrBlank()) {
+                    showHintBubble(1, currentQuestion.hint1)
+                    hintsShown = 1
+                    updateHintButtonState()
+                }
+            }
+            1 -> {
+                if (!currentQuestion.hint2.isNullOrBlank()) {
+                    showHintBubble(2, currentQuestion.hint2)
+                    hintsShown = 2
+                    updateHintButtonState()
+                }
+            }
+        }
+    }
+
+    private fun showHintBubble(hintNumber: Int, text: String) {
+        val bubbleView = if (hintNumber == 1) hint1Bubble else hint2Bubble
+        val textView = if (hintNumber == 1) hint1Text else hint2Text
+
+        textView.text = text
+        hintBubblesContainer.visibility = View.VISIBLE
+        bubbleView.visibility = View.VISIBLE
+
+        // Set pivot for animation (right edge)
+        bubbleView.pivotX = bubbleView.width.toFloat()
+        bubbleView.pivotY = bubbleView.height.toFloat() / 2
+
+        // Pop animation
+        val scaleX = ObjectAnimator.ofFloat(bubbleView, "scaleX", 0f, 1f)
+        val scaleY = ObjectAnimator.ofFloat(bubbleView, "scaleY", 0f, 1f)
+        val alpha = ObjectAnimator.ofFloat(bubbleView, "alpha", 0f, 1f)
+
+        AnimatorSet().apply {
+            playTogether(scaleX, scaleY, alpha)
+            duration = 300
+            interpolator = OvershootInterpolator(1.2f)
+            start()
+        }
+    }
+
+    private fun hideAllHintBubbles() {
+        hintBubblesContainer.visibility = View.GONE
+        hint1Bubble.visibility = View.GONE
+        hint2Bubble.visibility = View.GONE
+    }
+
+    private fun updateHintButtonState() {
+        if (currentQuestionIndex >= questions.size) return
+        val currentQuestion = questions[currentQuestionIndex]
+
+        val shouldBeEnabled = when {
+            !currentQuestion.hasHints() -> false
+            hintsShown >= 2 -> false
+            hintsShown == 1 && currentQuestion.hint2.isNullOrBlank() -> false
+            else -> true
+        }
+
+        hintButton.isEnabled = shouldBeEnabled
+        hintButton.alpha = if (shouldBeEnabled) 1.0f else 0.5f
+        hintLabel.alpha = if (shouldBeEnabled) 1.0f else 0.5f
+    }
+
     private fun loadQuestion() {
         if (currentQuestionIndex >= questions.size || currentQuestionIndex >= 15) {
             navigateToResultActivity()
@@ -288,6 +383,8 @@ class MainActivity : AppCompatActivity() {
         // Reset selected option
         selectedOption = -1
         isAnswered = false
+        hintsShown = 0
+        hideAllHintBubbles()
 
         // Reset option buttons
         resetOptionButtons()
@@ -300,6 +397,9 @@ class MainActivity : AppCompatActivity() {
         questionTextView.apply {
             text = question.questionText
         }
+
+        // Update hint button state for new question
+        updateHintButtonState()
 
         // Set options text
         val options = question.getParsedOptions()
