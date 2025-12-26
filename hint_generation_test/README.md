@@ -23,12 +23,16 @@ This directory contains the tools and results for the AI-powered hint generation
 5.  **Model Upgrade Testing**:
     *   Switched to **Gemini 3 Flash (Preview)** for Batch 7 to evaluate improved reasoning and Bulgarian linguistic accuracy.
     *   Generated `hints_batch_7.xlsx` (IDs 62-71) using the new model.
+6.  **Consolidated Re-run**:
+    *   Re-ran all questions from Batches 1-6 (IDs 2-61) using **Gemini 3 Flash (Preview)**.
+    *   Consolidated the results into a single file: `hints_consolidated_1-6_gemini3.xlsx`.
 
 ## Files:
 *   `generate_hints_to_excel.py`: The main automation script (updated to support batching and offsets).
 *   `hints_batch_1_v4.xlsx`: Results from the first verification batch.
 *   `hints_batch_2.xlsx` - `hints_batch_6.xlsx`: Extended test batches for evaluation (Gemini 2.0 Flash).
 *   `hints_batch_7.xlsx`: Comparison batch generated with Gemini 3 Flash (Preview).
+*   `hints_consolidated_1-6_gemini3.xlsx`: Consolidated re-run of first 60 questions using Gemini 3.
 *   `README.md`: This documentation file.
 
 ## Next Steps:

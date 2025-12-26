@@ -126,11 +126,43 @@ def run_batch(batch_num, start_offset, batch_size):
     return total_processed
 
 def main():
-    # We already did batches 1-6
-    # Now we do Batch 7 with Gemini 3 Flash (Preview)
-    batch_size = 10
-    offset = 60
-    run_batch(7, offset, batch_size)
+    # Re-running questions from Batches 1-6 (IDs 2-61) using Gemini 3 Flash (Preview)
+    # Saving into a single consolidated file
+    batch_size = 60
+    offset = 0
+    output_file = "hints_consolidated_1-6_gemini3.xlsx"
+    
+    print(f"\n=== Starting Consolidated Re-run (Offset: {offset}, Size: {batch_size}) ===")
+    
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Hints"
+    ws.append(["ID", "Question", "Options", "Correct Answer", "Hint1", "Hint2", "Status", "Source DB"])
+
+    total_processed = 0
+    current_offset = offset
+    
+    for db_path in DATABASES:
+        if total_processed >= batch_size:
+            break
+            
+        print(f"Processing database: {db_path}")
+        questions = get_questions_from_db(db_path, limit=batch_size - total_processed, offset=current_offset)
+        
+        for q_id, q_text, q_options, q_correct in questions:
+            print(f"Generating hints for ID {q_id} in {db_path}...")
+            h1, h2, status = generate_hints(q_text, q_options, q_correct)
+            
+            ws.append([q_id, q_text, q_options, q_correct, h1, h2, status, os.path.basename(db_path)])
+            total_processed += 1
+            
+            wb.save(output_file)
+            
+            if total_processed < batch_size:
+                print(f"Waiting {DELAY_BETWEEN_CALLS:.2f}s...")
+                time.sleep(DELAY_BETWEEN_CALLS)
+    
+    print(f"Finished Consolidated Re-run. Saved to {output_file}")
 
 if __name__ == "__main__":
     main()
