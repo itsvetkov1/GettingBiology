@@ -26,9 +26,14 @@ This directory contains the tools and results for the AI-powered hint generation
 6.  **Consolidated Re-run**:
     *   Re-ran all questions from Batches 1-6 (IDs 2-61) using **Gemini 3 Flash (Preview)**.
     *   Consolidated the results into a single file: `hints_consolidated_1-6_gemini3.xlsx`.
+7.  **Integration Test**:
+    *   Added `hint1` and `hint2` columns to the `questions` table in `class8.db`.
+    *   Imported the first 15 hints (IDs 2-16) from the consolidated Excel file into the database using `import_hints_to_db.py`.
+    *   Verified the data integrity within the SQLite database.
 
 ## Files:
 *   `generate_hints_to_excel.py`: The main automation script (updated to support batching and offsets).
+*   `import_hints_to_db.py`: Script to import hints from Excel to SQLite.
 *   `hints_batch_1_v4.xlsx`: Results from the first verification batch.
 *   `hints_batch_2.xlsx` - `hints_batch_6.xlsx`: Extended test batches for evaluation (Gemini 2.0 Flash).
 *   `hints_batch_7.xlsx`: Comparison batch generated with Gemini 3 Flash (Preview).
