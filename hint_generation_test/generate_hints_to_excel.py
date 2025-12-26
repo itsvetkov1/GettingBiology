@@ -31,12 +31,14 @@ DELAY_BETWEEN_CALLS = 6.6
 DAILY_LIMIT = 1400
 BATCH_SIZE = 10  # For verification
 
-def get_questions_from_db(db_path, limit=None):
+def get_questions_from_db(db_path, limit=None, offset=0):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     query = "SELECT id, questionText, options, correctAnswer FROM questions"
     if limit:
         query += f" LIMIT {limit}"
+    if offset:
+        query += f" OFFSET {offset}"
     cursor.execute(query)
     rows = cursor.fetchall()
     conn.close()
@@ -86,40 +88,50 @@ def generate_hints(question, options, correct_answer):
     
     return "", "", "Error: Max retries exceeded (429)"
 
-def main():
+def run_batch(batch_num, start_offset, batch_size):
+    output_file = f"hints_batch_{batch_num}.xlsx"
+    print(f"\n=== Starting Batch {batch_num} (Offset: {start_offset}) ===")
+    
     wb = Workbook()
     ws = wb.active
     ws.title = "Hints"
     ws.append(["ID", "Question", "Options", "Correct Answer", "Hint1", "Hint2", "Status", "Source DB"])
 
     total_processed = 0
+    current_offset = start_offset
     
     for db_path in DATABASES:
-        if total_processed >= BATCH_SIZE:
+        if total_processed >= batch_size:
             break
             
         print(f"Processing database: {db_path}")
-        questions = get_questions_from_db(db_path, limit=BATCH_SIZE - total_processed)
+        # For simplicity, we assume we are still in the first DB for these small batches
+        # In a real scenario, we'd need more complex offset tracking across DBs
+        questions = get_questions_from_db(db_path, limit=batch_size - total_processed, offset=current_offset)
         
         for q_id, q_text, q_options, q_correct in questions:
-            if total_processed >= DAILY_LIMIT:
-                print("Daily limit reached. Stopping.")
-                break
-                
             print(f"Generating hints for ID {q_id} in {db_path}...")
             h1, h2, status = generate_hints(q_text, q_options, q_correct)
             
             ws.append([q_id, q_text, q_options, q_correct, h1, h2, status, os.path.basename(db_path)])
             total_processed += 1
             
-            # Save after each question to avoid data loss
-            wb.save(OUTPUT_FILE)
+            wb.save(output_file)
             
-            if total_processed < BATCH_SIZE:
+            if total_processed < batch_size:
                 print(f"Waiting {DELAY_BETWEEN_CALLS:.2f}s...")
                 time.sleep(DELAY_BETWEEN_CALLS)
+    
+    print(f"Finished Batch {batch_num}. Saved to {output_file}")
+    return total_processed
 
-    print(f"Finished. Processed {total_processed} questions. Results saved to {OUTPUT_FILE}")
+def main():
+    # We already did batch 1 (offset 0, size 10)
+    # Now we do 5 more batches of 10 questions each
+    batch_size = 10
+    for i in range(2, 7):
+        offset = (i - 1) * batch_size
+        run_batch(i, offset, batch_size)
 
 if __name__ == "__main__":
     main()

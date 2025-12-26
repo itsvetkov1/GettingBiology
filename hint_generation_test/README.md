@@ -16,10 +16,15 @@ This directory contains the tools and results for the AI-powered hint generation
     *   Successfully ran a test batch of 10 questions from `class8.db`.
     *   Verified the output in `hints_batch_1_v4.xlsx`.
     *   Confirmed the hints are accurate, in Bulgarian, and follow the HINT1/HINT2 format.
+4.  **Extended Generation**:
+    *   Generated 5 additional batches (`hints_batch_2.xlsx` to `hints_batch_6.xlsx`).
+    *   Each batch contains 10 questions, covering IDs 12 to 61 from `class8.db`.
+    *   Maintained the 6.6s delay and `gemini-2.0-flash` model for consistency.
 
 ## Files:
-*   `generate_hints_to_excel.py`: The main automation script.
+*   `generate_hints_to_excel.py`: The main automation script (updated to support batching and offsets).
 *   `hints_batch_1_v4.xlsx`: Results from the first verification batch.
+*   `hints_batch_2.xlsx` - `hints_batch_6.xlsx`: Extended test batches for evaluation.
 *   `README.md`: This documentation file.
 
 ## Next Steps:
