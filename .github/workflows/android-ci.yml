@@ -158,37 +158,65 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: |
+          echo "Starting Debug APK build..."
+          ./gradlew assembleDebug --stacktrace --info || {
+            echo "Debug build failed with exit code $?"
+            exit 1
+          }
+          echo "Debug APK build completed successfully"
 
       - name: Build Release APK
-        run: ./gradlew assembleRelease
+        run: |
+          echo "Starting Release APK build..."
+          ./gradlew assembleRelease --stacktrace --info || {
+            echo "Release build failed with exit code $?"
+            exit 1
+          }
+          echo "Release APK build completed successfully"
 
       - name: Rename APKs with build info
         run: |
+          echo "Searching for built APK files..."
+          find . -name "*.apk" -type f
+
           TIMESTAMP=$(date +'%Y%m%d-%H%M%S')
           SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
           BRANCH_NAME=$(echo ${{ github.ref_name }} | sed 's/\//-/g')
-          
+
           mkdir -p artifacts
-          
+
           # Find and rename debug APK
           DEBUG_APK=$(find . -name "*-debug.apk" -type f | head -1)
           if [ -n "$DEBUG_APK" ]; then
+            echo "Found debug APK: $DEBUG_APK"
             cp "$DEBUG_APK" "artifacts/znam-li-${BRANCH_NAME}-${SHORT_SHA}-debug.apk"
+            echo "Copied to artifacts/znam-li-${BRANCH_NAME}-${SHORT_SHA}-debug.apk"
+          else
+            echo "WARNING: No debug APK found!"
           fi
-          
+
           # Find and rename release APK
           RELEASE_APK=$(find . -name "*-release*.apk" -type f | head -1)
           if [ -n "$RELEASE_APK" ]; then
+            echo "Found release APK: $RELEASE_APK"
             cp "$RELEASE_APK" "artifacts/znam-li-${BRANCH_NAME}-${SHORT_SHA}-release.apk"
+            echo "Copied to artifacts/znam-li-${BRANCH_NAME}-${SHORT_SHA}-release.apk"
+          else
+            echo "WARNING: No release APK found!"
           fi
+
+          echo "Contents of artifacts directory:"
+          ls -lh artifacts/
 
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
+        if: hashFiles('artifacts/*.apk') != ''
         with:
           name: apk-${{ github.ref_name }}-${{ github.sha }}
           path: artifacts/*.apk
           retention-days: 30
+          if-no-files-found: warn
 
   # ===========================================
   # Job 4: Build skipped notification
