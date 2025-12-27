@@ -154,24 +154,40 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           cache: gradle
 
+      - name: Setup Gradle properties for CI
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError" >> ~/.gradle/gradle.properties
+          echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
+          echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
+      - name: Clean build directory
+        run: ./gradlew clean --stacktrace
 
       - name: Build Debug APK
         run: |
           echo "Starting Debug APK build..."
-          ./gradlew assembleDebug --stacktrace --info || {
-            echo "Debug build failed with exit code $?"
-            exit 1
+          ./gradlew assembleDebug --stacktrace --no-daemon || {
+            EXIT_CODE=$?
+            echo "Debug build failed with exit code $EXIT_CODE"
+            echo "Attempting to show recent build logs..."
+            find app/build -name "*.log" -exec tail -50 {} \; 2>/dev/null || true
+            exit $EXIT_CODE
           }
           echo "Debug APK build completed successfully"
 
       - name: Build Release APK
         run: |
           echo "Starting Release APK build..."
-          ./gradlew assembleRelease --stacktrace --info || {
-            echo "Release build failed with exit code $?"
-            exit 1
+          ./gradlew assembleRelease --stacktrace --no-daemon || {
+            EXIT_CODE=$?
+            echo "Release build failed with exit code $EXIT_CODE"
+            echo "Attempting to show recent build logs..."
+            find app/build -name "*.log" -exec tail -50 {} \; 2>/dev/null || true
+            exit $EXIT_CODE
           }
           echo "Release APK build completed successfully"
 
