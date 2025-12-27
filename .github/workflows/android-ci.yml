@@ -207,7 +207,7 @@ jobs:
   # Job 5: Summary
   # ===========================================
   summary:
-    needs: [parse-flags, unit-tests, build-apk, build-skipped]
+    needs: parse-flags
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -220,7 +220,3 @@ jobs:
           echo "| [test] | ${{ needs.parse-flags.outputs.run_tests }} |" >> $GITHUB_STEP_SUMMARY
           echo "| [build] | ${{ needs.parse-flags.outputs.force_build }} |" >> $GITHUB_STEP_SUMMARY
           echo "| [ignore] | ${{ needs.parse-flags.outputs.ignore_build }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Job Results" >> $GITHUB_STEP_SUMMARY
-          echo "- **Unit Tests:** ${{ needs.unit-tests.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Build APK:** ${{ needs.build-apk.result || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
