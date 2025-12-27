@@ -229,7 +229,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: hashFiles('artifacts/*.apk') != ''
         with:
-          name: apk-${{ github.ref_name }}-${{ github.sha }}
+          name: apk-${{ github.run_number }}-${{ github.run_attempt }}
           path: artifacts/*.apk
           retention-days: 30
           if-no-files-found: warn
