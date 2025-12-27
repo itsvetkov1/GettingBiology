@@ -80,10 +80,12 @@
             <!-- Hint Bubbles Container (positioned to left of button) -->
             <LinearLayout
                 android:id="@+id/hintBubblesContainer"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:gravity="end"
                 app:layout_constraintTop_toTopOf="@id/hintButtonContainer"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/hintButtonContainer"
                 android:layout_marginEnd="8dp"
                 android:visibility="gone">
@@ -102,6 +104,13 @@
                     android:visibility="gone"/>
             </LinearLayout>
 
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/hintBarrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="hintButtonContainer,hintBubblesContainer" />
+
             <!-- Question Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_question"
@@ -111,7 +120,7 @@
                 app:cardElevation="2dp"
                 app:cardCornerRadius="16dp"
                 app:cardBackgroundColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/hintButtonContainer"
+                app:layout_constraintTop_toBottomOf="@id/hintBarrier"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 

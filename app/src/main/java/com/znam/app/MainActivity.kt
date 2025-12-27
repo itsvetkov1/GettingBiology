@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mAdView: AdView
     private lateinit var timerTextView: TextView
     private lateinit var scoreTextView: TextView
+    private lateinit var nestedScrollView: androidx.core.widget.NestedScrollView
 
     // Hint UI Components
     private lateinit var hintButton: MaterialCardView
@@ -223,6 +224,7 @@ class MainActivity : AppCompatActivity() {
         nextButton = findViewById(R.id.btn_next)
         timerTextView = findViewById(R.id.tv_time)
         scoreTextView = findViewById(R.id.tv_score)
+        nestedScrollView = findViewById(R.id.nested_scroll_view)
 
         // Initialize Hint UI
         hintButton = findViewById(R.id.hintButton)
@@ -335,20 +337,26 @@ class MainActivity : AppCompatActivity() {
         hintBubblesContainer.visibility = View.VISIBLE
         bubbleView.visibility = View.VISIBLE
 
-        // Set pivot for animation (right edge)
-        bubbleView.pivotX = bubbleView.width.toFloat()
-        bubbleView.pivotY = bubbleView.height.toFloat() / 2
+        // Use post to ensure layout is complete before calculating pivot and starting animation
+        bubbleView.post {
+            // Set pivot for animation (right edge)
+            bubbleView.pivotX = bubbleView.width.toFloat()
+            bubbleView.pivotY = bubbleView.height.toFloat() / 2
 
-        // Pop animation
-        val scaleX = ObjectAnimator.ofFloat(bubbleView, "scaleX", 0f, 1f)
-        val scaleY = ObjectAnimator.ofFloat(bubbleView, "scaleY", 0f, 1f)
-        val alpha = ObjectAnimator.ofFloat(bubbleView, "alpha", 0f, 1f)
+            // Pop animation
+            val scaleX = ObjectAnimator.ofFloat(bubbleView, "scaleX", 0f, 1f)
+            val scaleY = ObjectAnimator.ofFloat(bubbleView, "scaleY", 0f, 1f)
+            val alpha = ObjectAnimator.ofFloat(bubbleView, "alpha", 0f, 1f)
 
-        AnimatorSet().apply {
-            playTogether(scaleX, scaleY, alpha)
-            duration = 300
-            interpolator = OvershootInterpolator(1.2f)
-            start()
+            AnimatorSet().apply {
+                playTogether(scaleX, scaleY, alpha)
+                duration = 300
+                interpolator = OvershootInterpolator(1.2f)
+                start()
+            }
+
+            // Scroll to top to ensure the new hint is visible
+            nestedScrollView.smoothScrollTo(0, 0)
         }
     }
 
