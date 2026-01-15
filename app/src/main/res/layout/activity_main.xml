@@ -35,6 +35,82 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
+            <!-- Hint Button (top right) -->
+            <LinearLayout
+                android:id="@+id/hintButtonContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/hintButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:strokeColor="#009688"
+                    app:strokeWidth="2dp"
+                    app:cardElevation="4dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="?"
+                        android:textColor="#009688"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:gravity="center"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:id="@+id/hintLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hint"
+                    android:textColor="#009688"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <!-- Hint Bubbles Container (positioned to left of button) -->
+            <LinearLayout
+                android:id="@+id/hintBubblesContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="end"
+                app:layout_constraintTop_toTopOf="@id/hintButtonContainer"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/hintButtonContainer"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone">
+
+                <!-- Hint 1 Bubble -->
+                <include
+                    android:id="@+id/hint1Bubble"
+                    layout="@layout/hint_bubble"
+                    android:visibility="gone"/>
+
+                <!-- Hint 2 Bubble -->
+                <include
+                    android:id="@+id/hint2Bubble"
+                    layout="@layout/hint_bubble"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"/>
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/hintBarrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="hintButtonContainer,hintBubblesContainer" />
+
             <!-- Question Card -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_question"
@@ -44,7 +120,7 @@
                 app:cardElevation="2dp"
                 app:cardCornerRadius="16dp"
                 app:cardBackgroundColor="@color/white"
-                app:layout_constraintTop_toBottomOf="@id/question_counter_text_view"
+                app:layout_constraintTop_toBottomOf="@id/hintBarrier"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
