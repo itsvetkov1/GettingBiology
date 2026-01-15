@@ -31,4 +31,19 @@ class QuestionTest {
         assertEquals("A", options[0])
         assertEquals("B", options[1]) 
     }
+
+    @Test
+    fun hasHints_returnsCorrectValue() {
+        val noHints = Question(1, "Text", "A;B", "A")
+        assertFalse(noHints.hasHints())
+
+        val oneHint = Question(1, "Text", "A;B", "A", hint1 = "Hint 1")
+        assertTrue(oneHint.hasHints())
+
+        val twoHints = Question(1, "Text", "A;B", "A", hint1 = "Hint 1", hint2 = "Hint 2")
+        assertTrue(twoHints.hasHints())
+
+        val emptyHint = Question(1, "Text", "A;B", "A", hint1 = "")
+        assertFalse(emptyHint.hasHints())
+    }
 }
