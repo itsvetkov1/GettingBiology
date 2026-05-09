@@ -15,7 +15,6 @@ import android.view.animation.OvershootInterpolator
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.room.Room
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.*
@@ -30,6 +29,7 @@ import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
 import com.google.android.gms.ads.AdView
+import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
 
@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
     private val AUTO_ADVANCE_DELAY = 1500L // 1.5 seconds
 
     // Database and Ads
+    private val databaseProvider: DatabaseProvider by inject()
     private lateinit var db: AppDatabase
     private var mInterstitialAd: InterstitialAd? = null
 
@@ -250,17 +251,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeDatabase(quizType: String, answeredQuestionIds: ArrayList<Int>) {
-        val dbName = when (quizType) {
-            "class8.db" -> "class8.db"
-            "class9.db" -> "class9.db"
-            "class10.db" -> "class10.db"
-            "db_entrance_exam.db" -> "db_entrance_exam.db"
-            else -> "dbquestions.db"
-        }
-        db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, dbName)
-            .createFromAsset(dbName)
-            .addMigrations(*AppDatabase.ALL_MIGRATIONS)
-            .build()
+        db = databaseProvider.createDatabase(quizType)
     }
 
     private fun fetchQuestions(answeredQuestionIds: ArrayList<Int>) {
