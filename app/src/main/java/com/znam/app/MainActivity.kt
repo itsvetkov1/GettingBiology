@@ -168,12 +168,13 @@ class MainActivity : AppCompatActivity() {
         MobileAds.initialize(this) {}
 
         mAdView = findViewById(R.id.adView)
+        mAdView.adUnitId = BuildConfig.ADMOB_BANNER_AD_UNIT_ID
         val adRequest = AdRequest.Builder().build()
         mAdView.loadAd(adRequest)
 
         InterstitialAd.load(
             this,
-            "ca-app-pub-3551035007628625/7595976845",
+            BuildConfig.ADMOB_INTERSTITIAL_AD_UNIT_ID,
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
