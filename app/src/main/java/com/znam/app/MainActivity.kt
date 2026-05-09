@@ -560,12 +560,6 @@ class MainActivity : AppCompatActivity() {
         // Stop the timer
         stopTimer()
 
-        // Populate QuizResultsHolder with the current quiz results
-        QuizResultsHolder.score = score
-        QuizResultsHolder.questions = questions
-        QuizResultsHolder.userAnswers = ArrayList(userAnswers)
-        QuizResultsHolder.elapsedTimeInSeconds = getElapsedTimeInSeconds()
-
         // Navigate to ResultActivity
         if (mInterstitialAd != null) {
             mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
@@ -581,7 +575,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun proceedToResultActivity() {
-        val intent = Intent(this, ResultActivity::class.java)
+        val result = QuizResult(
+            score = score,
+            questions = ArrayList(questions.take(15)),
+            userAnswers = ArrayList(userAnswers.take(15)),
+            elapsedTimeInSeconds = getElapsedTimeInSeconds()
+        )
+        val intent = Intent(this, ResultActivity::class.java).apply {
+            putExtra(ResultActivity.EXTRA_QUIZ_RESULT, result)
+        }
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
