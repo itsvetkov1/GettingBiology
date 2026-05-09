@@ -259,7 +259,7 @@ class MainActivity : AppCompatActivity() {
         }
         db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, dbName)
             .createFromAsset(dbName)
-            .fallbackToDestructiveMigration()
+            .addMigrations(*AppDatabase.ALL_MIGRATIONS)
             .build()
     }
 
