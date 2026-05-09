@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.znam.app.data.QuizSession
+import com.znam.app.data.StatsDao
 
 /**
  * Sealed class representing possible quiz events emitted as one-shots.
@@ -121,7 +123,8 @@ data class QuizUiState(
  */
 class QuizViewModel(
     application: Application,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val statsDao: StatsDao? = null
 ) : AndroidViewModel(application) {
 
     companion object {
@@ -148,6 +151,7 @@ class QuizViewModel(
     private var timerJob: Job? = null
     private var autoAdvanceJob: Job? = null
     private var db: AppDatabase? = null
+    private var totalHintsUsed: Int = 0
 
     private val sharedPrefs by lazy {
         getApplication<Application>().getSharedPreferences(PREFS_NAME, 0)
@@ -293,6 +297,9 @@ class QuizViewModel(
             else -> currentHints
         }
 
+        if (newHintState.hintsShown > currentHints.hintsShown) {
+            totalHintsUsed++
+        }
         _uiState.update { it.copy(hintState = newHintState) }
     }
 
@@ -377,14 +384,33 @@ class QuizViewModel(
     private fun finishQuiz() {
         stopTimer()
 
+        val state = _uiState.value
         val results = QuizResults(
-            score = _uiState.value.score,
-            questions = questions.take(_uiState.value.totalQuestions),
+            score = state.score,
+            questions = questions.take(state.totalQuestions),
             userAnswers = ArrayList(userAnswers),
-            elapsedTimeSeconds = _uiState.value.elapsedSeconds
+            elapsedTimeSeconds = state.elapsedSeconds
         )
 
         _uiState.update { it.copy(isQuizFinished = true) }
+
+        // Persist quiz session to stats database
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                statsDao?.insertSession(
+                    QuizSession(
+                        quizType = state.quizType,
+                        score = state.score,
+                        totalQuestions = state.totalQuestions,
+                        elapsedTimeSeconds = state.elapsedSeconds,
+                        hintsUsed = totalHintsUsed,
+                        timestamp = System.currentTimeMillis()
+                    )
+                )
+            } catch (_: Exception) {
+                // Stats persistence is best-effort; don't crash the quiz flow
+            }
+        }
 
         // Emit event — the UI layer decides whether to show an ad first
         _events.value = QuizEvent.ShowInterstitialAd(results)

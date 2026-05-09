@@ -50,22 +50,19 @@ data class StatsUiState(
  * history from the StatsDao. Stateless — just reads and exposes.
  */
 class StatsViewModel(
-    application: Application
+    application: Application,
+    private val statsDao: StatsDao
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(StatsUiState())
     val uiState: StateFlow<StatsUiState> = _uiState.asStateFlow()
 
-    // Injected via Koin in the real app; placeholder direct access for now
-    private var statsDao: StatsDao? = null
-
-    fun initialize(dao: StatsDao) {
-        statsDao = dao
+    init {
         loadStats()
     }
 
     private fun loadStats() {
-        val dao = statsDao ?: return
+        val dao = statsDao
         viewModelScope.launch {
             try {
                 val weekAgoMillis = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000L)
