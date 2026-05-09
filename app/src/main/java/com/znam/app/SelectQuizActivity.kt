@@ -25,7 +25,7 @@ class SelectQuizActivity : AppCompatActivity() {
     }
 
     private fun startQuiz(databaseName: String) {
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, ComposeQuizActivity::class.java).apply {
             putExtra("QUIZ_TYPE", databaseName)
         }
         // Save quiz type to SharedPreferences
@@ -37,5 +37,4 @@ class SelectQuizActivity : AppCompatActivity() {
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
-
 }

@@ -36,6 +36,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".SelectQuizActivity" />
+        <activity android:name=".ComposeQuizActivity" />
+        <activity android:name=".ComposeStatsActivity" />
     </application>
 
 </manifest>
