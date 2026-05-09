@@ -6,7 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
+import com.znam.app.ui.theme.ZnamTheme
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
@@ -43,7 +43,7 @@ class ComposeQuizActivity : ComponentActivity() {
         quizViewModel.initialize(quizType)
 
         setContent {
-            MaterialTheme {
+            ZnamTheme {
                 QuizScreen(
                     viewModel = quizViewModel,
                     onNavigateToResults = { results ->

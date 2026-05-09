@@ -3,7 +3,7 @@ package com.znam.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.MaterialTheme
+import com.znam.app.ui.theme.ZnamTheme
 import com.znam.app.ui.StatsScreen
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -19,7 +19,7 @@ class ComposeStatsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            MaterialTheme {
+            ZnamTheme {
                 StatsScreen(
                     viewModel = statsViewModel,
                     onNavigateBack = { finish() }
