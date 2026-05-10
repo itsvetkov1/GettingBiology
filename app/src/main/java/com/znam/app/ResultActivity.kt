@@ -25,7 +25,6 @@ class ResultActivity : AppCompatActivity() {
         setContentView(R.layout.activity_result)
 
         // Enable edge-to-edge display and handle system window insets
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 
         val quizResult = readQuizResult() ?: run {
             Log.e("QuizDebug", "Missing quiz result extra")
@@ -78,7 +77,7 @@ class ResultActivity : AppCompatActivity() {
 
 
         findViewById<Button>(R.id.restart_quiz_button).setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, SelectQuizActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish() // Finish ResultActivity to remove it from the back stack
         }
