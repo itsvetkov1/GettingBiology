@@ -3,15 +3,8 @@
     android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <!-- Layer 1: DNA Background -->
-    <ImageView
-        android:id="@+id/backgroundImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/welcome_animation2" />
+    android:layout_height="match_parent"
+    android:background="@color/md_theme_light_primary">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/languageToggleButton"
@@ -22,13 +15,13 @@
         android:layout_margin="16dp"
         android:text="@string/language_toggle_to_en"
         android:contentDescription="@string/language_toggle_content_description"
-        android:textColor="@color/md_theme_light_primary"
-        app:backgroundTint="@color/white_90_opacity"
+        android:textColor="@color/white"
+        app:backgroundTint="@android:color/transparent"
         app:cornerRadius="22dp"
-        app:strokeColor="@color/md_theme_light_primary"
+        app:strokeColor="@color/white"
         app:strokeWidth="1dp" />
 
-    <!-- Layer 3: Logo -->
+    <!-- Logo -->
     <ImageView
         android:id="@+id/logoImageView"
         android:layout_width="match_parent"
@@ -40,7 +33,7 @@
         android:alpha="0.8"
         android:src="@drawable/logo" />
 
-    <!-- Layer 4: Bottom Sheet Card -->
+    <!-- Bottom Sheet Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottomSheetCard"
         android:layout_width="match_parent"
