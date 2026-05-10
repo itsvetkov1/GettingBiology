@@ -2,6 +2,7 @@ package com.znam.app
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -32,6 +33,10 @@ import com.google.android.gms.ads.AdView
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.applyLocale(newBase))
+    }
 
     // Constants
     private val TAG = "MainActivity"
@@ -122,7 +127,7 @@ class MainActivity : AppCompatActivity() {
             fetchQuestions(answeredQuestionIds)
         } catch (e: Exception) {
             Log.e(TAG, "Error in onCreate", e)
-            Toast.makeText(this, "Error starting quiz: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.error_starting_quiz, e.message ?: ""), Toast.LENGTH_LONG).show()
             finish()
         }
     }
@@ -262,19 +267,19 @@ class MainActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     questions = filteredQuestions
                     if (questions.isNotEmpty()) {
-                        userAnswers = MutableList(questions.size) { "Въпросът е пропуснат." }
+                        userAnswers = MutableList(questions.size) { SKIPPED_ANSWER }
                         startTimer()
                         loadQuestion()
                     } else {
                         // Handle case where no questions are available
-                        Toast.makeText(this@MainActivity, "No questions available.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@MainActivity, getString(R.string.no_questions_available), Toast.LENGTH_LONG).show()
                         finish()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Log.e(TAG, "Error fetching questions", e)
-                    Toast.makeText(this@MainActivity, "Error loading questions: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.error_loading_questions, e.message ?: ""), Toast.LENGTH_LONG).show()
                     finish()
                 }
             }

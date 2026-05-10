@@ -50,7 +50,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import com.znam.app.R
 import com.znam.app.StatsUiState
 import com.znam.app.StatsViewModel
 import com.znam.app.ui.icons.AppIcons
@@ -92,7 +94,7 @@ fun StatsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Статистика",  // TODO: localize
+                        text = stringResource(R.string.stats_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -101,7 +103,7 @@ fun StatsScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Назад"
+                            contentDescription = stringResource(R.string.back_content_description)
                         )
                     }
                 },
@@ -119,7 +121,7 @@ fun StatsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Зареждане...",
+                    text = stringResource(R.string.loading),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -155,14 +157,14 @@ private fun EmptyStatsView(modifier: Modifier = Modifier) {
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Все още нямате завършени тестове",
+                text = stringResource(R.string.empty_stats_title),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Завършете поне един тест, за да видите статистиката си.",
+                text = stringResource(R.string.empty_stats_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
@@ -219,15 +221,15 @@ private fun StatsContent(
                 StatMiniCard(
                     icon = AppIcons.QuestionAnswer,
                     value = state.totalSessions.toString(),
-                    label = "Тестове",
+                    label = stringResource(R.string.tests_label),
                     tint = CategoryBlue,
                     backgroundColor = CategoryBlueBg,
                     modifier = Modifier.weight(1f)
                 )
                 StatMiniCard(
                     icon = AppIcons.Schedule,
-                    value = state.totalTimeFormatted,
-                    label = "Общо време",
+                    value = formatDuration(state.totalTimeSeconds),
+                    label = stringResource(R.string.total_time_label),
                     tint = TimeIndigo,
                     backgroundColor = TimeIndigoBg,
                     modifier = Modifier.weight(1f)
@@ -235,7 +237,7 @@ private fun StatsContent(
                 StatMiniCard(
                     icon = AppIcons.EmojiEvents,
                     value = state.bestScore.toString(),
-                    label = "Рекорд",
+                    label = stringResource(R.string.best_score_label),
                     tint = TrophyGold,
                     backgroundColor = TrophyGoldBg,
                     modifier = Modifier.weight(1f)
@@ -304,7 +306,7 @@ private fun AccuracyRing(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Обща точност",
+                text = stringResource(R.string.overall_accuracy_label),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -441,12 +443,15 @@ private fun WeekActivityCard(sessionsThisWeek: Int) {
             Spacer(modifier = Modifier.width(12.dp))
             Column {
                 Text(
-                    text = "Тази седмица",
+                    text = stringResource(R.string.this_week_label),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = "$sessionsThisWeek ${if (sessionsThisWeek == 1) "тест" else "теста"}",
+                    text = stringResource(
+                        if (sessionsThisWeek == 1) R.string.week_sessions_one else R.string.week_sessions_many,
+                        sessionsThisWeek
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -468,7 +473,7 @@ private fun CategoryBreakdownCard(categories: List<CategoryStats>) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "По категории",
+                text = stringResource(R.string.by_category_label),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -477,7 +482,7 @@ private fun CategoryBreakdownCard(categories: List<CategoryStats>) {
 
             if (categories.isEmpty()) {
                 Text(
-                    text = "Няма данни",
+                    text = stringResource(R.string.no_data),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -511,7 +516,7 @@ private fun CategoryRow(stats: CategoryStats, color: Color) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stats.displayName,
+                text = localizedCategoryName(stats.quizType),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onSurface
@@ -546,7 +551,7 @@ private fun RecentSessionsCard(sessions: List<QuizSession>) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Последни тестове",
+                text = stringResource(R.string.recent_tests_label),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface
@@ -555,7 +560,7 @@ private fun RecentSessionsCard(sessions: List<QuizSession>) {
 
             if (sessions.isEmpty()) {
                 Text(
-                    text = "Няма данни",
+                    text = stringResource(R.string.no_data),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -571,14 +576,7 @@ private fun RecentSessionsCard(sessions: List<QuizSession>) {
 
 @Composable
 private fun RecentSessionRow(session: QuizSession) {
-    val categoryName = when (session.quizType) {
-        "class8.db" -> "8 клас"
-        "class9.db" -> "9 клас"
-        "class10.db" -> "10 клас"
-        "db_entrance_exam.db" -> "Матура"
-        else -> session.quizType
-    }
-
+    val categoryName = localizedCategoryName(session.quizType)
     val timeAgo = formatTimeAgo(session.timestamp)
     val accuracy = session.accuracyPercent.toInt()
     val accuracyColor = when {
@@ -624,6 +622,29 @@ private fun RecentSessionRow(session: QuizSession) {
 
 // ── Helpers ────────────────────────────────────────────────────────────
 
+@Composable
+private fun localizedCategoryName(quizType: String): String {
+    return when (quizType) {
+        "class8.db" -> stringResource(R.string.category_class8_short)
+        "class9.db" -> stringResource(R.string.category_class9_short)
+        "class10.db" -> stringResource(R.string.category_class10_short)
+        "db_entrance_exam.db" -> stringResource(R.string.category_entrance_exam_short)
+        else -> quizType
+    }
+}
+
+@Composable
+private fun formatDuration(totalSeconds: Int): String {
+    val hours = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    return when {
+        hours > 0 -> stringResource(R.string.duration_hours_minutes, hours, minutes)
+        minutes > 0 -> stringResource(R.string.duration_minutes, minutes)
+        else -> stringResource(R.string.duration_seconds, totalSeconds)
+    }
+}
+
+@Composable
 private fun formatTimeAgo(timestampMillis: Long): String {
     val diffMs = System.currentTimeMillis() - timestampMillis
     val diffMinutes = diffMs / (1000 * 60)
@@ -631,10 +652,10 @@ private fun formatTimeAgo(timestampMillis: Long): String {
     val diffDays = diffHours / 24
 
     return when {
-        diffMinutes < 1 -> "Току-що"
-        diffMinutes < 60 -> "Преди ${diffMinutes}мин"
-        diffHours < 24 -> "Преди ${diffHours}ч"
-        diffDays < 7 -> "Преди ${diffDays}дни"
+        diffMinutes < 1 -> stringResource(R.string.time_just_now)
+        diffMinutes < 60 -> stringResource(R.string.time_minutes_ago, diffMinutes)
+        diffHours < 24 -> stringResource(R.string.time_hours_ago, diffHours)
+        diffDays < 7 -> stringResource(R.string.time_days_ago, diffDays)
         else -> {
             val formatter = java.text.SimpleDateFormat("dd.MM", java.util.Locale.getDefault())
             formatter.format(java.util.Date(timestampMillis))

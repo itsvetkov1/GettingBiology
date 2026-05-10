@@ -1,5 +1,6 @@
 package com.znam.app
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
@@ -19,6 +20,9 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
 
 class ResultActivity : AppCompatActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.applyLocale(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +46,7 @@ class ResultActivity : AppCompatActivity() {
         val timeString = String.format("%02d:%02d", minutes, seconds)
 
         findViewById<TextView>(R.id.result_text_view).apply {
-            val fullText = "Резултат: $score/15"
+            val fullText = getString(R.string.result_format, score, 15)
             val spannable = SpannableString(fullText)
             val tealColor = ContextCompat.getColor(this@ResultActivity, R.color.md_theme_light_primary)
             val scoreStart = fullText.indexOf("$score/15")
@@ -60,7 +64,7 @@ class ResultActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.time_text_view).apply {
-            text = "Време: $timeString"
+            text = getString(R.string.time_format, timeString)
             alpha = 0f
             animate().alpha(1f).setDuration(1000).start()
         }
@@ -69,7 +73,7 @@ class ResultActivity : AppCompatActivity() {
 
         questions.forEachIndexed { index, question ->
             if (index < 15) {
-                val userAnswer = userAnswers.getOrNull(index) ?: "Question Skipped"
+                val userAnswer = userAnswers.getOrNull(index) ?: SKIPPED_ANSWER
                 Log.d("QuizDebug", "Displaying Question ${index + 1}: Correct Answer: ${question.correctAnswer}, User Answer: $userAnswer")
                 questionsLayout.addView(createQuestionView(questionsLayout, question, userAnswer))
             }
@@ -104,16 +108,16 @@ class ResultActivity : AppCompatActivity() {
         val userAnswerTextView = view.findViewById<TextView>(R.id.tv_user_answer)
 
         questionTextView.text = question.questionText
-        correctAnswerTextView.text = "Правилен отговор: ${question.correctAnswer}"
+        correctAnswerTextView.text = getString(R.string.correct_answer_format, question.correctAnswer)
 
         val isCorrect = userAnswer?.trim()?.equals(question.correctAnswer.trim(), ignoreCase = true) == true
 
         if (!isCorrect) {
             userAnswerTextView.visibility = View.VISIBLE
-            userAnswerTextView.text = if (userAnswer == "Въпросът е пропуснат.") {
-                "Въпросът е пропуснат."
+            userAnswerTextView.text = if (userAnswer == SKIPPED_ANSWER) {
+                getString(R.string.skipped_answer)
             } else {
-                "Вашият отговор: $userAnswer"
+                getString(R.string.your_answer_format, userAnswer)
             }
         } else {
             userAnswerTextView.visibility = View.GONE

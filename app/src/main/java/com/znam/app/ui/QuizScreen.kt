@@ -49,7 +49,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import com.znam.app.R
 import com.znam.app.AnswerFeedback
 import com.znam.app.HintState
 import com.znam.app.QuizEvent
@@ -121,7 +123,7 @@ private fun LoadingScreen() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             // TODO: Replace with Lottie animation (Task 2.1)
             Text(
-                text = "Зареждане...",
+                text = stringResource(R.string.loading),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -245,7 +247,7 @@ private fun QuizHeader(
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = AppIcons.Lightbulb,
-                    contentDescription = "Hint",
+                    contentDescription = stringResource(R.string.hint_content_description),
                     tint = if (canShowHint) HintTeal else DefaultOptionBorder,
                     modifier = Modifier.size(24.dp)
                 )
@@ -456,7 +458,7 @@ private fun QuizBottomBar(
             // Score
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "0422043e0447043a0438",
+                    text = stringResource(R.string.score_label),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                 )
@@ -479,7 +481,7 @@ private fun QuizBottomBar(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "041204400435043c0435",
+                        text = stringResource(R.string.time_label),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                     )

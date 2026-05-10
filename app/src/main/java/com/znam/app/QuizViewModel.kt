@@ -216,7 +216,7 @@ class QuizViewModel(
 
                 // Initialize user answers list with placeholder
                 repeat(totalToShow) {
-                    userAnswers.add("Въпросът е пропуснат.")
+                    userAnswers.add(SKIPPED_ANSWER)
                 }
 
                 _uiState.update {

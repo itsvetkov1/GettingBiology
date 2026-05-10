@@ -1,5 +1,6 @@
 package com.znam.app
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -20,6 +21,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  * ad display + navigation to ResultActivity on completion.
  */
 class ComposeQuizActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.applyLocale(newBase))
+    }
+
 
     companion object {
         private const val TAG = "ComposeQuizActivity"
@@ -55,7 +60,7 @@ class ComposeQuizActivity : ComponentActivity() {
                     onNoQuestions = {
                         Toast.makeText(
                             this,
-                            "Няма налични въпроси.",
+                            getString(R.string.no_questions_available),
                             Toast.LENGTH_LONG
                         ).show()
                         finish()

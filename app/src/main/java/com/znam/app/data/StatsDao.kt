@@ -87,13 +87,4 @@ data class CategoryStats(
     val questions: Int,
     val correct: Int,
     val accuracy: Float
-) {
-    val displayName: String
-        get() = when (quizType) {
-            "class8.db" -> "8 клас"
-            "class9.db" -> "9 клас"
-            "class10.db" -> "10 клас"
-            "db_entrance_exam.db" -> "Матура"
-            else -> quizType
-        }
-}
+)

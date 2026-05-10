@@ -1,5 +1,6 @@
 package com.znam.app
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +13,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  * Stats load automatically via the ViewModel's init block.
  */
 class ComposeStatsActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.applyLocale(newBase))
+    }
 
     private val statsViewModel: StatsViewModel by viewModel()
 

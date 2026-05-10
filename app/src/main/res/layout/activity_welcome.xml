@@ -13,6 +13,21 @@
         android:scaleType="centerCrop"
         android:src="@drawable/welcome_animation2" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/languageToggleButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:text="@string/language_toggle_to_en"
+        android:contentDescription="@string/language_toggle_content_description"
+        android:textColor="@color/md_theme_light_primary"
+        app:backgroundTint="@color/white_90_opacity"
+        app:cornerRadius="22dp"
+        app:strokeColor="@color/md_theme_light_primary"
+        app:strokeWidth="1dp" />
+
     <!-- Layer 3: Logo -->
     <ImageView
         android:id="@+id/logoImageView"
@@ -48,7 +63,7 @@
                 android:id="@+id/headerTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Знам ли?"
+                android:text="@string/welcome_title"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/md_theme_light_primary"
@@ -58,7 +73,7 @@
                 android:id="@+id/subtitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Провери знанията си"
+                android:text="@string/welcome_subtitle"
                 android:textSize="16sp"
                 android:textColor="@color/gray_600"
                 android:layout_marginBottom="24dp" />
@@ -73,7 +88,7 @@
                     android:id="@+id/startQuizButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:text="Начни"
+                    android:text="@string/start_button"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"
@@ -87,7 +102,7 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:text="Статистика"
+                    android:text="@string/stats_title"
                     android:textSize="14sp"
                     android:textColor="@color/md_theme_light_primary"
                     app:cornerRadius="12dp"

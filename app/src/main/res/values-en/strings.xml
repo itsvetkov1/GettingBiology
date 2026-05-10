@@ -1,0 +1,68 @@
+<resources>
+    <string name="app_name">3HAM</string>
+    <string name="question_counter_format">%1$d/%2$d</string>
+    <string name="welcome_title">Do I know?</string>
+    <string name="welcome_subtitle">Test your knowledge</string>
+    <string name="start_button">Start</string>
+    <string name="stats_title">Statistics</string>
+    <string name="language_toggle_to_en">EN</string>
+    <string name="language_toggle_to_bg">BG</string>
+    <string name="language_toggle_content_description">Change language</string>
+
+    <string name="select_quiz_title">Choose a test</string>
+    <string name="category_class8">8th grade</string>
+    <string name="category_class9">9th grade</string>
+    <string name="category_class10">10th grade</string>
+    <string name="category_entrance_exam">Entrance exam</string>
+    <string name="category_class8_short">Grade 8</string>
+    <string name="category_class9_short">Grade 9</string>
+    <string name="category_class10_short">Grade 10</string>
+    <string name="category_entrance_exam_short">Matura</string>
+
+    <string name="loading">Loading...</string>
+    <string name="back_content_description">Back</string>
+    <string name="hint_label">Hint</string>
+    <string name="hint_content_description">Hint</string>
+    <string name="question_placeholder">Question text</string>
+    <string name="question_counter_placeholder">Question 1 of 15</string>
+    <string name="option_1_placeholder">Option 1</string>
+    <string name="option_2_placeholder">Option 2</string>
+    <string name="option_3_placeholder">Option 3</string>
+    <string name="option_4_placeholder">Option 4</string>
+    <string name="select_answer_prompt">*Please select an answer!</string>
+    <string name="next_button">Next</string>
+    <string name="score_label">Score</string>
+    <string name="time_label">Time</string>
+    <string name="no_questions_available">No questions available.</string>
+    <string name="error_starting_quiz">Error starting quiz: %1$s</string>
+    <string name="error_loading_questions">Error loading questions: %1$s</string>
+
+    <string name="empty_stats_title">You do not have completed tests yet</string>
+    <string name="empty_stats_subtitle">Complete at least one test to see your statistics.</string>
+    <string name="tests_label">Tests</string>
+    <string name="total_time_label">Total time</string>
+    <string name="best_score_label">Best</string>
+    <string name="overall_accuracy_label">Overall accuracy</string>
+    <string name="this_week_label">This week</string>
+    <string name="week_sessions_one">%1$d test</string>
+    <string name="week_sessions_many">%1$d tests</string>
+    <string name="by_category_label">By category</string>
+    <string name="no_data">No data</string>
+    <string name="recent_tests_label">Recent tests</string>
+    <string name="time_just_now">Just now</string>
+    <string name="time_minutes_ago">%1$d min ago</string>
+    <string name="time_hours_ago">%1$d h ago</string>
+    <string name="time_days_ago">%1$d days ago</string>
+    <string name="duration_hours_minutes">%1$d h %2$d min</string>
+    <string name="duration_minutes">%1$d min</string>
+    <string name="duration_seconds">%1$d sec</string>
+
+    <string name="result_format">Result: %1$d/%2$d</string>
+    <string name="result_placeholder">Result: 0/15</string>
+    <string name="time_format">Time: %1$s</string>
+    <string name="time_placeholder">Time: 00:00</string>
+    <string name="correct_answer_format">Correct answer: %1$s</string>
+    <string name="skipped_answer">Question skipped.</string>
+    <string name="your_answer_format">Your answer: %1$s</string>
+    <string name="new_quiz_button">New test</string>
+</resources>

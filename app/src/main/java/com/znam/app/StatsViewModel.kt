@@ -28,17 +28,6 @@ data class StatsUiState(
     val recentSessions: List<QuizSession> = emptyList(),
     val sessionsThisWeek: Int = 0
 ) {
-    val totalTimeFormatted: String
-        get() {
-            val hours = totalTimeSeconds / 3600
-            val minutes = (totalTimeSeconds % 3600) / 60
-            return when {
-                hours > 0 -> "${hours}ч ${minutes}мин"
-                minutes > 0 -> "${minutes}мин"
-                else -> "${totalTimeSeconds}сек"
-            }
-        }
-
     val hasData: Boolean
         get() = totalSessions > 0
 }
