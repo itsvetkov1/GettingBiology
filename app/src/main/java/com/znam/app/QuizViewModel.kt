@@ -179,7 +179,7 @@ class QuizViewModel(
 
         viewModelScope.launch {
             try {
-                val loadedQuestions = withContext(Dispatchers.IO) {
+                var loadedQuestions = withContext(Dispatchers.IO) {
                     val dbName = resolveDbName(quizType)
                     db = Room.databaseBuilder(
                         getApplication(),
@@ -191,7 +191,19 @@ class QuizViewModel(
                         .build()
 
                     val allQuestions = db!!.questionDao().getAllQuestions()
-                    allQuestions.filterNot { it.id in answeredQuestionIds }
+                    val filtered = allQuestions.filterNot { it.id in answeredQuestionIds }
+                    if (filtered.isEmpty() && allQuestions.isNotEmpty()) {
+                        // All questions exhausted - auto-reset pool for fresh session
+                        answeredQuestionIds.clear()
+                        allQuestions.shuffled()
+                    } else {
+                        filtered
+                    }
+                }
+
+                // Clear saved progress if we just reset
+                if (answeredQuestionIds.isEmpty()) {
+                    sharedPrefs.edit().remove(KEY_ANSWERED_IDS).apply()
                 }
 
                 if (loadedQuestions.isEmpty()) {
