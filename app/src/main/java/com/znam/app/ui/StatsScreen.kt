@@ -20,14 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.EmojiEvents
-import androidx.compose.material.icons.outlined.QuestionAnswer
-import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material.icons.outlined.School
-import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -60,6 +52,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.znam.app.StatsUiState
 import com.znam.app.StatsViewModel
+import com.znam.app.ui.icons.AppIcons
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import com.znam.app.data.CategoryStats
 import com.znam.app.data.QuizSession
 import kotlinx.coroutines.delay
@@ -152,7 +147,7 @@ private fun EmptyStatsView(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(32.dp)
         ) {
             Icon(
-                imageVector = Icons.Outlined.School,
+                imageVector = AppIcons.School,
                 contentDescription = null,
                 modifier = Modifier.size(64.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
@@ -220,7 +215,7 @@ private fun StatsContent(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 StatMiniCard(
-                    icon = Icons.Outlined.QuestionAnswer,
+                    icon = AppIcons.QuestionAnswer,
                     value = state.totalSessions.toString(),
                     label = "Тестове",
                     tint = CategoryBlue,
@@ -228,7 +223,7 @@ private fun StatsContent(
                     modifier = Modifier.weight(1f)
                 )
                 StatMiniCard(
-                    icon = Icons.Outlined.Schedule,
+                    icon = AppIcons.Schedule,
                     value = state.totalTimeFormatted,
                     label = "Общо време",
                     tint = TimeIndigo,
@@ -236,7 +231,7 @@ private fun StatsContent(
                     modifier = Modifier.weight(1f)
                 )
                 StatMiniCard(
-                    icon = Icons.Outlined.EmojiEvents,
+                    icon = AppIcons.EmojiEvents,
                     value = state.bestScore.toString(),
                     label = "Рекорд",
                     tint = TrophyGold,
@@ -436,7 +431,7 @@ private fun WeekActivityCard(sessionsThisWeek: Int) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Outlined.TrendingUp,
+                imageVector = AppIcons.TrendingUp,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(32.dp)
@@ -597,7 +592,7 @@ private fun RecentSessionRow(session: QuizSession) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                imageVector = Icons.Outlined.CheckCircle,
+                imageVector = AppIcons.CheckCircle,
                 contentDescription = null,
                 tint = accuracyColor,
                 modifier = Modifier.size(18.dp)

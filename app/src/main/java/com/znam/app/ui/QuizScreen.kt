@@ -26,9 +26,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Lightbulb
-import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,6 +54,7 @@ import com.znam.app.HintState
 import com.znam.app.QuizEvent
 import com.znam.app.QuizUiState
 import com.znam.app.QuizViewModel
+import com.znam.app.ui.icons.AppIcons
 
 // ── Color constants ─────────────────────────────────────────────────────
 
@@ -245,7 +243,7 @@ private fun QuizHeader(
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
-                    imageVector = Icons.Outlined.Lightbulb,
+                    imageVector = AppIcons.Lightbulb,
                     contentDescription = "Hint",
                     tint = if (canShowHint) HintTeal else DefaultOptionBorder,
                     modifier = Modifier.size(24.dp)
@@ -291,7 +289,7 @@ private fun HintBubble(text: String, index: Int) {
             verticalAlignment = Alignment.Top
         ) {
             Icon(
-                imageVector = Icons.Outlined.Lightbulb,
+                imageVector = AppIcons.Lightbulb,
                 contentDescription = null,
                 tint = HintTeal,
                 modifier = Modifier.size(18.dp)
@@ -472,7 +470,7 @@ private fun QuizBottomBar(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Outlined.Timer,
+                        imageVector = AppIcons.Timer,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                         modifier = Modifier.size(14.dp)
