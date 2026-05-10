@@ -456,7 +456,7 @@ private fun QuizBottomBar(
             // Score
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "Score",  // TODO: localize (Task 3.1)
+                    text = "0422043e0447043a0438",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                 )
@@ -479,7 +479,7 @@ private fun QuizBottomBar(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Time",  // TODO: localize (Task 3.1)
+                        text = "041204400435043c0435",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                     )
