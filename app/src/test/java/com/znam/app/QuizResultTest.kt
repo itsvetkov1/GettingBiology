@@ -3,14 +3,21 @@ package com.znam.app
 import android.os.Parcel
 import android.os.Parcelable
 import org.junit.Assert.assertEquals
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.koin.core.context.stopKoin
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33])
 class QuizResultTest {
+
+    @After
+    fun tearDown() {
+        stopKoin()
+    }
     @Test
     fun parcelableRoundTrip_preservesQuizResultData() {
         val result = QuizResult(

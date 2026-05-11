@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
@@ -57,8 +58,10 @@ import com.znam.app.HintState
 import com.znam.app.QuizEvent
 import com.znam.app.QuizUiState
 import com.znam.app.QuizViewModel
+import com.znam.app.Question
 import com.znam.app.ui.icons.AppIcons
 
+// Quiz-specific semantic colors — candidates for theme extraction in future Material3 migration
 // ── Color constants ─────────────────────────────────────────────────────
 
 private val CorrectGreen = Color(0xFF2E7D32)
@@ -495,4 +498,94 @@ private fun QuizBottomBar(
             }
         }
     }
+}
+
+
+// ── Previews ────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true)
+@Composable
+private fun QuizScreenLoadingPreview() {
+    LoadingScreen()
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun QuizScreenQuestionPreview() {
+    QuizContent(
+        state = previewQuizState(),
+        onOptionSelected = {},
+        onHintRequested = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun QuizScreenCorrectAnswerPreview() {
+    QuizContent(
+        state = previewQuizState(
+            answerFeedback = AnswerFeedback(
+                selectedOption = 0,
+                correctOption = 0,
+                isCorrect = true
+            ),
+            score = 1
+        ),
+        onOptionSelected = {},
+        onHintRequested = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun QuizScreenIncorrectAnswerWithHintsPreview() {
+    QuizContent(
+        state = previewQuizState(
+            answerFeedback = AnswerFeedback(
+                selectedOption = 1,
+                correctOption = 0,
+                isCorrect = false
+            ),
+            hintState = HintState(
+                hint1Text = "Живите организми са изградени от клетки.",
+                hint2Text = "Търси основната структурна единица.",
+                hint1Visible = true,
+                hint2Visible = true,
+                canShowMore = false
+            )
+        ),
+        onOptionSelected = {},
+        onHintRequested = {}
+    )
+}
+
+private fun previewQuizState(
+    answerFeedback: AnswerFeedback? = null,
+    score: Int = 0,
+    hintState: HintState = HintState(
+        hint1Text = "Живите организми са изградени от клетки.",
+        hint1Visible = false,
+        canShowMore = true
+    )
+): QuizUiState {
+    val question = Question(
+        id = 1,
+        questionText = "Коя е основната структурна и функционална единица на живите организми?",
+        options = "Клетка;Тъкан;Орган;Система",
+        correctAnswer = "Клетка",
+        hint1 = "Живите организми са изградени от клетки.",
+        hint2 = "Търси основната структурна единица."
+    )
+    return QuizUiState(
+        isLoading = false,
+        quizType = "class8.db",
+        currentQuestionIndex = 0,
+        totalQuestions = 15,
+        question = question,
+        parsedOptions = question.getParsedOptions(),
+        score = score,
+        elapsedSeconds = 73,
+        hintState = hintState,
+        answerFeedback = answerFeedback
+    )
 }

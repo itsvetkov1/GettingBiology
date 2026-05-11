@@ -31,7 +31,8 @@
         android:adjustViewBounds="true"
         android:elevation="8dp"
         android:alpha="0.8"
-        android:src="@drawable/logo" />
+        android:src="@drawable/logo"
+        android:contentDescription="@string/app_logo_description" />
 
     <!-- Bottom Sheet Card -->
     <com.google.android.material.card.MaterialCardView

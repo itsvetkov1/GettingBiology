@@ -24,22 +24,22 @@ def releaseBannerAdUnitId = localProperty('ADMOB_BANNER_AD_UNIT_ID', 'ca-app-pub
 def releaseInterstitialAdUnitId = localProperty('ADMOB_INTERSTITIAL_AD_UNIT_ID', 'ca-app-pub-3551035007628625/7595976845')
 
 android {
-    namespace 'com.znam.app'
-    compileSdk 35
+    namespace = 'com.znam.app'
+    compileSdk = 35
 
     buildFeatures {
-        buildConfig true
-        compose true
+        buildConfig = true
+        compose = true
     }
 
     defaultConfig {
         applicationId "com.znam.app"
-        minSdk 28
-        targetSdk 35
-        versionCode 5
-        versionName "5"
+        minSdk = 28
+        targetSdk = 35
+        versionCode = 5
+        versionName = "5"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -50,8 +50,8 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled = true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [ADMOB_APPLICATION_ID: debugAdMobApplicationId]
             buildConfigField 'String', 'ADMOB_BANNER_AD_UNIT_ID', "\"${debugBannerAdUnitId}\""
@@ -59,13 +59,12 @@ android {
         }
 
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled = true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [ADMOB_APPLICATION_ID: releaseAdMobApplicationId]
             buildConfigField 'String', 'ADMOB_BANNER_AD_UNIT_ID', "\"${releaseBannerAdUnitId}\""
             buildConfigField 'String', 'ADMOB_INTERSTITIAL_AD_UNIT_ID', "\"${releaseInterstitialAdUnitId}\""
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -82,6 +81,12 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
         }
     }
 }

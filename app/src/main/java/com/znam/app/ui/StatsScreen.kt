@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
@@ -661,4 +662,53 @@ private fun formatTimeAgo(timestampMillis: Long): String {
             formatter.format(java.util.Date(timestampMillis))
         }
     }
+}
+
+
+// ── Previews ────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true)
+@Composable
+private fun StatsLoadingPreview() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.loading),
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun StatsEmptyPreview() {
+    EmptyStatsView()
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun StatsPopulatedPreview() {
+    StatsContent(
+        state = StatsUiState(
+            isLoading = false,
+            totalSessions = 8,
+            totalQuestionsAnswered = 120,
+            totalCorrectAnswers = 93,
+            overallAccuracy = 77.5f,
+            totalTimeSeconds = 1640,
+            bestScore = 14,
+            bestAccuracy = 93.3f,
+            categoryStats = listOf(
+                CategoryStats("class8.db", sessions = 3, questions = 45, correct = 39, accuracy = 86.6f),
+                CategoryStats("class9.db", sessions = 5, questions = 75, correct = 54, accuracy = 72f)
+            ),
+            recentSessions = listOf(
+                QuizSession(quizType = "class8.db", score = 13, totalQuestions = 15, elapsedTimeSeconds = 210),
+                QuizSession(quizType = "class9.db", score = 11, totalQuestions = 15, elapsedTimeSeconds = 240)
+            ),
+            sessionsThisWeek = 4
+        )
+    )
 }

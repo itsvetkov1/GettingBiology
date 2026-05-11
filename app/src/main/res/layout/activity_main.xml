@@ -94,12 +94,16 @@
                 <include
                     android:id="@+id/hint1Bubble"
                     layout="@layout/hint_bubble"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:visibility="gone"/>
 
                 <!-- Hint 2 Bubble -->
                 <include
                     android:id="@+id/hint2Bubble"
                     layout="@layout/hint_bubble"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:visibility="gone"/>
             </LinearLayout>

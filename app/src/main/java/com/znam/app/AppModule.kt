@@ -40,7 +40,8 @@ val appModule = module {
         QuizViewModel(
             application = androidContext() as android.app.Application,
             savedStateHandle = get(),
-            statsDao = get()
+            statsDao = get(),
+            databaseProvider = get()
         )
     }
 }

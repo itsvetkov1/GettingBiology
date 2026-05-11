@@ -16,6 +16,7 @@
         android:adjustViewBounds="true"
         android:alpha="0.8"
         android:src="@drawable/logo"
+        android:contentDescription="@string/app_logo_description"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

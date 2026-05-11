@@ -39,6 +39,7 @@ class ResultActivity : AppCompatActivity() {
         val questions = quizResult.questions
         val userAnswers = quizResult.userAnswers
         val elapsedTimeInSeconds = quizResult.elapsedTimeInSeconds
+        val totalQuestions = questions.size.coerceAtMost(QuizViewModel.MAX_QUESTIONS_PER_SESSION)
 
         // Format the elapsed time
         val minutes = elapsedTimeInSeconds / 60
@@ -46,10 +47,10 @@ class ResultActivity : AppCompatActivity() {
         val timeString = String.format("%02d:%02d", minutes, seconds)
 
         findViewById<TextView>(R.id.result_text_view).apply {
-            val fullText = getString(R.string.result_format, score, 15)
+            val fullText = getString(R.string.result_format, score, totalQuestions)
             val spannable = SpannableString(fullText)
             val tealColor = ContextCompat.getColor(this@ResultActivity, R.color.md_theme_light_primary)
-            val scoreStart = fullText.indexOf("$score/15")
+            val scoreStart = fullText.indexOf("$score/$totalQuestions")
             if (scoreStart != -1) {
                 spannable.setSpan(
                     ForegroundColorSpan(tealColor),
@@ -72,7 +73,7 @@ class ResultActivity : AppCompatActivity() {
         val questionsLayout = findViewById<LinearLayout>(R.id.questions_layout)
 
         questions.forEachIndexed { index, question ->
-            if (index < 15) {
+            if (index < totalQuestions) {
                 val userAnswer = userAnswers.getOrNull(index) ?: SKIPPED_ANSWER
                 Log.d("QuizDebug", "Displaying Question ${index + 1}: Correct Answer: ${question.correctAnswer}, User Answer: $userAnswer")
                 questionsLayout.addView(createQuestionView(questionsLayout, question, userAnswer))

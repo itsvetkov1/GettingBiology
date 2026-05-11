@@ -1,10 +1,10 @@
 package com.znam.app
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.room.Room
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -124,7 +124,8 @@ data class QuizUiState(
 class QuizViewModel(
     application: Application,
     private val savedStateHandle: SavedStateHandle,
-    private val statsDao: StatsDao? = null
+    private val statsDao: StatsDao? = null,
+    private val databaseProvider: DatabaseProvider = DatabaseProvider(application)
 ) : AndroidViewModel(application) {
 
     companion object {
@@ -179,18 +180,11 @@ class QuizViewModel(
 
         viewModelScope.launch {
             try {
-                var loadedQuestions = withContext(Dispatchers.IO) {
-                    val dbName = resolveDbName(quizType)
-                    db = Room.databaseBuilder(
-                        getApplication(),
-                        AppDatabase::class.java,
-                        dbName
-                    )
-                        .createFromAsset(dbName)
-                        .fallbackToDestructiveMigration()  // TODO: replace with proper migration (Task 1.4)
-                        .build()
+                val loadedQuestions = withContext(Dispatchers.IO) {
+                    val database = databaseProvider.createDatabase(quizType)
+                    db = database
 
-                    val allQuestions = db!!.questionDao().getAllQuestions()
+                    val allQuestions = database.questionDao().getAllQuestions()
                     val filtered = allQuestions.filterNot { it.id in answeredQuestionIds }
                     if (filtered.isEmpty() && allQuestions.isNotEmpty()) {
                         // All questions exhausted - auto-reset pool for fresh session
@@ -231,7 +225,7 @@ class QuizViewModel(
 
                 startTimer()
             } catch (e: Exception) {
-                // TODO: expose error state to UI
+                Log.e("QuizViewModel", "Failed to load questions", e)
                 _events.value = QuizEvent.NoQuestionsAvailable
             }
         }
@@ -419,8 +413,8 @@ class QuizViewModel(
                         timestamp = System.currentTimeMillis()
                     )
                 )
-            } catch (_: Exception) {
-                // Stats persistence is best-effort; don't crash the quiz flow
+            } catch (e: Exception) {
+                Log.w("QuizViewModel", "Stats persistence failed (best-effort)", e)
             }
         }
 

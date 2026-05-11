@@ -6,13 +6,20 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.material.card.MaterialCardView
 import org.junit.Assert.*
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
+import org.koin.core.context.stopKoin
 
 @RunWith(AndroidJUnit4::class)
 @Config(sdk = [33])
 class MainActivityTest {
+
+    @After
+    fun tearDown() {
+        stopKoin()
+    }
 
     @Test
     fun testHintButtonFlow() {

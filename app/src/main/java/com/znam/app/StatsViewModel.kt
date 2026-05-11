@@ -1,6 +1,7 @@
 package com.znam.app
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.znam.app.data.CategoryStats
@@ -72,6 +73,7 @@ class StatsViewModel(
                     )
                 }
             } catch (e: Exception) {
+                Log.e("StatsViewModel", "Failed to load stats", e)
                 _uiState.update { it.copy(isLoading = false) }
             }
         }

@@ -7,6 +7,8 @@
     <string name="stats_title">Статистика</string>
     <string name="language_toggle_to_en">EN</string>
     <string name="language_toggle_to_bg">BG</string>
+    <string name="app_logo_description">Лого на приложението</string>
+    <string name="hint_icon_description">Подсказка</string>
     <string name="language_toggle_content_description">Смени езика</string>
 
     <string name="select_quiz_title">Изберете тест</string>
