@@ -47,7 +47,8 @@ val appModule = module {
     viewModel {
         StatsViewModel(
             application = androidContext() as android.app.Application,
-            statsDao = get()
+            statsDao = get(),
+            gamificationDao = get()
         )
     }
     viewModel {

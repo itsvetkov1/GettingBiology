@@ -61,9 +61,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import com.znam.app.data.CategoryStats
 import com.znam.app.data.QuizSession
+import com.znam.app.data.Achievement
+import com.znam.app.data.Achievements
+import com.znam.app.data.UserProfile
+import com.znam.app.GamificationManager
 import kotlinx.coroutines.delay
 
-// ── Color palette ──────────────────────────────────────────────────────
+//  Color palette 
 
 private val AccuracyGreen = Color(0xFF2E7D32)
 private val AccuracyGreenLight = Color(0xFFC8E6C9)
@@ -80,7 +84,7 @@ private val ChartColors = listOf(
     Color(0xFFE53935)   // Red
 )
 
-// ── Main Screen ────────────────────────────────────────────────────────
+//  Main Screen 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -138,7 +142,7 @@ fun StatsScreen(
     }
 }
 
-// ── Empty state ────────────────────────────────────────────────────────
+//  Empty state 
 
 @Composable
 private fun EmptyStatsView(modifier: Modifier = Modifier) {
@@ -174,7 +178,7 @@ private fun EmptyStatsView(modifier: Modifier = Modifier) {
     }
 }
 
-// ── Main content ───────────────────────────────────────────────────────
+//  Main content 
 
 @Composable
 private fun StatsContent(
@@ -196,7 +200,7 @@ private fun StatsContent(
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
-        // ── Accuracy ring ──────────────────────────────────────────
+        //  Accuracy ring 
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(tween(400)) + slideInVertically(tween(400)) { -40 }
@@ -210,7 +214,21 @@ private fun StatsContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ── Quick stats row ────────────────────────────────────────
+        //  Gamification section
+        if (state.userProfile != null) {
+            AnimatedVisibility(
+                visible = visible,
+                enter = fadeIn(tween(450, 50)) + slideInVertically(tween(400, 50)) { -35 }
+            ) {
+                GamificationOverviewCard(
+                    profile = state.userProfile!!,
+                    achievements = state.achievements
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        //  Quick stats row 
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(tween(500, 100)) + slideInVertically(tween(400, 100)) { -30 }
@@ -248,7 +266,7 @@ private fun StatsContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ── This week card ─────────────────────────────────────────
+        //  This week card 
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(tween(500, 200)) + slideInVertically(tween(400, 200)) { -30 }
@@ -258,7 +276,7 @@ private fun StatsContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ── Category breakdown ─────────────────────────────────────
+        //  Category breakdown 
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(tween(500, 300)) + slideInVertically(tween(400, 300)) { -30 }
@@ -268,7 +286,7 @@ private fun StatsContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ── Recent sessions ────────────────────────────────────────
+        //  Recent sessions 
         AnimatedVisibility(
             visible = visible,
             enter = fadeIn(tween(500, 400)) + slideInVertically(tween(400, 400)) { -30 }
@@ -280,7 +298,7 @@ private fun StatsContent(
     }
 }
 
-// ── Accuracy Ring ──────────────────────────────────────────────────────
+//  Accuracy Ring 
 
 @Composable
 private fun AccuracyRing(
@@ -372,7 +390,7 @@ private fun AccuracyRing(
     }
 }
 
-// ── Stat Mini Card ─────────────────────────────────────────────────────
+//  Stat Mini Card 
 
 @Composable
 private fun StatMiniCard(
@@ -419,7 +437,7 @@ private fun StatMiniCard(
     }
 }
 
-// ── Week Activity ──────────────────────────────────────────────────────
+//  Week Activity 
 
 @Composable
 private fun WeekActivityCard(sessionsThisWeek: Int) {
@@ -463,7 +481,7 @@ private fun WeekActivityCard(sessionsThisWeek: Int) {
     }
 }
 
-// ── Category Breakdown ─────────────────────────────────────────────────
+//  Category Breakdown 
 
 @Composable
 private fun CategoryBreakdownCard(categories: List<CategoryStats>) {
@@ -541,7 +559,7 @@ private fun CategoryRow(stats: CategoryStats, color: Color) {
     }
 }
 
-// ── Recent Sessions ────────────────────────────────────────────────────
+//  Recent Sessions 
 
 @Composable
 private fun RecentSessionsCard(sessions: List<QuizSession>) {
@@ -622,7 +640,186 @@ private fun RecentSessionRow(session: QuizSession) {
     }
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────
+
+
+//  Gamification Overview
+
+@Composable
+private fun GamificationOverviewCard(
+    profile: UserProfile,
+    achievements: List<Achievement>
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            // Level + XP header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Level badge
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .padding(2.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val progressColor = MaterialTheme.colorScheme.primary
+                    val trackColor = MaterialTheme.colorScheme.surfaceVariant
+                    val levelProgress = GamificationManager.levelProgress(profile.totalXp)
+
+                    Canvas(modifier = Modifier.size(52.dp)) {
+                        val strokeWidth = 4.dp.toPx()
+                        val arcSize = Size(size.width - strokeWidth, size.height - strokeWidth)
+                        val topLeft = Offset(strokeWidth / 2, strokeWidth / 2)
+                        drawArc(
+                            color = trackColor, startAngle = -90f, sweepAngle = 360f,
+                            useCenter = false, topLeft = topLeft, size = arcSize,
+                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                        )
+                        drawArc(
+                            color = progressColor, startAngle = -90f,
+                            sweepAngle = levelProgress * 360f,
+                            useCenter = false, topLeft = topLeft, size = arcSize,
+                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                        )
+                    }
+                    Text(
+                        text = "${profile.level}",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Level ${profile.level}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    val currentLevelXp = GamificationManager.xpForLevel(profile.level)
+                    val nextLevelXp = GamificationManager.xpForLevel(profile.level + 1)
+                    Text(
+                        text = "${profile.totalXp} XP  •  ${nextLevelXp - profile.totalXp} to next level",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                // Streak badge
+                if (profile.currentStreak > 0) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                        ),
+                        shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "🔥", fontSize = 16.sp)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "${profile.currentStreak}",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                            )
+                        }
+                    }
+                }
+            }
+
+            // XP progress bar
+            Spacer(modifier = Modifier.height(12.dp))
+            val currentLevelXp = GamificationManager.xpForLevel(profile.level)
+            val nextLevelXp = GamificationManager.xpForLevel(profile.level + 1)
+            val xpRange = nextLevelXp - currentLevelXp
+            val xpProgress = if (xpRange > 0) (profile.totalXp - currentLevelXp).toFloat() / xpRange else 0f
+
+            val animatedXpProgress by animateFloatAsState(
+                targetValue = xpProgress,
+                animationSpec = tween(durationMillis = 1000),
+                label = "xp_bar"
+            )
+
+            LinearProgressIndicator(
+                progress = { animatedXpProgress },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(8.dp),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
+
+            // Quick gamification stats
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                GamificationStat(value = "${profile.totalQuizzesCompleted}", label = "Quizzes")
+                GamificationStat(value = "${profile.longestStreak}", label = "Best Streak")
+                GamificationStat(value = "${profile.perfectScoreCount}", label = "Perfects")
+                GamificationStat(value = "${achievements.size}", label = "Badges")
+            }
+
+            // Recent achievements preview
+            if (achievements.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(
+                        text = "Recent Achievements: ",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    achievements.take(5).forEach { achievement ->
+                        val icon = Achievements.icons[achievement.achievementId] ?: "⭐"
+                        Text(
+                            text = "$icon ",
+                            fontSize = 18.sp
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun GamificationStat(value: String, label: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = value,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+//  Helpers 
 
 @Composable
 private fun localizedCategoryName(quizType: String): String {
@@ -666,7 +863,7 @@ private fun formatTimeAgo(timestampMillis: Long): String {
 }
 
 
-// ── Previews ────────────────────────────────────────────────────────────
+//  Previews 
 
 @Preview(showBackground = true)
 @Composable

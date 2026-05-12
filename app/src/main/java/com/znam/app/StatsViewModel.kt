@@ -4,9 +4,12 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.znam.app.data.Achievement
 import com.znam.app.data.CategoryStats
+import com.znam.app.data.GamificationDao
 import com.znam.app.data.QuizSession
 import com.znam.app.data.StatsDao
+import com.znam.app.data.UserProfile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +30,10 @@ data class StatsUiState(
     val bestAccuracy: Float = 0f,
     val categoryStats: List<CategoryStats> = emptyList(),
     val recentSessions: List<QuizSession> = emptyList(),
-    val sessionsThisWeek: Int = 0
+    val sessionsThisWeek: Int = 0,
+    // Gamification
+    val userProfile: UserProfile? = null,
+    val achievements: List<Achievement> = emptyList()
 ) {
     val hasData: Boolean
         get() = totalSessions > 0
@@ -36,12 +42,13 @@ data class StatsUiState(
 /**
  * ViewModel for the Statistics dashboard.
  *
- * Loads lifetime aggregates, per-category breakdowns, and recent session
- * history from the StatsDao. Stateless — just reads and exposes.
+ * Loads lifetime aggregates, per-category breakdowns, recent session
+ * history, and gamification data from the DAOs.
  */
 class StatsViewModel(
     application: Application,
-    private val statsDao: StatsDao
+    private val statsDao: StatsDao,
+    private val gamificationDao: GamificationDao? = null
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(StatsUiState())
@@ -52,24 +59,29 @@ class StatsViewModel(
     }
 
     private fun loadStats() {
-        val dao = statsDao
         viewModelScope.launch {
             try {
                 val weekAgoMillis = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000L)
 
+                // Load gamification data
+                val profile = try { gamificationDao?.ensureProfile() } catch (e: Exception) { null }
+                val achievements = try { gamificationDao?.getAllAchievements() ?: emptyList() } catch (e: Exception) { emptyList() }
+
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        totalSessions = dao.totalSessions(),
-                        totalQuestionsAnswered = dao.totalQuestionsAnswered(),
-                        totalCorrectAnswers = dao.totalCorrectAnswers(),
-                        overallAccuracy = dao.overallAccuracyPercent(),
-                        totalTimeSeconds = dao.totalTimeSeconds(),
-                        bestScore = dao.bestScore(),
-                        bestAccuracy = dao.bestAccuracyPercent(),
-                        categoryStats = dao.statsByCategory(),
-                        recentSessions = dao.recentSessions(20),
-                        sessionsThisWeek = dao.sessionsAfter(weekAgoMillis)
+                        totalSessions = statsDao.totalSessions(),
+                        totalQuestionsAnswered = statsDao.totalQuestionsAnswered(),
+                        totalCorrectAnswers = statsDao.totalCorrectAnswers(),
+                        overallAccuracy = statsDao.overallAccuracyPercent(),
+                        totalTimeSeconds = statsDao.totalTimeSeconds(),
+                        bestScore = statsDao.bestScore(),
+                        bestAccuracy = statsDao.bestAccuracyPercent(),
+                        categoryStats = statsDao.statsByCategory(),
+                        recentSessions = statsDao.recentSessions(20),
+                        sessionsThisWeek = statsDao.sessionsAfter(weekAgoMillis),
+                        userProfile = profile,
+                        achievements = achievements
                     )
                 }
             } catch (e: Exception) {
