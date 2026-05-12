@@ -5,17 +5,18 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// ── Light Colors ────────────────────────────────────────────────────────
-// Matches colors.xml md_theme_light_* values
-
+// ── Light Colors ──
 private val LightPrimary = Color(0xFF006874)
 private val LightOnPrimary = Color(0xFFFFFFFF)
 private val LightPrimaryContainer = Color(0xFF97F0FF)
@@ -74,9 +75,7 @@ private val LightColorScheme = lightColorScheme(
     inversePrimary = LightInversePrimary,
 )
 
-// ── Dark Colors ─────────────────────────────────────────────────────────
-// Matches colors.xml md_theme_dark_* values
-
+// ── Dark Colors ──
 private val DarkPrimary = Color(0xFF4FD8EB)
 private val DarkOnPrimary = Color(0xFF00363D)
 private val DarkPrimaryContainer = Color(0xFF004F58)
@@ -135,14 +134,24 @@ private val DarkColorScheme = darkColorScheme(
     inversePrimary = DarkInversePrimary,
 )
 
-// ── Theme Composable ────────────────────────────────────────────────────
+// ── Theme Composable ──
 
 @Composable
 fun ZnamTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val context = LocalContext.current
+    val colorScheme = when {
+        // Dynamic color on Android 12+ (API 31)
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (darkTheme) dynamicDarkColorScheme(context)
+            else dynamicLightColorScheme(context)
+        }
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
+    }
 
     // Update status bar color to match the theme
     val view = LocalView.current

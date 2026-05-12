@@ -62,6 +62,19 @@ import com.znam.app.QuizViewModel
 import com.znam.app.Question
 import com.znam.app.ui.icons.AppIcons
 
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+import nl.dionsegijn.konfetti.compose.KonfettiView
+import nl.dionsegijn.konfetti.core.Party
+import nl.dionsegijn.konfetti.core.Position
+import nl.dionsegijn.konfetti.core.emitter.Emitter
+import java.util.concurrent.TimeUnit
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+
 // Quiz-specific semantic colors — candidates for theme extraction in future Material3 migration
 // ── Color constants ─────────────────────────────────────────────────────
 
@@ -105,14 +118,43 @@ fun QuizScreen(
         }
     }
 
-    if (uiState.isLoading) {
-        LoadingScreen()
-    } else {
-        QuizContent(
-            state = uiState,
-            onOptionSelected = viewModel::selectAnswer,
-            onHintRequested = viewModel::requestHint
-        )
+    var showKonfetti by remember { mutableStateOf(false) }
+
+    // Trigger konfetti on perfect score navigation event
+    LaunchedEffect(event) {
+        when (val e = event) {
+            is QuizEvent.NavigateToResults -> {
+                if (e.results.score == e.results.questions.size) {
+                    showKonfetti = true
+                }
+            }
+            else -> {}
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (uiState.isLoading) {
+            LoadingScreen()
+        } else {
+            QuizContent(
+                state = uiState,
+                onOptionSelected = viewModel::selectAnswer,
+                onHintRequested = viewModel::requestHint
+            )
+        }
+
+        // Konfetti celebration for perfect score
+        if (showKonfetti) {
+            KonfettiView(
+                modifier = Modifier.fillMaxSize(),
+                parties = listOf(
+                    Party(
+                        emitter = Emitter(duration = 2, TimeUnit.SECONDS).perSecond(80),
+                        position = Position.Relative(0.5, 0.0)
+                    )
+                )
+            )
+        }
     }
 }
 
@@ -125,7 +167,15 @@ private fun LoadingScreen() {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // TODO: Replace with Lottie animation (Task 2.1)
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(R.raw.loading_dna)
+            )
+            LottieAnimation(
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.size(120.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.loading),
                 style = MaterialTheme.typography.titleMedium,

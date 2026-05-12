@@ -40,3 +40,15 @@
 -keepclassmembers class * {
     @androidx.room.ColumnInfo <fields>;
 }
+
+# Lottie
+-dontwarn com.airbnb.lottie.**
+-keep class com.airbnb.lottie.** { *; }
+
+# Konfetti
+-dontwarn nl.dionsegijn.konfetti.**
+-keep class nl.dionsegijn.konfetti.** { *; }
+
+# Coil
+-dontwarn coil.**
+-keep class coil.** { *; }

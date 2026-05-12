@@ -3,7 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.compose'
     id 'kotlin-parcelize'
-    id 'kotlin-kapt'
+    id 'com.google.devtools.ksp'
 }
 
 def localProperties = new Properties()
@@ -36,15 +36,13 @@ android {
         applicationId "com.znam.app"
         minSdk = 28
         targetSdk = 35
-        versionCode = 5
-        versionName = "5"
+        versionCode = 6
+        versionName = "6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
-            }
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas")
         }
     }
 
@@ -75,7 +73,6 @@ android {
 
     kotlinOptions {
         jvmTarget = '17'
-        freeCompilerArgs += ['-Xskip-metadata-version-check']
     }
 
     testOptions {
@@ -91,56 +88,48 @@ android {
     }
 }
 
-kapt {
-    javacOptions {
-        option("-J--add-opens=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED")
-        option("-J--add-opens=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED")
-        option("-J--add-opens=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED")
-        option("-J--add-opens=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED")
-        option("-J--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED")
-        option("-J--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED")
-        option("-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED")
-        option("-J--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED")
-        option("-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED")
-        option("-J--add-opens=jdk.compiler/com.sun.tools.javac.jvm=ALL-UNNAMED")
-    }
-}
-
 dependencies {
-
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
-    kapt 'com.github.bumptech.glide:compiler:4.16.0'
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    // Core Android
+    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
-    implementation 'com.google.android.gms:play-services-ads:25.2.0'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
 
-    implementation platform('androidx.compose:compose-bom:2025.01.00')
+    // Jetpack Compose (BOM)
+    implementation platform('androidx.compose:compose-bom:2025.05.00')
     implementation 'androidx.compose.material3:material3'
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-tooling-preview'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     implementation 'androidx.activity:activity-compose:1.10.1'
 
+    // Lottie for Compose animations
+    implementation 'com.airbnb.android:lottie-compose:6.6.4'
+
+    // Konfetti for celebrations
+    implementation 'nl.dionsegijn:konfetti-compose:2.0.5'
+
+    // Coil for image loading (Compose-native, replaces Glide)
+    implementation 'io.coil-kt:coil-compose:2.7.0'
+
+    // Room (KSP)
+    def room_version = "2.7.2"
+    implementation "androidx.room:room-runtime:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+
+    // Koin DI
     implementation 'io.insert-koin:koin-android:4.0.4'
+
+    // AdMob
+    implementation 'com.google.android.gms:play-services-ads:25.2.0'
+    implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.robolectric:robolectric:4.10.3'
-    testImplementation 'org.mockito:mockito-core:5.10.0'
-    testImplementation 'androidx.test:core:1.5.0'
-    testImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-
-    def room_version = "2.7.2"
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
-    // Kotlin users should also include the following
-    kapt "androidx.room:room-compiler:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
+    testImplementation 'org.robolectric:robolectric:4.14.1'
+    testImplementation 'org.mockito:mockito-core:5.15.2'
+    testImplementation 'androidx.test:core:1.6.1'
+    testImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
 }
