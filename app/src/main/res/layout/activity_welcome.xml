@@ -53,6 +53,13 @@
             android:paddingBottom="24dp"
             android:gravity="center_horizontal">
 
+            <!-- Gamification status (Compose) -->
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/welcome_gamification_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp" />
+
             <TextView
                 android:id="@+id/headerTextView"
                 android:layout_width="wrap_content"
@@ -87,6 +94,19 @@
                     android:textStyle="bold"
                     android:textColor="@color/white"
                     app:backgroundTint="@color/md_theme_light_primary"
+                    app:cornerRadius="12dp"
+                    app:elevation="2dp"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/dailyChallengeButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="⚡ Daily Challenge"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    app:backgroundTint="#E65100"
                     app:cornerRadius="12dp"
                     app:elevation="2dp"
                     android:layout_marginBottom="8dp" />
