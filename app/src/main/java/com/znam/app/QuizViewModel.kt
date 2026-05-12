@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.znam.app.data.QuizSession
 import com.znam.app.data.StatsDao
+import com.znam.app.data.GamificationDao
 
 /**
  * Sealed class representing possible quiz events emitted as one-shots.
@@ -125,7 +126,8 @@ class QuizViewModel(
     application: Application,
     private val savedStateHandle: SavedStateHandle,
     private val statsDao: StatsDao? = null,
-    private val databaseProvider: DatabaseProvider = DatabaseProvider(application)
+    private val databaseProvider: DatabaseProvider = DatabaseProvider(application),
+    private val gamificationManager: GamificationManager? = null
 ) : AndroidViewModel(application) {
 
     companion object {
@@ -136,7 +138,7 @@ class QuizViewModel(
         private const val KEY_LAST_QUIZ_TYPE = "LAST_QUIZ_TYPE"
     }
 
-    // ── State ───────────────────────────────────────────────────────────
+    //  State 
 
     private val _uiState = MutableStateFlow(QuizUiState())
     val uiState: StateFlow<QuizUiState> = _uiState.asStateFlow()
@@ -144,7 +146,14 @@ class QuizViewModel(
     private val _events = MutableStateFlow<QuizEvent?>(null)
     val events: StateFlow<QuizEvent?> = _events.asStateFlow()
 
-    // ── Internal ────────────────────────────────────────────────────────
+    private val _gamificationResult = MutableStateFlow<GamificationManager.GamificationResult?>(null)
+    val gamificationResult: StateFlow<GamificationManager.GamificationResult?> = _gamificationResult.asStateFlow()
+
+    fun consumeGamificationResult() {
+        _gamificationResult.value = null
+    }
+
+    //  Internal 
 
     private var questions: List<Question> = emptyList()
     private val userAnswers = mutableListOf<String>()
@@ -158,7 +167,7 @@ class QuizViewModel(
         getApplication<Application>().getSharedPreferences(PREFS_NAME, 0)
     }
 
-    // ── Public API ──────────────────────────────────────────────────────
+    //  Public API 
 
     /**
      * Initialize the quiz with a given type. Call once from the UI layer.
@@ -316,7 +325,7 @@ class QuizViewModel(
         _events.value = null
     }
 
-    // ── Internals ───────────────────────────────────────────────────────
+    //  Internals 
 
     private fun resolveDbName(quizType: String): String {
         return when (quizType) {
@@ -400,7 +409,7 @@ class QuizViewModel(
 
         _uiState.update { it.copy(isQuizFinished = true) }
 
-        // Persist quiz session to stats database
+        // Persist quiz session to stats database + process gamification
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 statsDao?.insertSession(
@@ -416,9 +425,24 @@ class QuizViewModel(
             } catch (e: Exception) {
                 Log.w("QuizViewModel", "Stats persistence failed (best-effort)", e)
             }
+
+            // Gamification: award XP, update streak, check achievements
+            try {
+                val result = gamificationManager?.processQuizCompletion(
+                    score = state.score,
+                    totalQuestions = state.totalQuestions,
+                    elapsedTimeSeconds = state.elapsedSeconds,
+                    hintsUsed = totalHintsUsed
+                )
+                if (result != null) {
+                    _gamificationResult.value = result
+                }
+            } catch (e: Exception) {
+                Log.w("QuizViewModel", "Gamification processing failed (best-effort)", e)
+            }
         }
 
-        // Emit event — the UI layer decides whether to show an ad first
+        // Emit event  the UI layer decides whether to show an ad first
         _events.value = QuizEvent.ShowInterstitialAd(results)
     }
 

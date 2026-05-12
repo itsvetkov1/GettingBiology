@@ -16,8 +16,11 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
+import com.znam.app.ui.QuizRewardSummary
+import com.znam.app.ui.theme.ZnamTheme
 
 class ResultActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
@@ -27,8 +30,6 @@ class ResultActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_result)
-
-        // Enable edge-to-edge display and handle system window insets
 
         val quizResult = readQuizResult() ?: run {
             Log.e("QuizDebug", "Missing quiz result extra")
@@ -70,6 +71,9 @@ class ResultActivity : AppCompatActivity() {
             animate().alpha(1f).setDuration(1000).start()
         }
 
+        // Gamification summary
+        setupGamificationView()
+
         val questionsLayout = findViewById<LinearLayout>(R.id.questions_layout)
 
         questions.forEachIndexed { index, question ->
@@ -80,11 +84,44 @@ class ResultActivity : AppCompatActivity() {
             }
         }
 
-
         findViewById<Button>(R.id.restart_quiz_button).setOnClickListener {
             startActivity(Intent(this, SelectQuizActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
-            finish() // Finish ResultActivity to remove it from the back stack
+            finish()
+        }
+    }
+
+    private fun setupGamificationView() {
+        val composeView = findViewById<ComposeView>(R.id.gamification_compose_view)
+        val xpEarned = intent.getIntExtra(EXTRA_XP_EARNED, -1)
+
+        if (xpEarned < 0) {
+            // No gamification data — hide the view
+            composeView.visibility = View.GONE
+            return
+        }
+
+        val newTotalXp = intent.getIntExtra(EXTRA_NEW_TOTAL_XP, 0)
+        val oldLevel = intent.getIntExtra(EXTRA_OLD_LEVEL, 1)
+        val newLevel = intent.getIntExtra(EXTRA_NEW_LEVEL, 1)
+        val leveledUp = intent.getBooleanExtra(EXTRA_LEVELED_UP, false)
+        val currentStreak = intent.getIntExtra(EXTRA_CURRENT_STREAK, 0)
+        val newAchievements = intent.getStringArrayExtra(EXTRA_NEW_ACHIEVEMENTS)?.toList() ?: emptyList()
+
+        val gamResult = GamificationManager.GamificationResult(
+            xpEarned = xpEarned,
+            newTotalXp = newTotalXp,
+            oldLevel = oldLevel,
+            newLevel = newLevel,
+            leveledUp = leveledUp,
+            currentStreak = currentStreak,
+            newAchievements = newAchievements
+        )
+
+        composeView.setContent {
+            ZnamTheme {
+                QuizRewardSummary(result = gamResult)
+            }
         }
     }
 
@@ -99,11 +136,18 @@ class ResultActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_QUIZ_RESULT = "com.znam.app.EXTRA_QUIZ_RESULT"
+        const val EXTRA_XP_EARNED = "com.znam.app.EXTRA_XP_EARNED"
+        const val EXTRA_NEW_TOTAL_XP = "com.znam.app.EXTRA_NEW_TOTAL_XP"
+        const val EXTRA_OLD_LEVEL = "com.znam.app.EXTRA_OLD_LEVEL"
+        const val EXTRA_NEW_LEVEL = "com.znam.app.EXTRA_NEW_LEVEL"
+        const val EXTRA_LEVELED_UP = "com.znam.app.EXTRA_LEVELED_UP"
+        const val EXTRA_CURRENT_STREAK = "com.znam.app.EXTRA_CURRENT_STREAK"
+        const val EXTRA_NEW_ACHIEVEMENTS = "com.znam.app.EXTRA_NEW_ACHIEVEMENTS"
     }
 
     private fun createQuestionView(parent: ViewGroup, question: Question, userAnswer: String?): View {
         val view = layoutInflater.inflate(R.layout.item_question_result, parent, false)
-        
+
         val questionTextView = view.findViewById<TextView>(R.id.tv_question_text)
         val correctAnswerTextView = view.findViewById<TextView>(R.id.tv_correct_answer)
         val userAnswerTextView = view.findViewById<TextView>(R.id.tv_user_answer)
@@ -123,7 +167,7 @@ class ResultActivity : AppCompatActivity() {
         } else {
             userAnswerTextView.visibility = View.GONE
         }
-        
+
         return view
     }
 }

@@ -59,6 +59,7 @@ import com.znam.app.HintState
 import com.znam.app.QuizEvent
 import com.znam.app.QuizUiState
 import com.znam.app.QuizViewModel
+import androidx.compose.runtime.collectAsState
 import com.znam.app.Question
 import com.znam.app.ui.icons.AppIcons
 
@@ -75,8 +76,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 
-// Quiz-specific semantic colors — candidates for theme extraction in future Material3 migration
-// ── Color constants ─────────────────────────────────────────────────────
+// Quiz-specific semantic colors  candidates for theme extraction in future Material3 migration
+//  Color constants 
 
 private val CorrectGreen = Color(0xFF2E7D32)
 private val CorrectGreenBg = Color(0xFFC8E6C9)
@@ -87,7 +88,7 @@ private val SelectedBlueBg = Color(0xFFBBDEFB)
 private val HintTeal = Color(0xFF009688)
 private val DefaultOptionBorder = Color(0xFFBFC8CA)
 
-// ── Main Screen ─────────────────────────────────────────────────────────
+//  Main Screen 
 
 @Composable
 fun QuizScreen(
@@ -158,7 +159,7 @@ fun QuizScreen(
     }
 }
 
-// ── Loading ─────────────────────────────────────────────────────────────
+//  Loading 
 
 @Composable
 private fun LoadingScreen() {
@@ -185,7 +186,7 @@ private fun LoadingScreen() {
     }
 }
 
-// ── Quiz Content ────────────────────────────────────────────────────────
+//  Quiz Content 
 
 @Composable
 private fun QuizContent(
@@ -211,7 +212,7 @@ private fun QuizContent(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ── Header: Counter + Hint button ───────────────────────
+            //  Header: Counter + Hint button 
             QuizHeader(
                 counterText = state.questionCounterText,
                 progress = (state.currentQuestionIndex + 1).toFloat() / state.totalQuestions,
@@ -221,17 +222,17 @@ private fun QuizContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // ── Hint bubbles ────────────────────────────────────────
+            //  Hint bubbles 
             HintBubbles(hintState = state.hintState)
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ── Question card ───────────────────────────────────────
+            //  Question card 
             QuestionCard(questionText = state.question?.questionText ?: "")
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ── Option buttons ──────────────────────────────────────
+            //  Option buttons 
             state.parsedOptions.forEachIndexed { index, optionText ->
                 if (optionText.isNotBlank()) {
                     OptionButton(
@@ -250,7 +251,7 @@ private fun QuizContent(
     }
 }
 
-// ── Header ──────────────────────────────────────────────────────────────
+//  Header 
 
 @Composable
 private fun QuizHeader(
@@ -312,7 +313,7 @@ private fun QuizHeader(
     }
 }
 
-// ── Hint Bubbles ────────────────────────────────────────────────────────
+//  Hint Bubbles 
 
 @Composable
 private fun HintBubbles(hintState: HintState) {
@@ -363,7 +364,7 @@ private fun HintBubble(text: String, index: Int) {
     }
 }
 
-// ── Question Card ───────────────────────────────────────────────────────
+//  Question Card 
 
 @Composable
 private fun QuestionCard(questionText: String) {
@@ -385,7 +386,7 @@ private fun QuestionCard(questionText: String) {
     }
 }
 
-// ── Option Button ───────────────────────────────────────────────────────
+//  Option Button 
 
 @Composable
 private fun OptionButton(
@@ -462,7 +463,7 @@ private fun resolveOptionColors(
     isAnswered: Boolean
 ): OptionColors {
     if (feedback == null) {
-        // Default state — not yet answered
+        // Default state  not yet answered
         return OptionColors(
             background = Color.White,
             border = DefaultOptionBorder,
@@ -492,7 +493,7 @@ private fun resolveOptionColors(
     }
 }
 
-// ── Bottom Bar ──────────────────────────────────────────────────────────
+//  Bottom Bar 
 
 @Composable
 private fun QuizBottomBar(
@@ -554,7 +555,7 @@ private fun QuizBottomBar(
 }
 
 
-// ── Previews ────────────────────────────────────────────────────────────
+//  Previews 
 
 @Preview(showBackground = true)
 @Composable
@@ -600,8 +601,8 @@ private fun QuizScreenIncorrectAnswerWithHintsPreview() {
                 isCorrect = false
             ),
             hintState = HintState(
-                hint1Text = "Живите организми са изградени от клетки.",
-                hint2Text = "Търси основната структурна единица.",
+                hint1Text = "     .",
+                hint2Text = "   .",
                 hint1Visible = true,
                 hint2Visible = true,
                 canShowMore = false
@@ -616,18 +617,18 @@ private fun previewQuizState(
     answerFeedback: AnswerFeedback? = null,
     score: Int = 0,
     hintState: HintState = HintState(
-        hint1Text = "Живите организми са изградени от клетки.",
+        hint1Text = "     .",
         hint1Visible = false,
         canShowMore = true
     )
 ): QuizUiState {
     val question = Question(
         id = 1,
-        questionText = "Коя е основната структурна и функционална единица на живите организми?",
-        options = "Клетка;Тъкан;Орган;Система",
-        correctAnswer = "Клетка",
-        hint1 = "Живите организми са изградени от клетки.",
-        hint2 = "Търси основната структурна единица."
+        questionText = "         ?",
+        options = ";;;",
+        correctAnswer = "",
+        hint1 = "     .",
+        hint2 = "   ."
     )
     return QuizUiState(
         isLoading = false,

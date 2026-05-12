@@ -29,6 +29,13 @@ val appModule = module {
         get<com.znam.app.data.StatsDatabase>().statsDao()
     }
 
+    // Gamification
+    single<com.znam.app.data.GamificationDao> {
+        get<com.znam.app.data.StatsDatabase>().gamificationDao()
+    }
+
+    single { GamificationManager(gamificationDao = get()) }
+
     // ViewModels
     viewModel {
         StatsViewModel(
@@ -41,7 +48,8 @@ val appModule = module {
             application = androidContext() as android.app.Application,
             savedStateHandle = get(),
             statsDao = get(),
-            databaseProvider = get()
+            databaseProvider = get(),
+            gamificationManager = get()
         )
     }
 }

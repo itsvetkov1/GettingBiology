@@ -30,13 +30,14 @@ class DatabaseProvider(private val context: Context?) {
 
     /**
      * Returns the shared stats database (singleton, thread-safe).
-     * This database stores quiz session results across all quiz types.
+     * This database stores quiz session results and gamification data.
      */
     fun getStatsDatabase(): StatsDatabase {
         return statsDatabase ?: synchronized(this) {
             statsDatabase ?: run {
                 val appContext = requireNotNull(context) { "Context is required to create StatsDatabase" }.applicationContext
                 Room.databaseBuilder(appContext, StatsDatabase::class.java, "quiz_stats.db")
+                    .addMigrations(StatsDatabase.MIGRATION_1_2)
                     .build()
                     .also { statsDatabase = it }
             }

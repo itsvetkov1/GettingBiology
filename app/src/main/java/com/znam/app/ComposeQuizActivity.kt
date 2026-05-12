@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.lifecycle.lifecycleScope
 import com.znam.app.ui.theme.ZnamTheme
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -14,6 +15,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.znam.app.ui.QuizScreen
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -24,7 +26,6 @@ class ComposeQuizActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.applyLocale(newBase))
     }
-
 
     companion object {
         private const val TAG = "ComposeQuizActivity"
@@ -117,8 +118,21 @@ class ComposeQuizActivity : ComponentActivity() {
             userAnswers = ArrayList(results.userAnswers),
             elapsedTimeInSeconds = results.elapsedTimeSeconds
         )
+
+        val gamResult = quizViewModel.gamificationResult.value
+
         val intent = Intent(this, ResultActivity::class.java).apply {
             putExtra(ResultActivity.EXTRA_QUIZ_RESULT, quizResult)
+            // Pass gamification data
+            if (gamResult != null) {
+                putExtra(ResultActivity.EXTRA_XP_EARNED, gamResult.xpEarned)
+                putExtra(ResultActivity.EXTRA_NEW_TOTAL_XP, gamResult.newTotalXp)
+                putExtra(ResultActivity.EXTRA_OLD_LEVEL, gamResult.oldLevel)
+                putExtra(ResultActivity.EXTRA_NEW_LEVEL, gamResult.newLevel)
+                putExtra(ResultActivity.EXTRA_LEVELED_UP, gamResult.leveledUp)
+                putExtra(ResultActivity.EXTRA_CURRENT_STREAK, gamResult.currentStreak)
+                putExtra(ResultActivity.EXTRA_NEW_ACHIEVEMENTS, gamResult.newAchievements.toTypedArray())
+            }
         }
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
