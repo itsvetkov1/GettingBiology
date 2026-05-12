@@ -6,13 +6,19 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [QuizSession::class, UserProfile::class, Achievement::class],
-    version = 2,
+    entities = [
+        QuizSession::class,
+        UserProfile::class,
+        Achievement::class,
+        QuestionPerformance::class
+    ],
+    version = 3,
     exportSchema = false
 )
 abstract class StatsDatabase : RoomDatabase() {
     abstract fun statsDao(): StatsDao
     abstract fun gamificationDao(): GamificationDao
+    abstract fun questionPerformanceDao(): QuestionPerformanceDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -35,6 +41,25 @@ abstract class StatsDatabase : RoomDatabase() {
                     CREATE TABLE IF NOT EXISTS `achievements` (
                         `achievementId` TEXT NOT NULL PRIMARY KEY,
                         `unlockedAt` INTEGER NOT NULL DEFAULT 0
+                    )
+                """.trimIndent())
+            }
+        }
+
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `question_performance` (
+                        `quizType` TEXT NOT NULL,
+                        `questionId` INTEGER NOT NULL,
+                        `timesAnswered` INTEGER NOT NULL DEFAULT 0,
+                        `timesCorrect` INTEGER NOT NULL DEFAULT 0,
+                        `consecutiveCorrect` INTEGER NOT NULL DEFAULT 0,
+                        `consecutiveWrong` INTEGER NOT NULL DEFAULT 0,
+                        `lastAnsweredAt` INTEGER NOT NULL DEFAULT 0,
+                        `nextReviewAt` INTEGER NOT NULL DEFAULT 0,
+                        `difficultyScore` REAL NOT NULL DEFAULT 0.5,
+                        PRIMARY KEY(`quizType`, `questionId`)
                     )
                 """.trimIndent())
             }

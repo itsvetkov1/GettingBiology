@@ -127,7 +127,8 @@ class QuizViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val statsDao: StatsDao? = null,
     private val databaseProvider: DatabaseProvider = DatabaseProvider(application),
-    private val gamificationManager: GamificationManager? = null
+    private val gamificationManager: GamificationManager? = null,
+    private val smartSelector: SmartQuestionSelector? = null
 ) : AndroidViewModel(application) {
 
     companion object {
@@ -194,13 +195,22 @@ class QuizViewModel(
                     db = database
 
                     val allQuestions = database.questionDao().getAllQuestions()
-                    val filtered = allQuestions.filterNot { it.id in answeredQuestionIds }
-                    if (filtered.isEmpty() && allQuestions.isNotEmpty()) {
-                        // All questions exhausted - auto-reset pool for fresh session
-                        answeredQuestionIds.clear()
-                        allQuestions.shuffled()
+
+                    // Use smart selection if available, otherwise fall back to shuffle
+                    if (smartSelector != null && allQuestions.isNotEmpty()) {
+                        smartSelector.selectQuestions(
+                            allQuestions = allQuestions,
+                            quizType = quizType,
+                            count = MAX_QUESTIONS_PER_SESSION
+                        )
                     } else {
-                        filtered
+                        val filtered = allQuestions.filterNot { it.id in answeredQuestionIds }
+                        if (filtered.isEmpty() && allQuestions.isNotEmpty()) {
+                            answeredQuestionIds.clear()
+                            allQuestions.shuffled()
+                        } else {
+                            filtered
+                        }
                     }
                 }
 
@@ -262,6 +272,19 @@ class QuizViewModel(
         }
         answeredQuestionIds.add(question.id)
         persistProgress()
+
+        // Record answer for smart learning
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                smartSelector?.recordAnswer(
+                    quizType = _uiState.value.quizType,
+                    questionId = question.id,
+                    wasCorrect = isCorrect
+                )
+            } catch (e: Exception) {
+                Log.w("QuizViewModel", "Smart learning recording failed (best-effort)", e)
+            }
+        }
 
         val newScore = if (isCorrect) state.score + 1 else state.score
 

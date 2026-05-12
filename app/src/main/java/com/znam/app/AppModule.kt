@@ -36,6 +36,13 @@ val appModule = module {
 
     single { GamificationManager(gamificationDao = get()) }
 
+    // Smart learning
+    single<com.znam.app.data.QuestionPerformanceDao> {
+        get<com.znam.app.data.StatsDatabase>().questionPerformanceDao()
+    }
+
+    single { SmartQuestionSelector(performanceDao = get()) }
+
     // ViewModels
     viewModel {
         StatsViewModel(
@@ -49,7 +56,8 @@ val appModule = module {
             savedStateHandle = get(),
             statsDao = get(),
             databaseProvider = get(),
-            gamificationManager = get()
+            gamificationManager = get(),
+            smartSelector = get()
         )
     }
 }
