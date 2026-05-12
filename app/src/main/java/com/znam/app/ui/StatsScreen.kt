@@ -69,10 +69,10 @@ private val AccuracyGreen = Color(0xFF2E7D32)
 private val AccuracyGreenLight = Color(0xFFC8E6C9)
 private val CategoryBlue = Color(0xFF1565C0)
 private val CategoryBlueBg = Color(0xFFBBDEFB)
-private val TrophyGold = Color(0xFFF9A825)
-private val TrophyGoldBg = Color(0xFFFFF9C4)
+private val TrophyGold = Color(0xFFE65100)
+private val TrophyGoldBg = Color(0xFFFFF3E0)
 private val TimeIndigo = Color(0xFF283593)
-private val TimeIndigoBg = Color(0xFFC5CAE9)
+private val TimeIndigoBg = Color(0xFFE8EAF6)
 private val ChartColors = listOf(
     Color(0xFF1E88E5),  // Blue
     Color(0xFF43A047),  // Green
@@ -385,7 +385,8 @@ private fun StatMiniCard(
 ) {
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = backgroundColor.copy(alpha = 0.4f)),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(
@@ -405,13 +406,13 @@ private fun StatMiniCard(
                 text = value,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = tint,
+                color = Color(0xFF1A1A1A),
                 textAlign = TextAlign.Center
             )
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
-                color = tint.copy(alpha = 0.8f),
+                color = Color(0xFF555555),
                 textAlign = TextAlign.Center
             )
         }

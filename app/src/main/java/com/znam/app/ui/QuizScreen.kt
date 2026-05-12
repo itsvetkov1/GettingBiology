@@ -44,6 +44,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -238,20 +239,22 @@ private fun QuizHeader(
             enabled = canShowHint,
             shape = CircleShape,
             color = if (canShowHint)
-                MaterialTheme.colorScheme.surface
+                HintTeal.copy(alpha = 0.15f)
             else
-                MaterialTheme.colorScheme.surfaceVariant,
+                MaterialTheme.colorScheme.surface,
             border = BorderStroke(
                 2.dp,
-                if (canShowHint) HintTeal else DefaultOptionBorder
+                if (canShowHint) HintTeal else DefaultOptionBorder.copy(alpha = 0.4f)
             ),
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier
+                .size(48.dp)
+                .then(if (!canShowHint) Modifier.alpha(0.4f) else Modifier)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = AppIcons.Lightbulb,
                     contentDescription = stringResource(R.string.hint_content_description),
-                    tint = if (canShowHint) HintTeal else DefaultOptionBorder,
+                    tint = if (canShowHint) HintTeal else DefaultOptionBorder.copy(alpha = 0.5f),
                     modifier = Modifier.size(24.dp)
                 )
             }
