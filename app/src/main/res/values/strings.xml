@@ -1,4 +1,70 @@
 <resources>
     <string name="app_name">3HAM</string>
     <string name="question_counter_format">%1$d/%2$d</string>
+    <string name="welcome_title">Знам ли?</string>
+    <string name="welcome_subtitle">Провери знанията си</string>
+    <string name="start_button">Начни</string>
+    <string name="stats_title">Статистика</string>
+    <string name="language_toggle_to_en">EN</string>
+    <string name="language_toggle_to_bg">BG</string>
+    <string name="app_logo_description">Лого на приложението</string>
+    <string name="hint_icon_description">Подсказка</string>
+    <string name="language_toggle_content_description">Смени езика</string>
+
+    <string name="select_quiz_title">Изберете тест</string>
+    <string name="category_class8">8-ми клас</string>
+    <string name="category_class9">9-ти клас</string>
+    <string name="category_class10">10-ти клас</string>
+    <string name="category_entrance_exam">Кандидатстудентски изпит</string>
+    <string name="category_class8_short">8 клас</string>
+    <string name="category_class9_short">9 клас</string>
+    <string name="category_class10_short">10 клас</string>
+    <string name="category_entrance_exam_short">Матура</string>
+
+    <string name="loading">Зареждане...</string>
+    <string name="back_content_description">Назад</string>
+    <string name="hint_label">Подсказка</string>
+    <string name="hint_content_description">Подсказка</string>
+    <string name="question_placeholder">Текст на въпроса</string>
+    <string name="question_counter_placeholder">Въпрос 1 от 15</string>
+    <string name="option_1_placeholder">Опция 1</string>
+    <string name="option_2_placeholder">Опция 2</string>
+    <string name="option_3_placeholder">Опция 3</string>
+    <string name="option_4_placeholder">Опция 4</string>
+    <string name="select_answer_prompt">*Моля, изберете отговор!</string>
+    <string name="next_button">Напред</string>
+    <string name="score_label">Точки</string>
+    <string name="time_label">Време</string>
+    <string name="no_questions_available">Няма налични въпроси.</string>
+    <string name="error_starting_quiz">Грешка при стартиране на теста: %1$s</string>
+    <string name="error_loading_questions">Грешка при зареждане на въпросите: %1$s</string>
+
+    <string name="empty_stats_title">Все още нямате завършени тестове</string>
+    <string name="empty_stats_subtitle">Завършете поне един тест, за да видите статистиката си.</string>
+    <string name="tests_label">Тестове</string>
+    <string name="total_time_label">Общо време</string>
+    <string name="best_score_label">Рекорд</string>
+    <string name="overall_accuracy_label">Обща точност</string>
+    <string name="this_week_label">Тази седмица</string>
+    <string name="week_sessions_one">%1$d тест</string>
+    <string name="week_sessions_many">%1$d теста</string>
+    <string name="by_category_label">По категории</string>
+    <string name="no_data">Няма данни</string>
+    <string name="recent_tests_label">Последни тестове</string>
+    <string name="time_just_now">Току-що</string>
+    <string name="time_minutes_ago">Преди %1$dмин</string>
+    <string name="time_hours_ago">Преди %1$dч</string>
+    <string name="time_days_ago">Преди %1$dдни</string>
+    <string name="duration_hours_minutes">%1$dч %2$dмин</string>
+    <string name="duration_minutes">%1$dмин</string>
+    <string name="duration_seconds">%1$dсек</string>
+
+    <string name="result_format">Резултат: %1$d/%2$d</string>
+    <string name="result_placeholder">Резултат: 0/15</string>
+    <string name="time_format">Време: %1$s</string>
+    <string name="time_placeholder">Време: 00:00</string>
+    <string name="correct_answer_format">Правилен отговор: %1$s</string>
+    <string name="skipped_answer">Въпросът е пропуснат.</string>
+    <string name="your_answer_format">Вашият отговор: %1$s</string>
+    <string name="new_quiz_button">Нов тест</string>
 </resources>

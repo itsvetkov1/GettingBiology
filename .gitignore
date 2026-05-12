@@ -15,3 +15,9 @@
 local.properties
 .env
 ~$*.xlsx
+*.jks
+*.sqbpro
+build_log.txt
+error.log
+.idea/
+.vscode/

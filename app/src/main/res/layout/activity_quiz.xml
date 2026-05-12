@@ -23,7 +23,7 @@
                 android:id="@+id/tv_question_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Question 1 of 15"
+                android:text="@string/question_counter_placeholder"
                 android:textSize="14sp"
                 android:textColor="@color/gray_600"
                 android:layout_marginBottom="8dp" />
@@ -33,7 +33,7 @@
                 android:id="@+id/tv_question_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Which organelle is known as the powerhouse of the cell?"
+                android:text="@string/question_placeholder"
                 android:textSize="18sp"
                 android:textColor="@color/black"
                 android:fontFamily="sans-serif-medium"
@@ -45,7 +45,7 @@
                 android:id="@+id/btn_option_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nucleus"
+                android:text="@string/option_1_placeholder"
                 android:background="@drawable/option_button_background"
                 android:textColor="@color/gray_800"
                 android:layout_marginBottom="8dp" />
@@ -55,7 +55,7 @@
                 android:id="@+id/btn_option_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Mitochondria"
+                android:text="@string/option_2_placeholder"
                 android:background="@drawable/option_button_background_correct"
                 android:textColor="@color/green_800"
                 android:layout_marginBottom="8dp" />
@@ -65,7 +65,7 @@
                 android:id="@+id/btn_option_3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Endoplasmic reticulum"
+                android:text="@string/option_3_placeholder"
                 android:background="@drawable/option_button_background_incorrect"
                 android:textColor="@color/red_800"
                 android:layout_marginBottom="8dp" />
@@ -75,7 +75,7 @@
                 android:id="@+id/btn_option_4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Golgi apparatus"
+                android:text="@string/option_4_placeholder"
                 android:background="@drawable/option_button_background"
                 android:textColor="@color/gray_800"
                 android:layout_marginBottom="8dp" />
@@ -85,7 +85,7 @@
                 android:id="@+id/btn_next"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="NEXT"
+                android:text="@string/next_button"
                 android:backgroundTint="@color/blue_500"
                 android:textColor="@android:color/white"
                 android:fontFamily="sans-serif-medium"
@@ -121,7 +121,7 @@
                 android:id="@+id/tv_score_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Score"
+                android:text="@string/score_label"
                 android:textSize="12sp"
                 android:textColor="@color/gray_600" />
 
@@ -147,7 +147,7 @@
                 android:id="@+id/tv_time_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Time"
+                android:text="@string/time_label"
                 android:textSize="12sp"
                 android:textColor="@color/gray_600" />
 

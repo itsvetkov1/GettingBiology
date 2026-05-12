@@ -1,22 +1,45 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.compose'
     id 'kotlin-parcelize'
     id 'kotlin-kapt'
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { localProperties.load(it) }
+}
+
+def localProperty = { String name, String fallback ->
+    localProperties.getProperty(name, fallback)
+}
+
+def debugAdMobApplicationId = 'ca-app-pub-3940256099942544~3347511713'
+def debugBannerAdUnitId = 'ca-app-pub-3940256099942544/6300978111'
+def debugInterstitialAdUnitId = 'ca-app-pub-3940256099942544/1033173712'
+def releaseAdMobApplicationId = localProperty('ADMOB_APPLICATION_ID', 'ca-app-pub-3551035007628625~1796855252')
+def releaseBannerAdUnitId = localProperty('ADMOB_BANNER_AD_UNIT_ID', 'ca-app-pub-3551035007628625/8032474007')
+def releaseInterstitialAdUnitId = localProperty('ADMOB_INTERSTITIAL_AD_UNIT_ID', 'ca-app-pub-3551035007628625/7595976845')
+
 android {
-    namespace 'com.znam.app'
-    compileSdk 34
+    namespace = 'com.znam.app'
+    compileSdk = 35
+
+    buildFeatures {
+        buildConfig = true
+        compose = true
+    }
 
     defaultConfig {
         applicationId "com.znam.app"
-        minSdk 28
-        targetSdk 34
-        versionCode 5
-        versionName "5"
+        minSdk = 28
+        targetSdk = 35
+        versionCode = 5
+        versionName = "5"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -26,24 +49,44 @@ android {
     }
 
     buildTypes {
-        release {
-            minifyEnabled false
+        debug {
+            minifyEnabled = true
+            shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [ADMOB_APPLICATION_ID: debugAdMobApplicationId]
+            buildConfigField 'String', 'ADMOB_BANNER_AD_UNIT_ID', "\"${debugBannerAdUnitId}\""
+            buildConfigField 'String', 'ADMOB_INTERSTITIAL_AD_UNIT_ID', "\"${debugInterstitialAdUnitId}\""
+        }
+
+        release {
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [ADMOB_APPLICATION_ID: releaseAdMobApplicationId]
+            buildConfigField 'String', 'ADMOB_BANNER_AD_UNIT_ID', "\"${releaseBannerAdUnitId}\""
+            buildConfigField 'String', 'ADMOB_INTERSTITIAL_AD_UNIT_ID', "\"${releaseInterstitialAdUnitId}\""
         }
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
+        freeCompilerArgs += ['-Xskip-metadata-version-check']
     }
 
     testOptions {
         unitTests {
             includeAndroidResources = true
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
         }
     }
 }
@@ -65,16 +108,25 @@ kapt {
 
 dependencies {
 
-    implementation 'com.github.bumptech.glide:glide:4.12.0'
-    kapt 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    kapt 'com.github.bumptech.glide:compiler:4.16.0'
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'com.google.android.gms:play-services-ads:22.6.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'com.google.android.gms:play-services-ads:25.2.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'com.google.android.ump:user-messaging-platform:1.0.0'
+    implementation 'com.google.android.ump:user-messaging-platform:4.0.0'
+
+    implementation platform('androidx.compose:compose-bom:2025.01.00')
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation 'androidx.activity:activity-compose:1.10.1'
+
+    implementation 'io.insert-koin:koin-android:4.0.4'
 
     // Testing
     testImplementation 'junit:junit:4.13.2'
@@ -85,7 +137,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
-    def room_version = "2.6.1"
+    def room_version = "2.7.2"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     // Kotlin users should also include the following

@@ -32,5 +32,6 @@
         android:layout_height="16dp"
         android:layout_gravity="center_vertical|end"
         android:src="@drawable/hint_pointer"
+        android:contentDescription="@string/hint_icon_description"
         app:tint="#009688"/>
 </FrameLayout>

@@ -1,0 +1,715 @@
+package com.znam.app.ui
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.sp
+import com.znam.app.R
+import com.znam.app.StatsUiState
+import com.znam.app.StatsViewModel
+import com.znam.app.ui.icons.AppIcons
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import com.znam.app.data.CategoryStats
+import com.znam.app.data.QuizSession
+import kotlinx.coroutines.delay
+
+// ── Color palette ──────────────────────────────────────────────────────
+
+private val AccuracyGreen = Color(0xFF2E7D32)
+private val AccuracyGreenLight = Color(0xFFC8E6C9)
+private val CategoryBlue = Color(0xFF1565C0)
+private val CategoryBlueBg = Color(0xFFBBDEFB)
+private val TrophyGold = Color(0xFFE65100)
+private val TrophyGoldBg = Color(0xFFFFF3E0)
+private val TimeIndigo = Color(0xFF283593)
+private val TimeIndigoBg = Color(0xFFE8EAF6)
+private val ChartColors = listOf(
+    Color(0xFF1E88E5),  // Blue
+    Color(0xFF43A047),  // Green
+    Color(0xFFFB8C00),  // Orange
+    Color(0xFFE53935)   // Red
+)
+
+// ── Main Screen ────────────────────────────────────────────────────────
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StatsScreen(
+    viewModel: StatsViewModel,
+    onNavigateBack: () -> Unit
+) {
+    val state by viewModel.uiState.collectAsState()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(R.string.stats_title),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_content_description)
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            )
+        }
+    ) { paddingValues ->
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.loading),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        } else if (!state.hasData) {
+            EmptyStatsView(modifier = Modifier.padding(paddingValues))
+        } else {
+            StatsContent(
+                state = state,
+                modifier = Modifier.padding(paddingValues)
+            )
+        }
+    }
+}
+
+// ── Empty state ────────────────────────────────────────────────────────
+
+@Composable
+private fun EmptyStatsView(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(32.dp)
+        ) {
+            Icon(
+                imageVector = AppIcons.School,
+                contentDescription = null,
+                modifier = Modifier.size(64.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.empty_stats_title),
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.empty_stats_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            )
+        }
+    }
+}
+
+// ── Main content ───────────────────────────────────────────────────────
+
+@Composable
+private fun StatsContent(
+    state: StatsUiState,
+    modifier: Modifier = Modifier
+) {
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(100)
+        visible = true
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .navigationBarsPadding()
+            .padding(horizontal = 16.dp),
+    ) {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // ── Accuracy ring ──────────────────────────────────────────
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(tween(400)) + slideInVertically(tween(400)) { -40 }
+        ) {
+            AccuracyRing(
+                accuracy = state.overallAccuracy,
+                totalCorrect = state.totalCorrectAnswers,
+                totalQuestions = state.totalQuestionsAnswered
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ── Quick stats row ────────────────────────────────────────
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(tween(500, 100)) + slideInVertically(tween(400, 100)) { -30 }
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                StatMiniCard(
+                    icon = AppIcons.QuestionAnswer,
+                    value = state.totalSessions.toString(),
+                    label = stringResource(R.string.tests_label),
+                    tint = CategoryBlue,
+                    backgroundColor = CategoryBlueBg,
+                    modifier = Modifier.weight(1f)
+                )
+                StatMiniCard(
+                    icon = AppIcons.Schedule,
+                    value = formatDuration(state.totalTimeSeconds),
+                    label = stringResource(R.string.total_time_label),
+                    tint = TimeIndigo,
+                    backgroundColor = TimeIndigoBg,
+                    modifier = Modifier.weight(1f)
+                )
+                StatMiniCard(
+                    icon = AppIcons.EmojiEvents,
+                    value = state.bestScore.toString(),
+                    label = stringResource(R.string.best_score_label),
+                    tint = TrophyGold,
+                    backgroundColor = TrophyGoldBg,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ── This week card ─────────────────────────────────────────
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(tween(500, 200)) + slideInVertically(tween(400, 200)) { -30 }
+        ) {
+            WeekActivityCard(sessionsThisWeek = state.sessionsThisWeek)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ── Category breakdown ─────────────────────────────────────
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(tween(500, 300)) + slideInVertically(tween(400, 300)) { -30 }
+        ) {
+            CategoryBreakdownCard(categories = state.categoryStats)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ── Recent sessions ────────────────────────────────────────
+        AnimatedVisibility(
+            visible = visible,
+            enter = fadeIn(tween(500, 400)) + slideInVertically(tween(400, 400)) { -30 }
+        ) {
+            RecentSessionsCard(sessions = state.recentSessions)
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+// ── Accuracy Ring ──────────────────────────────────────────────────────
+
+@Composable
+private fun AccuracyRing(
+    accuracy: Float,
+    totalCorrect: Int,
+    totalQuestions: Int
+) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = accuracy / 100f,
+        animationSpec = tween(durationMillis = 1000, delayMillis = 200),
+        label = "accuracyAnim"
+    )
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.overall_accuracy_label),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Animated circular progress
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.size(160.dp)
+            ) {
+                val trackColor = MaterialTheme.colorScheme.surfaceVariant
+                val progressColor = when {
+                    accuracy >= 80f -> AccuracyGreen
+                    accuracy >= 60f -> TrophyGold
+                    else -> Color(0xFFE53935)
+                }
+
+                Canvas(modifier = Modifier.size(160.dp)) {
+                    val strokeWidth = 14.dp.toPx()
+                    val arcSize = Size(size.width - strokeWidth, size.height - strokeWidth)
+                    val topLeft = Offset(strokeWidth / 2, strokeWidth / 2)
+
+                    // Background track
+                    drawArc(
+                        color = trackColor,
+                        startAngle = -90f,
+                        sweepAngle = 360f,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                    )
+
+                    // Progress arc
+                    drawArc(
+                        color = progressColor,
+                        startAngle = -90f,
+                        sweepAngle = animatedProgress * 360f,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                    )
+                }
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "${accuracy.toInt()}%",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "$totalCorrect / $totalQuestions",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ── Stat Mini Card ─────────────────────────────────────────────────────
+
+@Composable
+private fun StatMiniCard(
+    icon: ImageVector,
+    value: String,
+    label: String,
+    tint: Color,
+    backgroundColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = tint,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF1A1A1A),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = Color(0xFF555555),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+// ── Week Activity ──────────────────────────────────────────────────────
+
+@Composable
+private fun WeekActivityCard(sessionsThisWeek: Int) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = AppIcons.TrendingUp,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column {
+                Text(
+                    text = stringResource(R.string.this_week_label),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = stringResource(
+                        if (sessionsThisWeek == 1) R.string.week_sessions_one else R.string.week_sessions_many,
+                        sessionsThisWeek
+                    ),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+// ── Category Breakdown ─────────────────────────────────────────────────
+
+@Composable
+private fun CategoryBreakdownCard(categories: List<CategoryStats>) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.by_category_label),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            if (categories.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.no_data),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                categories.forEachIndexed { index, cat ->
+                    CategoryRow(
+                        stats = cat,
+                        color = ChartColors[index % ChartColors.size]
+                    )
+                    if (index < categories.lastIndex) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CategoryRow(stats: CategoryStats, color: Color) {
+    val animatedProgress by animateFloatAsState(
+        targetValue = stats.accuracy / 100f,
+        animationSpec = tween(800, 300),
+        label = "catProgress"
+    )
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = localizedCategoryName(stats.quizType),
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "${stats.accuracy.toInt()}% (${stats.correct}/${stats.questions})",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        LinearProgressIndicator(
+            progress = { animatedProgress },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(6.dp),
+            color = color,
+            trackColor = color.copy(alpha = 0.15f),
+        )
+    }
+}
+
+// ── Recent Sessions ────────────────────────────────────────────────────
+
+@Composable
+private fun RecentSessionsCard(sessions: List<QuizSession>) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.recent_tests_label),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            if (sessions.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.no_data),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            } else {
+                sessions.take(10).forEach { session ->
+                    RecentSessionRow(session = session)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecentSessionRow(session: QuizSession) {
+    val categoryName = localizedCategoryName(session.quizType)
+    val timeAgo = formatTimeAgo(session.timestamp)
+    val accuracy = session.accuracyPercent.toInt()
+    val accuracyColor = when {
+        accuracy >= 80 -> AccuracyGreen
+        accuracy >= 60 -> TrophyGold
+        else -> Color(0xFFE53935)
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = AppIcons.CheckCircle,
+                contentDescription = null,
+                tint = accuracyColor,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Text(
+                    text = categoryName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = timeAgo,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        Text(
+            text = "${session.score}/${session.totalQuestions}",
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold,
+            color = accuracyColor
+        )
+    }
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────
+
+@Composable
+private fun localizedCategoryName(quizType: String): String {
+    return when (quizType) {
+        "class8.db" -> stringResource(R.string.category_class8_short)
+        "class9.db" -> stringResource(R.string.category_class9_short)
+        "class10.db" -> stringResource(R.string.category_class10_short)
+        "db_entrance_exam.db" -> stringResource(R.string.category_entrance_exam_short)
+        else -> quizType
+    }
+}
+
+@Composable
+private fun formatDuration(totalSeconds: Int): String {
+    val hours = totalSeconds / 3600
+    val minutes = (totalSeconds % 3600) / 60
+    return when {
+        hours > 0 -> stringResource(R.string.duration_hours_minutes, hours, minutes)
+        minutes > 0 -> stringResource(R.string.duration_minutes, minutes)
+        else -> stringResource(R.string.duration_seconds, totalSeconds)
+    }
+}
+
+@Composable
+private fun formatTimeAgo(timestampMillis: Long): String {
+    val diffMs = System.currentTimeMillis() - timestampMillis
+    val diffMinutes = diffMs / (1000 * 60)
+    val diffHours = diffMinutes / 60
+    val diffDays = diffHours / 24
+
+    return when {
+        diffMinutes < 1 -> stringResource(R.string.time_just_now)
+        diffMinutes < 60 -> stringResource(R.string.time_minutes_ago, diffMinutes)
+        diffHours < 24 -> stringResource(R.string.time_hours_ago, diffHours)
+        diffDays < 7 -> stringResource(R.string.time_days_ago, diffDays)
+        else -> {
+            val formatter = java.text.SimpleDateFormat("dd.MM", java.util.Locale.getDefault())
+            formatter.format(java.util.Date(timestampMillis))
+        }
+    }
+}
+
+
+// ── Previews ────────────────────────────────────────────────────────────
+
+@Preview(showBackground = true)
+@Composable
+private fun StatsLoadingPreview() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(R.string.loading),
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun StatsEmptyPreview() {
+    EmptyStatsView()
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun StatsPopulatedPreview() {
+    StatsContent(
+        state = StatsUiState(
+            isLoading = false,
+            totalSessions = 8,
+            totalQuestionsAnswered = 120,
+            totalCorrectAnswers = 93,
+            overallAccuracy = 77.5f,
+            totalTimeSeconds = 1640,
+            bestScore = 14,
+            bestAccuracy = 93.3f,
+            categoryStats = listOf(
+                CategoryStats("class8.db", sessions = 3, questions = 45, correct = 39, accuracy = 86.6f),
+                CategoryStats("class9.db", sessions = 5, questions = 75, correct = 54, accuracy = 72f)
+            ),
+            recentSessions = listOf(
+                QuizSession(quizType = "class8.db", score = 13, totalQuestions = 15, elapsedTimeSeconds = 210),
+                QuizSession(quizType = "class9.db", score = 11, totalQuestions = 15, elapsedTimeSeconds = 240)
+            ),
+            sessionsThisWeek = 4
+        )
+    )
+}

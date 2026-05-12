@@ -2,6 +2,7 @@ package com.znam.app
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -15,7 +16,6 @@ import android.view.animation.OvershootInterpolator
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.room.Room
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.*
@@ -30,8 +30,13 @@ import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
 import com.google.android.gms.ads.AdView
+import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.applyLocale(newBase))
+    }
 
     // Constants
     private val TAG = "MainActivity"
@@ -88,6 +93,7 @@ class MainActivity : AppCompatActivity() {
     private val AUTO_ADVANCE_DELAY = 1500L // 1.5 seconds
 
     // Database and Ads
+    private val databaseProvider: DatabaseProvider by inject()
     private lateinit var db: AppDatabase
     private var mInterstitialAd: InterstitialAd? = null
 
@@ -121,7 +127,7 @@ class MainActivity : AppCompatActivity() {
             fetchQuestions(answeredQuestionIds)
         } catch (e: Exception) {
             Log.e(TAG, "Error in onCreate", e)
-            Toast.makeText(this, "Error starting quiz: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.error_starting_quiz, e.message ?: ""), Toast.LENGTH_LONG).show()
             finish()
         }
     }
@@ -168,12 +174,13 @@ class MainActivity : AppCompatActivity() {
         MobileAds.initialize(this) {}
 
         mAdView = findViewById(R.id.adView)
+        mAdView.adUnitId = BuildConfig.ADMOB_BANNER_AD_UNIT_ID
         val adRequest = AdRequest.Builder().build()
         mAdView.loadAd(adRequest)
 
         InterstitialAd.load(
             this,
-            "ca-app-pub-3551035007628625/7595976845",
+            BuildConfig.ADMOB_INTERSTITIAL_AD_UNIT_ID,
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -249,17 +256,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeDatabase(quizType: String, answeredQuestionIds: ArrayList<Int>) {
-        val dbName = when (quizType) {
-            "class8.db" -> "class8.db"
-            "class9.db" -> "class9.db"
-            "class10.db" -> "class10.db"
-            "db_entrance_exam.db" -> "db_entrance_exam.db"
-            else -> "dbquestions.db"
-        }
-        db = Room.databaseBuilder(applicationContext, AppDatabase::class.java, dbName)
-            .createFromAsset(dbName)
-            .fallbackToDestructiveMigration()
-            .build()
+        db = databaseProvider.createDatabase(quizType)
     }
 
     private fun fetchQuestions(answeredQuestionIds: ArrayList<Int>) {
@@ -270,19 +267,19 @@ class MainActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     questions = filteredQuestions
                     if (questions.isNotEmpty()) {
-                        userAnswers = MutableList(questions.size) { "Въпросът е пропуснат." }
+                        userAnswers = MutableList(questions.size) { SKIPPED_ANSWER }
                         startTimer()
                         loadQuestion()
                     } else {
                         // Handle case where no questions are available
-                        Toast.makeText(this@MainActivity, "No questions available.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@MainActivity, getString(R.string.no_questions_available), Toast.LENGTH_LONG).show()
                         finish()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Log.e(TAG, "Error fetching questions", e)
-                    Toast.makeText(this@MainActivity, "Error loading questions: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MainActivity, getString(R.string.error_loading_questions, e.message ?: ""), Toast.LENGTH_LONG).show()
                     finish()
                 }
             }
@@ -559,12 +556,6 @@ class MainActivity : AppCompatActivity() {
         // Stop the timer
         stopTimer()
 
-        // Populate QuizResultsHolder with the current quiz results
-        QuizResultsHolder.score = score
-        QuizResultsHolder.questions = questions
-        QuizResultsHolder.userAnswers = ArrayList(userAnswers)
-        QuizResultsHolder.elapsedTimeInSeconds = getElapsedTimeInSeconds()
-
         // Navigate to ResultActivity
         if (mInterstitialAd != null) {
             mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
@@ -580,7 +571,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun proceedToResultActivity() {
-        val intent = Intent(this, ResultActivity::class.java)
+        val result = QuizResult(
+            score = score,
+            questions = ArrayList(questions.take(15)),
+            userAnswers = ArrayList(userAnswers.take(15)),
+            elapsedTimeInSeconds = getElapsedTimeInSeconds()
+        )
+        val intent = Intent(this, ResultActivity::class.java).apply {
+            putExtra(ResultActivity.EXTRA_QUIZ_RESULT, result)
+        }
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()

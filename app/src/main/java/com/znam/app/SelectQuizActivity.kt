@@ -1,11 +1,16 @@
 package com.znam.app
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 
 class SelectQuizActivity : AppCompatActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.applyLocale(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_quiz)
@@ -25,7 +30,7 @@ class SelectQuizActivity : AppCompatActivity() {
     }
 
     private fun startQuiz(databaseName: String) {
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, ComposeQuizActivity::class.java).apply {
             putExtra("QUIZ_TYPE", databaseName)
         }
         // Save quiz type to SharedPreferences
@@ -37,5 +42,4 @@ class SelectQuizActivity : AppCompatActivity() {
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
-
 }

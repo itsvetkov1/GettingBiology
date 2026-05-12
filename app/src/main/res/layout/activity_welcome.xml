@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/md_theme_light_primary">
 
-    <!-- Layer 1: DNA Background -->
-    <ImageView
-        android:id="@+id/backgroundImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/welcome_animation2" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/languageToggleButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="44dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:text="@string/language_toggle_to_en"
+        android:contentDescription="@string/language_toggle_content_description"
+        android:textColor="@color/white"
+        app:backgroundTint="@android:color/transparent"
+        app:cornerRadius="22dp"
+        app:strokeColor="@color/white"
+        app:strokeWidth="1dp" />
 
-    <!-- Layer 3: Logo -->
+    <!-- Logo -->
     <ImageView
         android:id="@+id/logoImageView"
         android:layout_width="match_parent"
@@ -22,9 +31,10 @@
         android:adjustViewBounds="true"
         android:elevation="8dp"
         android:alpha="0.8"
-        android:src="@drawable/logo" />
+        android:src="@drawable/logo"
+        android:contentDescription="@string/app_logo_description" />
 
-    <!-- Layer 4: Bottom Sheet Card -->
+    <!-- Bottom Sheet Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottomSheetCard"
         android:layout_width="match_parent"
@@ -47,7 +57,7 @@
                 android:id="@+id/headerTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Избери категория"
+                android:text="@string/welcome_title"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/md_theme_light_primary"
@@ -57,7 +67,7 @@
                 android:id="@+id/subtitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Провери знанията си"
+                android:text="@string/welcome_subtitle"
                 android:textSize="16sp"
                 android:textColor="@color/gray_600"
                 android:layout_marginBottom="24dp" />
@@ -72,7 +82,7 @@
                     android:id="@+id/startQuizButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:text="Биология"
+                    android:text="@string/start_button"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"
@@ -80,6 +90,21 @@
                     app:cornerRadius="12dp"
                     app:elevation="2dp"
                     android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/statsButton"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="@string/stats_title"
+                    android:textSize="14sp"
+                    android:textColor="@color/md_theme_light_primary"
+                    app:cornerRadius="12dp"
+                    app:strokeColor="@color/md_theme_light_primary"
+                    app:strokeWidth="1dp"
+                    app:icon="@android:drawable/ic_menu_recent_history"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/md_theme_light_primary" />
 
             </LinearLayout>
         </LinearLayout>

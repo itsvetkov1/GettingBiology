@@ -36,7 +36,7 @@ class DatabaseValidationTest {
         val db = Room.databaseBuilder(context, AppDatabase::class.java, dbName)
             .createFromAsset(dbName)
             .allowMainThreadQueries()
-            .fallbackToDestructiveMigration()
+            .addMigrations(*AppDatabase.ALL_MIGRATIONS)
             .build()
 
         try {
