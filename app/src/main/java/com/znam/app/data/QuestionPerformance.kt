@@ -32,7 +32,7 @@ data class QuestionPerformance(
     fun computeNextInterval(wasCorrect: Boolean): Long {
         val baseIntervalMs = 24 * 60 * 60 * 1000L // 1 day in ms
         return if (wasCorrect) {
-            when (consecutiveCorrect + 1) {
+            when (consecutiveCorrect) {
                 1 -> baseIntervalMs           // 1 day
                 2 -> baseIntervalMs * 3       // 3 days
                 3 -> baseIntervalMs * 7       // 1 week
