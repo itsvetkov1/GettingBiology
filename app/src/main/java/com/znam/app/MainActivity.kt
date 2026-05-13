@@ -31,6 +31,7 @@ import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
 import com.google.android.gms.ads.AdView
 import org.koin.android.ext.android.inject
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -82,7 +83,7 @@ class MainActivity : AppCompatActivity() {
             val elapsedSeconds = (elapsedMillis / 1000).toInt()
             val minutes = elapsedSeconds / 60
             val seconds = elapsedSeconds % 60
-            timerTextView.text = String.format("%02d:%02d", minutes, seconds)
+            timerTextView.text = String.format(Locale.ROOT, "%02d:%02d", minutes, seconds)
             handler.postDelayed(this, 1000)
         }
     }
@@ -301,7 +302,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateScoreDisplay() {
-        scoreTextView.text = "$score / 15"
+        scoreTextView.text = getString(R.string.score_display_format, score, 15)
     }
 
     private fun onHintRequested() {

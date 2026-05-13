@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import com.znam.app.data.QuizSession
 import com.znam.app.data.StatsDao
 import com.znam.app.data.GamificationDao
+import java.util.Locale
 
 /**
  * Sealed class representing possible quiz events emitted as one-shots.
@@ -97,7 +98,7 @@ data class QuizUiState(
         get() {
             val minutes = elapsedSeconds / 60
             val seconds = elapsedSeconds % 60
-            return String.format("%02d:%02d", minutes, seconds)
+            return String.format(Locale.ROOT, "%02d:%02d", minutes, seconds)
         }
 
     val isAnswered: Boolean

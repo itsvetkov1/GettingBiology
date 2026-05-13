@@ -129,7 +129,7 @@
                 android:id="@+id/tv_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 / 1"
+                android:text="@string/score_display_placeholder"
                 android:textSize="18sp"
                 android:textColor="@color/blue_500"
                 android:fontFamily="sans-serif-medium" />
@@ -155,7 +155,7 @@
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00:45"
+                android:text="@string/timer_placeholder"
                 android:textSize="18sp"
                 android:textColor="@color/black"
                 android:fontFamily="sans-serif-medium" />

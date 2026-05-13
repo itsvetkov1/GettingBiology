@@ -102,7 +102,7 @@
                     android:id="@+id/dailyChallengeButton"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:text="⚡ Daily Challenge"
+                    android:text="@string/daily_challenge_placeholder"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"

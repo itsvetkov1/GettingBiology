@@ -21,7 +21,7 @@
     <string name="category_class10_short">Grade 10</string>
     <string name="category_entrance_exam_short">Matura</string>
 
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading…</string>
     <string name="back_content_description">Back</string>
     <string name="hint_label">Hint</string>
     <string name="hint_content_description">Hint</string>
@@ -117,5 +117,5 @@
     <string name="achievement_level_25_description">Reach level 25</string>
     <string name="achievement_xp_1000_description">Earn 1,000 XP</string>
     <string name="achievement_xp_5000_description">Earn 5,000 XP</string>
-
+    <string name="score_display_format">%1$d / %2$d</string>    <string name="timer_placeholder">00:45</string>    <string name="daily_challenge_placeholder">⚡ Daily Challenge</string>    <string name="menu_more">More</string>    <string name="score_display_placeholder">0 / 1</string>
 </resources>

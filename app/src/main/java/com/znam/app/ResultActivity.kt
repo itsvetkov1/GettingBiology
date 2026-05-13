@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.card.MaterialCardView
 import com.znam.app.ui.QuizRewardSummary
 import com.znam.app.ui.theme.ZnamTheme
+import java.util.Locale
 
 class ResultActivity : AppCompatActivity() {
     override fun attachBaseContext(newBase: Context) {
@@ -45,7 +46,7 @@ class ResultActivity : AppCompatActivity() {
         // Format the elapsed time
         val minutes = elapsedTimeInSeconds / 60
         val seconds = elapsedTimeInSeconds % 60
-        val timeString = String.format("%02d:%02d", minutes, seconds)
+        val timeString = String.format(Locale.ROOT, "%02d:%02d", minutes, seconds)
 
         findViewById<TextView>(R.id.result_text_view).apply {
             val fullText = getString(R.string.result_format, score, totalQuestions)

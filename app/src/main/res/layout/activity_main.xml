@@ -280,7 +280,7 @@
                         android:id="@+id/tv_score"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0 / 1"
+                        android:text="@string/score_display_placeholder"
                         android:textAppearance="?attr/textAppearanceTitleLarge"
                         android:textColor="@color/md_theme_light_onPrimary" />
                 </LinearLayout>
@@ -305,7 +305,7 @@
                         android:id="@+id/tv_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="00:45"
+                        android:text="@string/timer_placeholder"
                         android:textAppearance="?attr/textAppearanceTitleLarge"
                         android:textColor="@color/md_theme_light_onPrimary" />
                 </LinearLayout>
