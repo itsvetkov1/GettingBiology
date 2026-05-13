@@ -12,3 +12,8 @@ allprojects {
         targetCompatibility = '17'
     }
 }
+
+tasks.register('gate') {
+    group = 'verification'
+    description = 'Aggregate verification marker used after assembleDebug, lint, and test.'
+}
