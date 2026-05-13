@@ -47,6 +47,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -423,12 +425,25 @@ private fun OptionButton(
         label = "optionScale"
     )
 
+    val optionStateDescription = when {
+        feedback == null -> "unanswered"
+        feedback.correctOption == index -> "correct"
+        feedback.selectedOption == index && !feedback.isCorrect -> "incorrect"
+        else -> "unanswered"
+    }
+    val feedbackIcon = when {
+        feedback?.correctOption == index -> AppIcons.Check
+        feedback?.selectedOption == index && feedback.isCorrect.not() -> AppIcons.Close
+        else -> null
+    }
+
     OutlinedButton(
         onClick = onSelected,
         enabled = !isAnswered,
         modifier = Modifier
             .fillMaxWidth()
-            .scale(scale),
+            .scale(scale)
+            .semantics { stateDescription = optionStateDescription },
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(
             width = if (feedback != null && (feedback.selectedOption == index || feedback.correctOption == index)) 2.dp else 1.dp,
@@ -439,15 +454,29 @@ private fun OptionButton(
             disabledContainerColor = animatedBg
         )
     ) {
-        Text(
-            text = text,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            style = MaterialTheme.typography.bodyLarge,
-            color = textColor,
-            textAlign = TextAlign.Start
-        )
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (feedbackIcon != null) {
+                Icon(
+                    imageVector = feedbackIcon,
+                    contentDescription = optionStateDescription,
+                    tint = textColor,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+            Text(
+                text = text,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyLarge,
+                color = textColor,
+                textAlign = TextAlign.Start
+            )
+        }
     }
 }
 
