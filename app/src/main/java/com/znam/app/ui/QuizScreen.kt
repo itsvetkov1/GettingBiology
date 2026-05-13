@@ -39,8 +39,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +61,6 @@ import com.znam.app.HintState
 import com.znam.app.QuizEvent
 import com.znam.app.QuizUiState
 import com.znam.app.QuizViewModel
-import androidx.compose.runtime.collectAsState
 import com.znam.app.Question
 import com.znam.app.ui.icons.AppIcons
 
@@ -99,8 +98,8 @@ fun QuizScreen(
     onShowInterstitialAd: (com.znam.app.QuizResults, com.znam.app.GamificationManager.GamificationResult?) -> Unit,
     onNoQuestions: () -> Unit
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val event by viewModel.events.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val event by viewModel.events.collectAsStateWithLifecycle()
 
     // Handle one-shot events
     LaunchedEffect(event) {
