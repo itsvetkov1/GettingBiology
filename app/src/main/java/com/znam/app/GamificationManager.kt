@@ -89,21 +89,7 @@ class GamificationManager(
         val isPerfect = score == totalQuestions && totalQuestions > 0
         val isSpeedRun = elapsedTimeSeconds < XP_SPEED_BONUS_THRESHOLD_SECONDS && totalQuestions > 0
 
-        // --- Calculate XP ---
-        var xpEarned = score * XP_PER_CORRECT
-        if (isPerfect) xpEarned += XP_PERFECT_BONUS
-        if (hintsUsed == 0 && isPerfect) xpEarned += XP_NO_HINTS_BONUS
-        if (isSpeedRun) xpEarned += XP_SPEED_BONUS
-
-        // Streak multiplier
-        val streakBonus = profile.currentStreak * XP_STREAK_MULTIPLIER_BASE
-        xpEarned += streakBonus
-
-        val newTotalXp = profile.totalXp + xpEarned
-        val oldLevel = profile.level
-        val newLevel = levelFromXp(newTotalXp)
-
-        // --- Update streak ---
+        // --- Update streak first so XP uses the post-rollover value ---
         val yesterday = today - 1
         val newStreak: Int
         val quizzesToday: Int
@@ -126,6 +112,19 @@ class GamificationManager(
             }
         }
 
+        // --- Calculate XP ---
+        var xpEarned = score * XP_PER_CORRECT
+        if (isPerfect) xpEarned += XP_PERFECT_BONUS
+        if (hintsUsed == 0 && isPerfect) xpEarned += XP_NO_HINTS_BONUS
+        if (isSpeedRun) xpEarned += XP_SPEED_BONUS
+
+        // Streak multiplier uses the streak after same-day/rollover/reset handling.
+        val streakBonus = newStreak * XP_STREAK_MULTIPLIER_BASE
+        xpEarned += streakBonus
+
+        val newTotalXp = profile.totalXp + xpEarned
+        val oldLevel = profile.level
+        val newLevel = levelFromXp(newTotalXp)
         val newLongest = maxOf(profile.longestStreak, newStreak)
         val newPerfectCount = if (isPerfect) profile.perfectScoreCount + 1 else profile.perfectScoreCount
 
