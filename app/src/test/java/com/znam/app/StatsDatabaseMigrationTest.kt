@@ -34,7 +34,11 @@ class StatsDatabaseMigrationTest {
         db.close()
 
         val migrated = Room.databaseBuilder(context, StatsDatabase::class.java, dbName)
-            .addMigrations(StatsDatabase.MIGRATION_1_2, StatsDatabase.MIGRATION_2_3)
+            .addMigrations(
+                StatsDatabase.MIGRATION_1_2,
+                StatsDatabase.MIGRATION_2_3,
+                StatsDatabase.MIGRATION_3_4
+            )
             .build()
         migrated.openHelper.writableDatabase.query("PRAGMA table_info(`user_profile`)").use { cursor ->
             val defaults = mutableMapOf<String, String?>()
@@ -67,7 +71,10 @@ class StatsDatabaseMigrationTest {
         db.close()
 
         val migrated = Room.databaseBuilder(context, StatsDatabase::class.java, dbName)
-            .addMigrations(StatsDatabase.MIGRATION_2_3)
+            .addMigrations(
+                StatsDatabase.MIGRATION_2_3,
+                StatsDatabase.MIGRATION_3_4
+            )
             .build()
         migrated.openHelper.writableDatabase.query("PRAGMA table_info(`question_performance`)").use { cursor ->
             val defaults = mutableMapOf<String, String?>()
