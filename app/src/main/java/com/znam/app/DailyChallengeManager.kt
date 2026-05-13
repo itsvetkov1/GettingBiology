@@ -9,7 +9,7 @@ import java.time.LocalDate
  *
  * Each day generates a deterministic "challenge" quiz type based on the date.
  * The user gets bonus XP for completing the daily challenge.
- * Tracks whether today's challenge has been completed via UserProfile.
+ * Tracks whether today's challenge has been completed via explicit UserProfile fields.
  */
 class DailyChallengeManager(
     private val gamificationDao: GamificationDao
@@ -24,28 +24,34 @@ class DailyChallengeManager(
         )
     }
 
-    /**
-     * Get today's challenge quiz type (deterministic based on date).
-     */
     fun getTodaysChallengeType(): String {
         val dayOfYear = LocalDate.now().dayOfYear
         return QUIZ_TYPES[dayOfYear % QUIZ_TYPES.size]
     }
 
-    /**
-     * Get the display name for today's challenge.
-     */
     fun getTodaysChallengeName(): String {
         return CHALLENGE_NAMES[getTodaysChallengeType()] ?: "Daily Challenge"
     }
 
-    /**
-     * Check if the user has completed today's challenge.
-     */
+    fun isTodaysChallenge(quizType: String): Boolean {
+        return quizType == getTodaysChallengeType()
+    }
+
     suspend fun isTodaysChallengeCompleted(): Boolean {
         val profile = gamificationDao.getProfile() ?: return false
         val today = LocalDate.now().toEpochDay()
-        // If last quiz was today and they've done at least one quiz today
-        return profile.lastQuizDateEpochDay == today && profile.quizzesCompletedToday > 0
+        return profile.lastDailyChallengeDateEpochDay == today &&
+            profile.dailyChallengeQuizType == getTodaysChallengeType()
+    }
+
+    suspend fun shouldAwardDailyChallenge(isDailyChallenge: Boolean, quizType: String): Boolean {
+        return isDailyChallenge && isTodaysChallenge(quizType) && !isTodaysChallengeCompleted()
+    }
+
+    fun markDailyChallengeCompleted(profile: UserProfile, quizType: String): UserProfile {
+        return profile.copy(
+            lastDailyChallengeDateEpochDay = LocalDate.now().toEpochDay(),
+            dailyChallengeQuizType = quizType
+        )
     }
 }

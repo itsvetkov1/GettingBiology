@@ -18,7 +18,9 @@ data class UserProfile(
     @ColumnInfo(defaultValue = "0") val lastQuizDateEpochDay: Long = 0L,  // LocalDate.toEpochDay()
     @ColumnInfo(defaultValue = "0") val quizzesCompletedToday: Int = 0,
     @ColumnInfo(defaultValue = "0") val perfectScoreCount: Int = 0,
-    @ColumnInfo(defaultValue = "0") val totalQuizzesCompleted: Int = 0
+    @ColumnInfo(defaultValue = "0") val totalQuizzesCompleted: Int = 0,
+    @ColumnInfo(defaultValue = "0") val lastDailyChallengeDateEpochDay: Long = 0L,
+    @ColumnInfo(defaultValue = "''") val dailyChallengeQuizType: String = ""
 )
 
 /**

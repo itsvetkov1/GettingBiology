@@ -42,7 +42,8 @@ class DatabaseProvider(private val context: Context?) {
             statsDatabase ?: buildDatabase("quiz_stats.db", StatsDatabase::class.java)
                 .addMigrations(
                     StatsDatabase.MIGRATION_1_2,
-                    StatsDatabase.MIGRATION_2_3
+                    StatsDatabase.MIGRATION_2_3,
+                    StatsDatabase.MIGRATION_3_4
                 )
                 .build()
                 .also { statsDatabase = it }

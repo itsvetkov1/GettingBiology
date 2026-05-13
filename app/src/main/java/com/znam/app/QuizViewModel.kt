@@ -163,6 +163,7 @@ class QuizViewModel(
     private var autoAdvanceJob: Job? = null
     private var db: AppDatabase? = null
     private var totalHintsUsed: Int = 0
+    private var isDailyChallenge: Boolean = false
 
     private val sharedPrefs by lazy {
         getApplication<Application>().getSharedPreferences(PREFS_NAME, 0)
@@ -174,9 +175,10 @@ class QuizViewModel(
      * Initialize the quiz with a given type. Call once from the UI layer.
      * Loads the database, fetches questions, and starts the timer.
      */
-    fun initialize(quizType: String) {
+    fun initialize(quizType: String, isDailyChallenge: Boolean = false) {
         if (!_uiState.value.isLoading) return  // already initialized
 
+        this.isDailyChallenge = isDailyChallenge
         _uiState.update { it.copy(quizType = quizType) }
 
         // Load previously answered question IDs
@@ -445,7 +447,9 @@ class QuizViewModel(
                     score = state.score,
                     totalQuestions = state.totalQuestions,
                     elapsedTimeSeconds = state.elapsedSeconds,
-                    hintsUsed = totalHintsUsed
+                    hintsUsed = totalHintsUsed,
+                    isDailyChallenge = isDailyChallenge,
+                    quizType = state.quizType
                 )
                 if (result != null) {
                     _gamificationResult.value = result

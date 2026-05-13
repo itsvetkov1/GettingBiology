@@ -42,11 +42,13 @@ class ComposeQuizActivity : ComponentActivity() {
                 .getString("LAST_QUIZ_TYPE", "default")
             ?: "default"
 
+        val isDailyChallenge = intent.getBooleanExtra("IS_DAILY_CHALLENGE", false)
+
         // Preload interstitial ad
         loadInterstitialAd()
 
         // Initialize the ViewModel with the quiz type
-        quizViewModel.initialize(quizType)
+        quizViewModel.initialize(quizType, isDailyChallenge)
 
         setContent {
             ZnamTheme {

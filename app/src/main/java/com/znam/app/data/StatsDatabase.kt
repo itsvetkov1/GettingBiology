@@ -12,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         Achievement::class,
         QuestionPerformance::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 abstract class StatsDatabase : RoomDatabase() {
@@ -62,6 +62,14 @@ abstract class StatsDatabase : RoomDatabase() {
                         PRIMARY KEY(`quizType`, `questionId`)
                     )
                 """.trimIndent())
+            }
+        }
+
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE `user_profile` ADD COLUMN `lastDailyChallengeDateEpochDay` INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE `user_profile` ADD COLUMN `dailyChallengeQuizType` TEXT NOT NULL DEFAULT ''")
             }
         }
     }

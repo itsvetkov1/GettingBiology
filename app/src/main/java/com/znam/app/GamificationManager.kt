@@ -15,7 +15,8 @@ import java.time.LocalDate
  * Called from QuizViewModel.finishQuiz().
  */
 class GamificationManager(
-    private val gamificationDao: GamificationDao
+    private val gamificationDao: GamificationDao,
+    private val dailyChallengeManager: DailyChallengeManager? = null
 ) {
     companion object {
         private const val TAG = "GamificationManager"
@@ -82,12 +83,18 @@ class GamificationManager(
         score: Int,
         totalQuestions: Int,
         elapsedTimeSeconds: Int,
-        hintsUsed: Int
+        hintsUsed: Int,
+        isDailyChallenge: Boolean = false,
+        quizType: String = ""
     ): GamificationResult {
         val profile = gamificationDao.ensureProfile()
         val today = LocalDate.now().toEpochDay()
         val isPerfect = score == totalQuestions && totalQuestions > 0
         val isSpeedRun = elapsedTimeSeconds < XP_SPEED_BONUS_THRESHOLD_SECONDS && totalQuestions > 0
+        val awardDailyChallengeBonus = dailyChallengeManager?.shouldAwardDailyChallenge(
+            isDailyChallenge = isDailyChallenge,
+            quizType = quizType
+        ) == true
 
         // --- Update streak first so XP uses the post-rollover value ---
         val yesterday = today - 1
@@ -117,6 +124,7 @@ class GamificationManager(
         if (isPerfect) xpEarned += XP_PERFECT_BONUS
         if (hintsUsed == 0 && isPerfect) xpEarned += XP_NO_HINTS_BONUS
         if (isSpeedRun) xpEarned += XP_SPEED_BONUS
+        if (awardDailyChallengeBonus) xpEarned += DailyChallengeManager.DAILY_CHALLENGE_XP_BONUS
 
         // Streak multiplier uses the streak after same-day/rollover/reset handling.
         val streakBonus = newStreak * XP_STREAK_MULTIPLIER_BASE
@@ -129,7 +137,7 @@ class GamificationManager(
         val newPerfectCount = if (isPerfect) profile.perfectScoreCount + 1 else profile.perfectScoreCount
 
         // --- Persist updated profile ---
-        val updatedProfile = profile.copy(
+        val baseUpdatedProfile = profile.copy(
             totalXp = newTotalXp,
             level = newLevel,
             currentStreak = newStreak,
@@ -139,6 +147,11 @@ class GamificationManager(
             perfectScoreCount = newPerfectCount,
             totalQuizzesCompleted = profile.totalQuizzesCompleted + 1
         )
+        val updatedProfile = if (awardDailyChallengeBonus) {
+            dailyChallengeManager?.markDailyChallengeCompleted(baseUpdatedProfile, quizType) ?: baseUpdatedProfile
+        } else {
+            baseUpdatedProfile
+        }
         gamificationDao.updateProfile(updatedProfile)
 
         // --- Check achievements ---
