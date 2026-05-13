@@ -13,7 +13,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         QuestionPerformance::class
     ],
     version = 3,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class StatsDatabase : RoomDatabase() {
     abstract fun statsDao(): StatsDao

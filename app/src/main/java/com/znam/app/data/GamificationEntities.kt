@@ -1,5 +1,6 @@
 package com.znam.app.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -10,14 +11,14 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "user_profile")
 data class UserProfile(
     @PrimaryKey val userId: Int = 1,
-    val totalXp: Int = 0,
-    val level: Int = 1,
-    val currentStreak: Int = 0,
-    val longestStreak: Int = 0,
-    val lastQuizDateEpochDay: Long = 0L,  // LocalDate.toEpochDay()
-    val quizzesCompletedToday: Int = 0,
-    val perfectScoreCount: Int = 0,
-    val totalQuizzesCompleted: Int = 0
+    @ColumnInfo(defaultValue = "0") val totalXp: Int = 0,
+    @ColumnInfo(defaultValue = "1") val level: Int = 1,
+    @ColumnInfo(defaultValue = "0") val currentStreak: Int = 0,
+    @ColumnInfo(defaultValue = "0") val longestStreak: Int = 0,
+    @ColumnInfo(defaultValue = "0") val lastQuizDateEpochDay: Long = 0L,  // LocalDate.toEpochDay()
+    @ColumnInfo(defaultValue = "0") val quizzesCompletedToday: Int = 0,
+    @ColumnInfo(defaultValue = "0") val perfectScoreCount: Int = 0,
+    @ColumnInfo(defaultValue = "0") val totalQuizzesCompleted: Int = 0
 )
 
 /**
@@ -26,7 +27,7 @@ data class UserProfile(
 @Entity(tableName = "achievements")
 data class Achievement(
     @PrimaryKey val achievementId: String,  // e.g. "first_quiz", "streak_7"
-    val unlockedAt: Long = System.currentTimeMillis()
+    @ColumnInfo(defaultValue = "0") val unlockedAt: Long = System.currentTimeMillis()
 )
 
 /**

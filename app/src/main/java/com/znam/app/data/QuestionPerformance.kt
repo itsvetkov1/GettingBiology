@@ -1,5 +1,6 @@
 package com.znam.app.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 
 /**
@@ -13,13 +14,13 @@ import androidx.room.Entity
 data class QuestionPerformance(
     val quizType: String,
     val questionId: Int,
-    val timesAnswered: Int = 0,
-    val timesCorrect: Int = 0,
-    val consecutiveCorrect: Int = 0,
-    val consecutiveWrong: Int = 0,
-    val lastAnsweredAt: Long = 0L,
-    val nextReviewAt: Long = 0L,      // spaced repetition: when to show again
-    val difficultyScore: Float = 0.5f  // 0.0 = easy, 1.0 = hard (for this user)
+    @ColumnInfo(defaultValue = "0") val timesAnswered: Int = 0,
+    @ColumnInfo(defaultValue = "0") val timesCorrect: Int = 0,
+    @ColumnInfo(defaultValue = "0") val consecutiveCorrect: Int = 0,
+    @ColumnInfo(defaultValue = "0") val consecutiveWrong: Int = 0,
+    @ColumnInfo(defaultValue = "0") val lastAnsweredAt: Long = 0L,
+    @ColumnInfo(defaultValue = "0") val nextReviewAt: Long = 0L,      // spaced repetition: when to show again
+    @ColumnInfo(defaultValue = "0.5") val difficultyScore: Float = 0.5f  // 0.0 = easy, 1.0 = hard (for this user)
 ) {
     val accuracyRate: Float
         get() = if (timesAnswered > 0) timesCorrect.toFloat() / timesAnswered else 0.5f
