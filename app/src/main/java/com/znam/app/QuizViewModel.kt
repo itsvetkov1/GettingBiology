@@ -350,16 +350,6 @@ class QuizViewModel(
 
     //  Internals 
 
-    private fun resolveDbName(quizType: String): String {
-        return when (quizType) {
-            "class8.db" -> "class8.db"
-            "class9.db" -> "class9.db"
-            "class10.db" -> "class10.db"
-            "db_entrance_exam.db" -> "db_entrance_exam.db"
-            else -> "dbquestions.db"
-        }
-    }
-
     private fun buildHintState(question: Question, hintsShown: Int): HintState {
         return HintState(
             hint1Text = if (hintsShown >= 1) question.hint1 else null,

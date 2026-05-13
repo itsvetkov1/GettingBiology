@@ -2,9 +2,13 @@ package com.znam.app
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.znam.app.data.StatsDatabase
+import java.util.concurrent.ConcurrentHashMap
 
 class DatabaseProvider(private val context: Context?) {
+
+    private val appDatabases = ConcurrentHashMap<String, AppDatabase>()
 
     @Volatile
     private var statsDatabase: StatsDatabase? = null
@@ -20,12 +24,13 @@ class DatabaseProvider(private val context: Context?) {
     }
 
     fun createDatabase(quizType: String): AppDatabase {
-        val appContext = requireNotNull(context) { "Context is required to create AppDatabase" }.applicationContext
         val dbName = databaseNameForQuizType(quizType)
-        return Room.databaseBuilder(appContext, AppDatabase::class.java, dbName)
-            .createFromAsset(dbName)
-            .addMigrations(*AppDatabase.ALL_MIGRATIONS)
-            .build()
+        return appDatabases.getOrPut(dbName) {
+            buildDatabase(dbName, AppDatabase::class.java)
+                .createFromAsset(dbName)
+                .addMigrations(*AppDatabase.ALL_MIGRATIONS)
+                .build()
+        }
     }
 
     /**
@@ -34,16 +39,21 @@ class DatabaseProvider(private val context: Context?) {
      */
     fun getStatsDatabase(): StatsDatabase {
         return statsDatabase ?: synchronized(this) {
-            statsDatabase ?: run {
-                val appContext = requireNotNull(context) { "Context is required to create StatsDatabase" }.applicationContext
-                Room.databaseBuilder(appContext, StatsDatabase::class.java, "quiz_stats.db")
-                    .addMigrations(
-                        StatsDatabase.MIGRATION_1_2,
-                        StatsDatabase.MIGRATION_2_3
-                    )
-                    .build()
-                    .also { statsDatabase = it }
-            }
+            statsDatabase ?: buildDatabase("quiz_stats.db", StatsDatabase::class.java)
+                .addMigrations(
+                    StatsDatabase.MIGRATION_1_2,
+                    StatsDatabase.MIGRATION_2_3
+                )
+                .build()
+                .also { statsDatabase = it }
         }
+    }
+
+    private fun <T : RoomDatabase> buildDatabase(
+        dbName: String,
+        databaseClass: Class<T>
+    ): RoomDatabase.Builder<T> {
+        val appContext = requireNotNull(context) { "Context is required to create Room databases" }.applicationContext
+        return Room.databaseBuilder(appContext, databaseClass, dbName)
     }
 }
