@@ -17,10 +17,10 @@ class DailyChallengeManager(
     companion object {
         const val DAILY_CHALLENGE_XP_BONUS = 50
         private val QUIZ_TYPES = listOf("class9.db", "class10.db", "db_entrance_exam.db")
-        private val CHALLENGE_NAMES = mapOf(
-            "class9.db" to "9th Grade Challenge",
-            "class10.db" to "10th Grade Challenge",
-            "db_entrance_exam.db" to "Entrance Exam Challenge"
+        private val CHALLENGE_NAME_RES_IDS = mapOf(
+            "class9.db" to R.string.daily_challenge_class9,
+            "class10.db" to R.string.daily_challenge_class10,
+            "db_entrance_exam.db" to R.string.daily_challenge_entrance_exam
         )
     }
 
@@ -29,8 +29,8 @@ class DailyChallengeManager(
         return QUIZ_TYPES[dayOfYear % QUIZ_TYPES.size]
     }
 
-    fun getTodaysChallengeName(): String {
-        return CHALLENGE_NAMES[getTodaysChallengeType()] ?: "Daily Challenge"
+    fun getTodaysChallengeNameResId(): Int {
+        return CHALLENGE_NAME_RES_IDS[getTodaysChallengeType()] ?: R.string.daily_challenge_default
     }
 
     fun isTodaysChallenge(quizType: String): Boolean {

@@ -32,11 +32,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.znam.app.GamificationManager
+import com.znam.app.R
 import com.znam.app.data.Achievements
 
 /**
@@ -67,13 +69,17 @@ fun XpProgressBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Level $level",
+                text = stringResource(R.string.level_format, level),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "${totalXp - currentLevelXp} / ${nextLevelXp - currentLevelXp} XP",
+                text = stringResource(
+                    R.string.xp_progress_format,
+                    totalXp - currentLevelXp,
+                    nextLevelXp - currentLevelXp
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -119,13 +125,13 @@ fun StreakBadge(
             Spacer(modifier = Modifier.width(6.dp))
             Column {
                 Text(
-                    text = "$currentStreak day${if (currentStreak != 1) "s" else ""}",
+                    text = stringResource(R.string.streak_days_format, currentStreak),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onTertiaryContainer
                 )
                 Text(
-                    text = "streak",
+                    text = stringResource(R.string.streak_label),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.7f)
                 )
@@ -169,9 +175,9 @@ fun AchievementCard(
     isUnlocked: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val name = Achievements.displayNames[achievementId] ?: achievementId
+    val name = achievementName(achievementId)
     val icon = Achievements.icons[achievementId] ?: "⭐"
-    val description = Achievements.descriptions[achievementId] ?: ""
+    val description = achievementDescription(achievementId)
 
     Card(
         modifier = modifier,
@@ -246,7 +252,7 @@ fun QuizRewardSummary(
             ) {
                 // XP earned
                 Text(
-                    text = "+${result.xpEarned} XP",
+                    text = stringResource(R.string.xp_earned_format, result.xpEarned),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -257,7 +263,7 @@ fun QuizRewardSummary(
                 // Level info
                 if (result.leveledUp) {
                     Text(
-                        text = "⭐ Level Up! Level ${result.newLevel}",
+                        text = stringResource(R.string.level_up_format, result.newLevel),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -276,7 +282,7 @@ fun QuizRewardSummary(
                         Text(text = "🔥", fontSize = 16.sp)
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "${result.currentStreak} day streak",
+                            text = stringResource(R.string.day_streak_format, result.currentStreak),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
@@ -287,7 +293,7 @@ fun QuizRewardSummary(
                 if (result.newAchievements.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "New Achievements!",
+                        text = stringResource(R.string.new_achievements_title),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -295,7 +301,7 @@ fun QuizRewardSummary(
                     Spacer(modifier = Modifier.height(4.dp))
                     result.newAchievements.forEach { id ->
                         val icon = Achievements.icons[id] ?: "⭐"
-                        val name = Achievements.displayNames[id] ?: id
+                        val name = achievementName(id)
                         Text(
                             text = "$icon $name",
                             style = MaterialTheme.typography.bodyMedium,
@@ -306,4 +312,55 @@ fun QuizRewardSummary(
             }
         }
     }
+}
+
+
+@Composable
+private fun achievementName(achievementId: String): String {
+    val resId = when (achievementId) {
+        Achievements.FIRST_QUIZ -> R.string.achievement_first_quiz_name
+        Achievements.TEN_QUIZZES -> R.string.achievement_ten_quizzes_name
+        Achievements.FIFTY_QUIZZES -> R.string.achievement_fifty_quizzes_name
+        Achievements.HUNDRED_QUIZZES -> R.string.achievement_hundred_quizzes_name
+        Achievements.STREAK_3 -> R.string.achievement_streak_3_name
+        Achievements.STREAK_7 -> R.string.achievement_streak_7_name
+        Achievements.STREAK_14 -> R.string.achievement_streak_14_name
+        Achievements.STREAK_30 -> R.string.achievement_streak_30_name
+        Achievements.FIRST_PERFECT -> R.string.achievement_first_perfect_name
+        Achievements.FIVE_PERFECTS -> R.string.achievement_five_perfects_name
+        Achievements.SPEED_DEMON -> R.string.achievement_speed_demon_name
+        Achievements.NO_HINTS -> R.string.achievement_no_hints_name
+        Achievements.LEVEL_5 -> R.string.achievement_level_5_name
+        Achievements.LEVEL_10 -> R.string.achievement_level_10_name
+        Achievements.LEVEL_25 -> R.string.achievement_level_25_name
+        Achievements.XP_1000 -> R.string.achievement_xp_1000_name
+        Achievements.XP_5000 -> R.string.achievement_xp_5000_name
+        else -> null
+    }
+    return resId?.let { stringResource(it) } ?: achievementId
+}
+
+@Composable
+private fun achievementDescription(achievementId: String): String {
+    val resId = when (achievementId) {
+        Achievements.FIRST_QUIZ -> R.string.achievement_first_quiz_description
+        Achievements.TEN_QUIZZES -> R.string.achievement_ten_quizzes_description
+        Achievements.FIFTY_QUIZZES -> R.string.achievement_fifty_quizzes_description
+        Achievements.HUNDRED_QUIZZES -> R.string.achievement_hundred_quizzes_description
+        Achievements.STREAK_3 -> R.string.achievement_streak_3_description
+        Achievements.STREAK_7 -> R.string.achievement_streak_7_description
+        Achievements.STREAK_14 -> R.string.achievement_streak_14_description
+        Achievements.STREAK_30 -> R.string.achievement_streak_30_description
+        Achievements.FIRST_PERFECT -> R.string.achievement_first_perfect_description
+        Achievements.FIVE_PERFECTS -> R.string.achievement_five_perfects_description
+        Achievements.SPEED_DEMON -> R.string.achievement_speed_demon_description
+        Achievements.NO_HINTS -> R.string.achievement_no_hints_description
+        Achievements.LEVEL_5 -> R.string.achievement_level_5_description
+        Achievements.LEVEL_10 -> R.string.achievement_level_10_description
+        Achievements.LEVEL_25 -> R.string.achievement_level_25_description
+        Achievements.XP_1000 -> R.string.achievement_xp_1000_description
+        Achievements.XP_5000 -> R.string.achievement_xp_5000_description
+        else -> null
+    }
+    return resId?.let { stringResource(it) } ?: ""
 }

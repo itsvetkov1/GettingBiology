@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -96,7 +97,7 @@ class WelcomeActivity : AppCompatActivity() {
 
     private fun setupDailyChallengeButton() {
         val button = findViewById<MaterialButton>(R.id.dailyChallengeButton)
-        val challengeName = dailyChallengeManager.getTodaysChallengeName()
+        val challengeName = getString(dailyChallengeManager.getTodaysChallengeNameResId())
         val challengeType = dailyChallengeManager.getTodaysChallengeType()
 
         // Check if challenge is completed
@@ -105,10 +106,10 @@ class WelcomeActivity : AppCompatActivity() {
                 dailyChallengeManager.isTodaysChallengeCompleted()
             }
             if (completed) {
-                button.text = "✅ $challengeName (Done!)"
+                button.text = getString(R.string.daily_challenge_done_format, challengeName)
                 button.alpha = 0.7f
             } else {
-                button.text = "⚡ $challengeName"
+                button.text = getString(R.string.daily_challenge_format, challengeName)
             }
         }
 
@@ -168,7 +169,7 @@ private fun WelcomeGamificationBar(gamificationDao: GamificationDao) {
                 Text(text = "🎓", fontSize = 20.sp)
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "Level ${p.level}",
+                    text = stringResource(R.string.level_format, p.level),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -177,7 +178,7 @@ private fun WelcomeGamificationBar(gamificationDao: GamificationDao) {
 
             // XP
             Text(
-                text = "${p.totalXp} XP",
+                text = stringResource(R.string.xp_total_format, p.totalXp),
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
