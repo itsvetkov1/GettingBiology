@@ -25,10 +25,10 @@ import com.znam.app.data.GamificationDao
  */
 sealed class QuizEvent {
     /** Navigate to the result screen with these results. */
-    data class NavigateToResults(val results: QuizResults) : QuizEvent()
+    data class NavigateToResults(val results: QuizResults, val gamificationResult: GamificationManager.GamificationResult? = null) : QuizEvent()
 
     /** Show an interstitial ad before navigating to results. */
-    data class ShowInterstitialAd(val results: QuizResults) : QuizEvent()
+    data class ShowInterstitialAd(val results: QuizResults, val gamificationResult: GamificationManager.GamificationResult? = null) : QuizEvent()
 
     /** No questions available for the selected quiz type. */
     object NoQuestionsAvailable : QuizEvent()
@@ -442,8 +442,8 @@ class QuizViewModel(
             }
 
             // Gamification: award XP, update streak, check achievements
-            try {
-                val result = gamificationManager?.processQuizCompletion(
+            val result = try {
+                gamificationManager?.processQuizCompletion(
                     score = state.score,
                     totalQuestions = state.totalQuestions,
                     elapsedTimeSeconds = state.elapsedSeconds,
@@ -451,16 +451,19 @@ class QuizViewModel(
                     isDailyChallenge = isDailyChallenge,
                     quizType = state.quizType
                 )
-                if (result != null) {
-                    _gamificationResult.value = result
-                }
             } catch (e: Exception) {
                 Log.w("QuizViewModel", "Gamification processing failed (best-effort)", e)
+                null
+            }
+            if (result != null) {
+                _gamificationResult.value = result
+            }
+
+            // Emit after persistence/gamification continuation so the result UI receives rewards.
+            withContext(Dispatchers.Main) {
+                _events.value = QuizEvent.ShowInterstitialAd(results, result)
             }
         }
-
-        // Emit event  the UI layer decides whether to show an ad first
-        _events.value = QuizEvent.ShowInterstitialAd(results)
     }
 
     private fun persistProgress() {

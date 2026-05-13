@@ -54,11 +54,11 @@ class ComposeQuizActivity : ComponentActivity() {
             ZnamTheme {
                 QuizScreen(
                     viewModel = quizViewModel,
-                    onNavigateToResults = { results ->
-                        navigateToResults(results)
+                    onNavigateToResults = { results, gamResult ->
+                        navigateToResults(results, gamResult)
                     },
-                    onShowInterstitialAd = { results ->
-                        showInterstitialThenResults(results)
+                    onShowInterstitialAd = { results, gamResult ->
+                        showInterstitialThenResults(results, gamResult)
                     },
                     onNoQuestions = {
                         Toast.makeText(
@@ -93,35 +93,33 @@ class ComposeQuizActivity : ComponentActivity() {
         )
     }
 
-    private fun showInterstitialThenResults(results: QuizResults) {
+    private fun showInterstitialThenResults(results: QuizResults, gamResult: GamificationManager.GamificationResult?) {
         val ad = interstitialAd
         if (ad != null) {
             ad.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
                     interstitialAd = null
-                    navigateToResults(results)
+                    navigateToResults(results, gamResult)
                 }
 
                 override fun onAdFailedToShowFullScreenContent(error: com.google.android.gms.ads.AdError) {
                     interstitialAd = null
-                    navigateToResults(results)
+                    navigateToResults(results, gamResult)
                 }
             }
             ad.show(this)
         } else {
-            navigateToResults(results)
+            navigateToResults(results, gamResult)
         }
     }
 
-    private fun navigateToResults(results: QuizResults) {
+    private fun navigateToResults(results: QuizResults, gamResult: GamificationManager.GamificationResult?) {
         val quizResult = QuizResult(
             score = results.score,
             questions = ArrayList(results.questions),
             userAnswers = ArrayList(results.userAnswers),
             elapsedTimeInSeconds = results.elapsedTimeSeconds
         )
-
-        val gamResult = quizViewModel.gamificationResult.value
 
         val intent = Intent(this, ResultActivity::class.java).apply {
             putExtra(ResultActivity.EXTRA_QUIZ_RESULT, quizResult)

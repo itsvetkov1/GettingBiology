@@ -93,8 +93,8 @@ private val DefaultOptionBorder = Color(0xFFBFC8CA)
 @Composable
 fun QuizScreen(
     viewModel: QuizViewModel,
-    onNavigateToResults: (com.znam.app.QuizResults) -> Unit,
-    onShowInterstitialAd: (com.znam.app.QuizResults) -> Unit,
+    onNavigateToResults: (com.znam.app.QuizResults, com.znam.app.GamificationManager.GamificationResult?) -> Unit,
+    onShowInterstitialAd: (com.znam.app.QuizResults, com.znam.app.GamificationManager.GamificationResult?) -> Unit,
     onNoQuestions: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -104,11 +104,11 @@ fun QuizScreen(
     LaunchedEffect(event) {
         when (val e = event) {
             is QuizEvent.NavigateToResults -> {
-                onNavigateToResults(e.results)
+                onNavigateToResults(e.results, e.gamificationResult)
                 viewModel.consumeEvent()
             }
             is QuizEvent.ShowInterstitialAd -> {
-                onShowInterstitialAd(e.results)
+                onShowInterstitialAd(e.results, e.gamificationResult)
                 viewModel.consumeEvent()
             }
             is QuizEvent.NoQuestionsAvailable -> {
