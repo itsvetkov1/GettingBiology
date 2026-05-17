@@ -27,7 +27,7 @@ class DailyChallengeManager(
 
     fun getTodaysChallengeType(): String {
         val dayOfYear = clock.today().dayOfYear
-        return QUIZ_TYPES[dayOfYear % QUIZ_TYPES.size]
+        return QUIZ_TYPES[(dayOfYear - 1) % QUIZ_TYPES.size]
     }
 
     fun getTodaysChallengeNameResId(): Int {
