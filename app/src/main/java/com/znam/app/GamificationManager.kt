@@ -5,7 +5,7 @@ import com.znam.app.data.Achievement
 import com.znam.app.data.Achievements
 import com.znam.app.data.GamificationDao
 import com.znam.app.data.UserProfile
-import java.time.LocalDate
+
 
 /**
  * Encapsulates all gamification logic: XP calculation, leveling,
@@ -16,7 +16,8 @@ import java.time.LocalDate
  */
 class GamificationManager(
     private val gamificationDao: GamificationDao,
-    private val dailyChallengeManager: DailyChallengeManager? = null
+    private val dailyChallengeManager: DailyChallengeManager? = null,
+    private val clock: Clock = SystemClock
 ) {
     companion object {
         private const val TAG = "GamificationManager"
@@ -88,7 +89,7 @@ class GamificationManager(
         quizType: String = ""
     ): GamificationResult {
         val profile = gamificationDao.ensureProfile()
-        val today = LocalDate.now().toEpochDay()
+        val today = clock.today().toEpochDay()
         val isPerfect = score == totalQuestions && totalQuestions > 0
         val isSpeedRun = elapsedTimeSeconds < XP_SPEED_BONUS_THRESHOLD_SECONDS && totalQuestions > 0
         val awardDailyChallengeBonus = dailyChallengeManager?.shouldAwardDailyChallenge(

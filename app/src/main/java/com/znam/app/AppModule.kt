@@ -30,12 +30,14 @@ val appModule = module {
     }
 
     // Gamification
+    single<Clock> { SystemClock }
+
     single<com.znam.app.data.GamificationDao> {
         get<com.znam.app.data.StatsDatabase>().gamificationDao()
     }
 
-    single { DailyChallengeManager(gamificationDao = get()) }
-    single { GamificationManager(gamificationDao = get(), dailyChallengeManager = get()) }
+    single { DailyChallengeManager(gamificationDao = get(), clock = get()) }
+    single { GamificationManager(gamificationDao = get(), dailyChallengeManager = get(), clock = get()) }
 
     // Smart learning
     single<com.znam.app.data.QuestionPerformanceDao> {

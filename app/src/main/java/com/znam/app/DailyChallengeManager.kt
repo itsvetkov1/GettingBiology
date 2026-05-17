@@ -2,7 +2,7 @@ package com.znam.app
 
 import com.znam.app.data.GamificationDao
 import com.znam.app.data.UserProfile
-import java.time.LocalDate
+
 
 /**
  * Manages the daily challenge feature.
@@ -12,7 +12,8 @@ import java.time.LocalDate
  * Tracks whether today's challenge has been completed via explicit UserProfile fields.
  */
 class DailyChallengeManager(
-    private val gamificationDao: GamificationDao
+    private val gamificationDao: GamificationDao,
+    private val clock: Clock = SystemClock
 ) {
     companion object {
         const val DAILY_CHALLENGE_XP_BONUS = 50
@@ -25,7 +26,7 @@ class DailyChallengeManager(
     }
 
     fun getTodaysChallengeType(): String {
-        val dayOfYear = LocalDate.now().dayOfYear
+        val dayOfYear = clock.today().dayOfYear
         return QUIZ_TYPES[dayOfYear % QUIZ_TYPES.size]
     }
 
@@ -39,7 +40,7 @@ class DailyChallengeManager(
 
     suspend fun isTodaysChallengeCompleted(): Boolean {
         val profile = gamificationDao.getProfile() ?: return false
-        val today = LocalDate.now().toEpochDay()
+        val today = clock.today().toEpochDay()
         return profile.lastDailyChallengeDateEpochDay == today &&
             profile.dailyChallengeQuizType == getTodaysChallengeType()
     }
@@ -50,7 +51,7 @@ class DailyChallengeManager(
 
     fun markDailyChallengeCompleted(profile: UserProfile, quizType: String): UserProfile {
         return profile.copy(
-            lastDailyChallengeDateEpochDay = LocalDate.now().toEpochDay(),
+            lastDailyChallengeDateEpochDay = clock.today().toEpochDay(),
             dailyChallengeQuizType = quizType
         )
     }
