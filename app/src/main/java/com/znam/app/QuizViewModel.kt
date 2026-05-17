@@ -162,7 +162,6 @@ class QuizViewModel(
     private val answeredQuestionIds = mutableListOf<Int>()
     private var timerJob: Job? = null
     private var autoAdvanceJob: Job? = null
-    private var db: AppDatabase? = null
     private var totalHintsUsed: Int = 0
     private var isDailyChallenge: Boolean = false
 
@@ -195,8 +194,6 @@ class QuizViewModel(
             try {
                 val loadedQuestions = withContext(Dispatchers.IO) {
                     val database = databaseProvider.createDatabase(quizType)
-                    db = database
-
                     val allQuestions = database.questionDao().getAllQuestions()
 
                     // Use smart selection if available, otherwise fall back to shuffle
@@ -477,6 +474,5 @@ class QuizViewModel(
         super.onCleared()
         stopTimer()
         autoAdvanceJob?.cancel()
-        db?.close()
     }
 }
