@@ -132,6 +132,8 @@ class ComposeQuizActivity : ComponentActivity() {
                 putExtra(ResultActivity.EXTRA_LEVELED_UP, gamResult.leveledUp)
                 putExtra(ResultActivity.EXTRA_CURRENT_STREAK, gamResult.currentStreak)
                 putExtra(ResultActivity.EXTRA_NEW_ACHIEVEMENTS, gamResult.newAchievements.toTypedArray())
+                putExtra(ResultActivity.EXTRA_XP_BREAKDOWN_LABELS, gamResult.xpBreakdown.map { it.label }.toTypedArray())
+                putExtra(ResultActivity.EXTRA_XP_BREAKDOWN_AMOUNTS, gamResult.xpBreakdown.map { it.amount }.toIntArray())
             }
         }
         startActivity(intent)

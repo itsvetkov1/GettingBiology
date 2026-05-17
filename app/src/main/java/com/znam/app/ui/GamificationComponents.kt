@@ -260,6 +260,30 @@ fun QuizRewardSummary(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                result.xpBreakdown.forEach { component ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = component.label,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                        )
+                        Text(
+                            text = "+${component.amount} XP",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+
+                if (result.xpBreakdown.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
                 // Level info
                 if (result.leveledUp) {
                     Text(

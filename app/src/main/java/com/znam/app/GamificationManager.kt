@@ -75,7 +75,13 @@ class GamificationManager(
         val newLevel: Int,
         val leveledUp: Boolean,
         val currentStreak: Int,
-        val newAchievements: List<String>  // achievement IDs unlocked this session
+        val newAchievements: List<String>,  // achievement IDs unlocked this session
+        val xpBreakdown: List<XpComponent> = emptyList()
+    )
+
+    data class XpComponent(
+        val label: String,
+        val amount: Int
     )
 
     /**
@@ -123,15 +129,34 @@ class GamificationManager(
         }
 
         // --- Calculate XP ---
-        var xpEarned = score * XP_PER_CORRECT
-        if (isPerfect) xpEarned += XP_PERFECT_BONUS
-        if (hintsUsed == 0 && isPerfect) xpEarned += XP_NO_HINTS_BONUS
-        if (isSpeedRun) xpEarned += XP_SPEED_BONUS
-        if (awardDailyChallengeBonus) xpEarned += DailyChallengeManager.DAILY_CHALLENGE_XP_BONUS
+        val xpBreakdown = mutableListOf<XpComponent>()
+        val baseXp = score * XP_PER_CORRECT
+        xpBreakdown.add(XpComponent("Correct answers", baseXp))
+
+        var xpEarned = baseXp
+        if (isPerfect) {
+            xpEarned += XP_PERFECT_BONUS
+            xpBreakdown.add(XpComponent("Perfect score", XP_PERFECT_BONUS))
+        }
+        if (hintsUsed == 0 && isPerfect) {
+            xpEarned += XP_NO_HINTS_BONUS
+            xpBreakdown.add(XpComponent("No hints", XP_NO_HINTS_BONUS))
+        }
+        if (isSpeedRun) {
+            xpEarned += XP_SPEED_BONUS
+            xpBreakdown.add(XpComponent("Speed bonus", XP_SPEED_BONUS))
+        }
+        if (awardDailyChallengeBonus) {
+            xpEarned += DailyChallengeManager.DAILY_CHALLENGE_XP_BONUS
+            xpBreakdown.add(XpComponent("Daily challenge", DailyChallengeManager.DAILY_CHALLENGE_XP_BONUS))
+        }
 
         // Streak multiplier uses the streak after same-day/rollover/reset handling.
         val streakBonus = (newStreak * XP_STREAK_MULTIPLIER_BASE).coerceAtMost(MAX_STREAK_BONUS)
         xpEarned += streakBonus
+        if (streakBonus > 0) {
+            xpBreakdown.add(XpComponent("Streak bonus", streakBonus))
+        }
 
         val newTotalXp = profile.totalXp + xpEarned
         val oldLevel = profile.level
@@ -212,7 +237,8 @@ class GamificationManager(
             newLevel = newLevel,
             leveledUp = newLevel > oldLevel,
             currentStreak = newStreak,
-            newAchievements = trulyNew
+            newAchievements = trulyNew,
+            xpBreakdown = xpBreakdown
         )
     }
 }

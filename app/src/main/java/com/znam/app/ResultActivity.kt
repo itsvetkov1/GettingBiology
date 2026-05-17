@@ -108,6 +108,11 @@ class ResultActivity : AppCompatActivity() {
         val leveledUp = intent.getBooleanExtra(EXTRA_LEVELED_UP, false)
         val currentStreak = intent.getIntExtra(EXTRA_CURRENT_STREAK, 0)
         val newAchievements = intent.getStringArrayExtra(EXTRA_NEW_ACHIEVEMENTS)?.toList() ?: emptyList()
+        val breakdownLabels = intent.getStringArrayExtra(EXTRA_XP_BREAKDOWN_LABELS)?.toList() ?: emptyList()
+        val breakdownAmounts = intent.getIntArrayExtra(EXTRA_XP_BREAKDOWN_AMOUNTS)?.toList() ?: emptyList()
+        val xpBreakdown = breakdownLabels.zip(breakdownAmounts).map { (label, amount) ->
+            GamificationManager.XpComponent(label = label, amount = amount)
+        }
 
         val gamResult = GamificationManager.GamificationResult(
             xpEarned = xpEarned,
@@ -116,7 +121,8 @@ class ResultActivity : AppCompatActivity() {
             newLevel = newLevel,
             leveledUp = leveledUp,
             currentStreak = currentStreak,
-            newAchievements = newAchievements
+            newAchievements = newAchievements,
+            xpBreakdown = xpBreakdown
         )
 
         composeView.setContent {
@@ -144,6 +150,8 @@ class ResultActivity : AppCompatActivity() {
         const val EXTRA_LEVELED_UP = "com.znam.app.EXTRA_LEVELED_UP"
         const val EXTRA_CURRENT_STREAK = "com.znam.app.EXTRA_CURRENT_STREAK"
         const val EXTRA_NEW_ACHIEVEMENTS = "com.znam.app.EXTRA_NEW_ACHIEVEMENTS"
+        const val EXTRA_XP_BREAKDOWN_LABELS = "com.znam.app.EXTRA_XP_BREAKDOWN_LABELS"
+        const val EXTRA_XP_BREAKDOWN_AMOUNTS = "com.znam.app.EXTRA_XP_BREAKDOWN_AMOUNTS"
     }
 
     private fun createQuestionView(parent: ViewGroup, question: Question, userAnswer: String?): View {
