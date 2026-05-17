@@ -97,29 +97,46 @@ class WelcomeActivity : AppCompatActivity() {
 
     private fun setupDailyChallengeButton() {
         val button = findViewById<MaterialButton>(R.id.dailyChallengeButton)
-        val challengeName = getString(dailyChallengeManager.getTodaysChallengeNameResId())
-        val challengeType = dailyChallengeManager.getTodaysChallengeType()
+
+        fun bindButtonState(completed: Boolean) {
+            val challengeName = getString(dailyChallengeManager.getTodaysChallengeNameResId())
+            if (completed) {
+                button.text = getString(R.string.daily_challenge_done_format, challengeName)
+                button.alpha = 0.7f
+                button.isEnabled = false
+            } else {
+                button.text = getString(R.string.daily_challenge_format, challengeName)
+                button.alpha = 1.0f
+                button.isEnabled = true
+            }
+        }
 
         // Check if challenge is completed
         lifecycleScope.launch {
             val completed = withContext(Dispatchers.IO) {
                 dailyChallengeManager.isTodaysChallengeCompleted()
             }
-            if (completed) {
-                button.text = getString(R.string.daily_challenge_done_format, challengeName)
-                button.alpha = 0.7f
-            } else {
-                button.text = getString(R.string.daily_challenge_format, challengeName)
-            }
+            bindButtonState(completed)
         }
 
         button.setOnClickListener {
-            val intent = Intent(this, ComposeQuizActivity::class.java).apply {
-                putExtra("QUIZ_TYPE", challengeType)
-                putExtra("IS_DAILY_CHALLENGE", true)
+            lifecycleScope.launch {
+                val completed = withContext(Dispatchers.IO) {
+                    dailyChallengeManager.isTodaysChallengeCompleted()
+                }
+                if (completed) {
+                    bindButtonState(completed = true)
+                    return@launch
+                }
+
+                val currentChallengeType = dailyChallengeManager.getTodaysChallengeType()
+                val intent = Intent(this@WelcomeActivity, ComposeQuizActivity::class.java).apply {
+                    putExtra("QUIZ_TYPE", currentChallengeType)
+                    putExtra("IS_DAILY_CHALLENGE", true)
+                }
+                startActivity(intent)
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             }
-            startActivity(intent)
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
     }
 
