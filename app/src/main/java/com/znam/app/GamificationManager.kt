@@ -27,6 +27,7 @@ class GamificationManager(
         const val XP_PER_CORRECT = 10
         const val XP_PERFECT_BONUS = 50
         const val XP_STREAK_MULTIPLIER_BASE = 5   // +5 XP per streak day
+        const val MAX_STREAK_BONUS = 100           // Cap recurring streak XP so it cannot dominate quiz rewards
         const val XP_NO_HINTS_BONUS = 25
         const val XP_SPEED_BONUS_THRESHOLD_SECONDS = 90
         const val XP_SPEED_BONUS = 30
@@ -129,7 +130,7 @@ class GamificationManager(
         if (awardDailyChallengeBonus) xpEarned += DailyChallengeManager.DAILY_CHALLENGE_XP_BONUS
 
         // Streak multiplier uses the streak after same-day/rollover/reset handling.
-        val streakBonus = newStreak * XP_STREAK_MULTIPLIER_BASE
+        val streakBonus = (newStreak * XP_STREAK_MULTIPLIER_BASE).coerceAtMost(MAX_STREAK_BONUS)
         xpEarned += streakBonus
 
         val newTotalXp = profile.totalXp + xpEarned
