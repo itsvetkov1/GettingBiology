@@ -133,15 +133,15 @@ class SmartQuestionSelector(
                 existing.difficultyScore * (1 - alpha) + 1f * alpha
             }
 
-            existing.copy(
+            val updated = existing.copy(
                 timesAnswered = existing.timesAnswered + 1,
                 timesCorrect = existing.timesCorrect + (if (wasCorrect) 1 else 0),
                 consecutiveCorrect = newConsecutiveCorrect,
                 consecutiveWrong = newConsecutiveWrong,
                 lastAnsweredAt = now,
-                nextReviewAt = now + existing.computeNextInterval(wasCorrect),
                 difficultyScore = newDifficulty.coerceIn(0f, 1f)
             )
+            updated.copy(nextReviewAt = now + updated.computeNextInterval(wasCorrect))
         } else {
             // First time seeing this question
             val perf = QuestionPerformance(
