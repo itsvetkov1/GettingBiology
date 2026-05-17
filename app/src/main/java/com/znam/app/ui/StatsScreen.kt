@@ -704,7 +704,7 @@ private fun GamificationOverviewCard(
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Level ${profile.level}",
+                        text = stringResource(R.string.level_format, profile.level),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -712,7 +712,11 @@ private fun GamificationOverviewCard(
                     val currentLevelXp = GamificationManager.xpForLevel(profile.level)
                     val nextLevelXp = GamificationManager.xpForLevel(profile.level + 1)
                     Text(
-                        text = "${profile.totalXp} XP  •  ${nextLevelXp - profile.totalXp} to next level",
+                        text = stringResource(
+                            R.string.xp_to_next_level_format,
+                            profile.totalXp,
+                            nextLevelXp - profile.totalXp
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -771,10 +775,10 @@ private fun GamificationOverviewCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                GamificationStat(value = "${profile.totalQuizzesCompleted}", label = "Quizzes")
-                GamificationStat(value = "${profile.longestStreak}", label = "Best Streak")
-                GamificationStat(value = "${profile.perfectScoreCount}", label = "Perfects")
-                GamificationStat(value = "${achievements.size}", label = "Badges")
+                GamificationStat(value = "${profile.totalQuizzesCompleted}", label = stringResource(R.string.gamification_quizzes_label))
+                GamificationStat(value = "${profile.longestStreak}", label = stringResource(R.string.gamification_best_streak_label))
+                GamificationStat(value = "${profile.perfectScoreCount}", label = stringResource(R.string.gamification_perfects_label))
+                GamificationStat(value = "${achievements.size}", label = stringResource(R.string.gamification_badges_label))
             }
 
             // Recent achievements preview
@@ -785,7 +789,7 @@ private fun GamificationOverviewCard(
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Text(
-                        text = "Recent Achievements: ",
+                        text = stringResource(R.string.recent_achievements_label) + " ",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

@@ -63,23 +63,23 @@ object Achievements {
 
     /** Human-readable names for display. */
     val displayNames = mapOf(
-        FIRST_QUIZ to "First Steps",
-        TEN_QUIZZES to "Getting Started",
-        FIFTY_QUIZZES to "Dedicated Learner",
-        HUNDRED_QUIZZES to "Quiz Master",
-        STREAK_3 to "On a Roll",
-        STREAK_7 to "Week Warrior",
-        STREAK_14 to "Fortnight Force",
-        STREAK_30 to "Monthly Legend",
-        FIRST_PERFECT to "Perfectionist",
-        FIVE_PERFECTS to "Flawless Five",
-        SPEED_DEMON to "Speed Demon",
-        NO_HINTS to "Solo Genius",
-        LEVEL_5 to "Rising Star",
-        LEVEL_10 to "Knowledge Seeker",
-        LEVEL_25 to "Biology Expert",
-        XP_1000 to "XP Collector",
-        XP_5000 to "XP Hoarder"
+        FIRST_QUIZ to "Първи стъпки",
+        TEN_QUIZZES to "Добро начало",
+        FIFTY_QUIZZES to "Отдаден ученик",
+        HUNDRED_QUIZZES to "Майстор на тестовете",
+        STREAK_3 to "В серия",
+        STREAK_7 to "Седмичен воин",
+        STREAK_14 to "Двуседмична сила",
+        STREAK_30 to "Месечна легенда",
+        FIRST_PERFECT to "Перфекционист",
+        FIVE_PERFECTS to "Безгрешна петица",
+        SPEED_DEMON to "Скоростен демон",
+        NO_HINTS to "Самостоятелен гений",
+        LEVEL_5 to "Изгряваща звезда",
+        LEVEL_10 to "Търсач на знание",
+        LEVEL_25 to "Експерт по биология",
+        XP_1000 to "Колекционер на XP",
+        XP_5000 to "Трупач на XP"
     )
 
     /** Emoji icons for each achievement. */
@@ -105,22 +105,22 @@ object Achievements {
 
     /** Description of how to earn each achievement. */
     val descriptions = mapOf(
-        FIRST_QUIZ to "Complete your first quiz",
-        TEN_QUIZZES to "Complete 10 quizzes",
-        FIFTY_QUIZZES to "Complete 50 quizzes",
-        HUNDRED_QUIZZES to "Complete 100 quizzes",
-        STREAK_3 to "Maintain a 3-day streak",
-        STREAK_7 to "Maintain a 7-day streak",
-        STREAK_14 to "Maintain a 14-day streak",
-        STREAK_30 to "Maintain a 30-day streak",
-        FIRST_PERFECT to "Get a perfect score",
-        FIVE_PERFECTS to "Get 5 perfect scores",
-        SPEED_DEMON to "Complete a quiz in under 60 seconds",
-        NO_HINTS to "Get a perfect score without using any hints",
-        LEVEL_5 to "Reach level 5",
-        LEVEL_10 to "Reach level 10",
-        LEVEL_25 to "Reach level 25",
-        XP_1000 to "Earn 1,000 XP",
-        XP_5000 to "Earn 5,000 XP"
+        FIRST_QUIZ to "Завърши първия си тест",
+        TEN_QUIZZES to "Завърши 10 теста",
+        FIFTY_QUIZZES to "Завърши 50 теста",
+        HUNDRED_QUIZZES to "Завърши 100 теста",
+        STREAK_3 to "Поддържай 3-дневна поредица",
+        STREAK_7 to "Поддържай 7-дневна поредица",
+        STREAK_14 to "Поддържай 14-дневна поредица",
+        STREAK_30 to "Поддържай 30-дневна поредица",
+        FIRST_PERFECT to "Постигни перфектен резултат",
+        FIVE_PERFECTS to "Постигни 5 перфектни резултата",
+        SPEED_DEMON to "Завърши тест за под 60 секунди",
+        NO_HINTS to "Постигни перфектен резултат без подсказки",
+        LEVEL_5 to "Достигни ниво 5",
+        LEVEL_10 to "Достигни ниво 10",
+        LEVEL_25 to "Достигни ниво 25",
+        XP_1000 to "Спечели 1 000 XP",
+        XP_5000 to "Спечели 5 000 XP"
     )
 }

@@ -1,59 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:fitsSystemWindows="true"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_theme_light_primary">
+    android:background="@color/md_theme_light_primary"
+    android:clipToPadding="false"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/languageToggleButton"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="44dp"
-        android:layout_gravity="top|end"
-        android:layout_margin="16dp"
-        android:text="@string/language_toggle_to_en"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:contentDescription="@string/language_toggle_content_description"
+        android:text="@string/language_toggle_to_en"
         android:textColor="@color/white"
         app:backgroundTint="@android:color/transparent"
         app:cornerRadius="22dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:strokeColor="@color/white"
         app:strokeWidth="1dp" />
 
-    <!-- Logo -->
     <ImageView
         android:id="@+id/logoImageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="0dp"
-        android:layout_marginTop="120dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="72dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="28dp"
         android:adjustViewBounds="true"
-        android:elevation="8dp"
         android:alpha="0.8"
+        android:contentDescription="@string/app_logo_description"
+        android:elevation="8dp"
+        android:scaleType="fitCenter"
         android:src="@drawable/logo"
-        android:contentDescription="@string/app_logo_description" />
+        app:layout_constraintBottom_toTopOf="@id/bottomSheetCard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Bottom Sheet Card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottomSheetCard"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:cardBackgroundColor="@color/white_90_opacity"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="20dp"
+        app:cardBackgroundColor="@color/white"
         app:cardElevation="8dp"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.TopRounded">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.RoundedCard">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
             android:paddingHorizontal="24dp"
-            android:paddingTop="32dp"
-            android:paddingBottom="24dp"
-            android:gravity="center_horizontal">
+            android:paddingTop="24dp"
+            android:paddingBottom="24dp">
 
-            <!-- Gamification status (Compose) -->
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/welcome_gamification_view"
                 android:layout_width="match_parent"
@@ -64,20 +76,20 @@
                 android:id="@+id/headerTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="@string/welcome_title"
-                android:textSize="22sp"
-                android:textStyle="bold"
                 android:textColor="@color/md_theme_light_primary"
-                android:layout_marginBottom="8dp" />
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/subtitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:text="@string/welcome_subtitle"
-                android:textSize="16sp"
                 android:textColor="@color/gray_600"
-                android:layout_marginBottom="24dp" />
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:id="@+id/categoryButtonContainer"
@@ -89,27 +101,27 @@
                     android:id="@+id/startQuizButton"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
+                    android:layout_marginBottom="8dp"
                     android:text="@string/start_button"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@color/white"
                     app:backgroundTint="@color/md_theme_light_primary"
                     app:cornerRadius="12dp"
-                    app:elevation="2dp"
-                    android:layout_marginBottom="8dp" />
+                    app:elevation="2dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/dailyChallengeButton"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
+                    android:layout_marginBottom="8dp"
                     android:text="@string/daily_challenge_placeholder"
+                    android:textColor="@color/white"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/white"
                     app:backgroundTint="#E65100"
                     app:cornerRadius="12dp"
-                    app:elevation="2dp"
-                    android:layout_marginBottom="8dp" />
+                    app:elevation="2dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/statsButton"
@@ -117,17 +129,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:text="@string/stats_title"
-                    android:textSize="14sp"
                     android:textColor="@color/md_theme_light_primary"
+                    android:textSize="14sp"
                     app:cornerRadius="12dp"
-                    app:strokeColor="@color/md_theme_light_primary"
-                    app:strokeWidth="1dp"
                     app:icon="@android:drawable/ic_menu_recent_history"
                     app:iconGravity="textStart"
-                    app:iconTint="@color/md_theme_light_primary" />
+                    app:iconTint="@color/md_theme_light_primary"
+                    app:strokeColor="@color/md_theme_light_primary"
+                    app:strokeWidth="1dp" />
 
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
