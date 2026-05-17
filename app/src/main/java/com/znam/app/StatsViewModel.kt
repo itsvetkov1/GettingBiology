@@ -64,7 +64,7 @@ class StatsViewModel(
                 val weekAgoMillis = System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000L)
 
                 // Load gamification data
-                val profile = try { gamificationDao?.ensureProfile() } catch (e: Exception) { null }
+                val profile = try { gamificationDao?.getProfile() } catch (e: Exception) { null }
                 val achievements = try { gamificationDao?.getAllAchievements() ?: emptyList() } catch (e: Exception) { emptyList() }
 
                 _uiState.update {
