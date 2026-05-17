@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -51,4 +52,25 @@ interface GamificationDao {
 
     @Query("SELECT COUNT(*) FROM achievements WHERE achievementId = :id")
     suspend fun isUnlocked(id: String): Int
+
+    /**
+     * Persist profile changes and related achievement unlocks atomically.
+     *
+     * The caller computes the new profile from a mutex-guarded snapshot; this
+     * transaction prevents the profile commit and achievement inserts from
+     * being split across separate database units of work.
+     */
+    @Transaction
+    suspend fun updateProfileAndUnlockAchievements(
+        profile: UserProfile,
+        candidateAchievementIds: List<String>
+    ): List<String> {
+        updateProfile(profile)
+        val alreadyUnlocked = getUnlockedIds().toSet()
+        val trulyNew = candidateAchievementIds.distinct().filter { it !in alreadyUnlocked }
+        for (id in trulyNew) {
+            unlockAchievement(Achievement(achievementId = id))
+        }
+        return trulyNew
+    }
 }

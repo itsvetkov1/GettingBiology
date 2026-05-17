@@ -1,11 +1,10 @@
 package com.znam.app
 
 import android.util.Log
-import com.znam.app.data.Achievement
 import com.znam.app.data.Achievements
 import com.znam.app.data.GamificationDao
-import com.znam.app.data.UserProfile
-
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Encapsulates all gamification logic: XP calculation, leveling,
@@ -19,6 +18,8 @@ class GamificationManager(
     private val dailyChallengeManager: DailyChallengeManager? = null,
     private val clock: Clock = SystemClock
 ) {
+    private val processMutex = Mutex()
+
     companion object {
         private const val TAG = "GamificationManager"
 
@@ -87,7 +88,7 @@ class GamificationManager(
         hintsUsed: Int,
         isDailyChallenge: Boolean = false,
         quizType: String = ""
-    ): GamificationResult {
+    ): GamificationResult = processMutex.withLock {
         val profile = gamificationDao.ensureProfile()
         val today = clock.today().toEpochDay()
         val isPerfect = score == totalQuestions && totalQuestions > 0
@@ -137,7 +138,7 @@ class GamificationManager(
         val newLongest = maxOf(profile.longestStreak, newStreak)
         val newPerfectCount = if (isPerfect) profile.perfectScoreCount + 1 else profile.perfectScoreCount
 
-        // --- Persist updated profile ---
+        // --- Build updated profile ---
         val baseUpdatedProfile = profile.copy(
             totalXp = newTotalXp,
             level = newLevel,
@@ -153,17 +154,15 @@ class GamificationManager(
         } else {
             baseUpdatedProfile
         }
-        gamificationDao.updateProfile(updatedProfile)
 
         // --- Check achievements ---
-        val newAchievements = mutableListOf<String>()
+        val candidateAchievements = mutableListOf<String>()
         val totalQuizzes = updatedProfile.totalQuizzesCompleted
 
         fun tryUnlock(id: String, condition: Boolean) {
             if (condition) {
                 try {
-                    // We'll check and insert — IGNORE conflict means no error if already unlocked
-                    newAchievements.add(id)
+                    candidateAchievements.add(id)
                 } catch (e: Exception) {
                     Log.w(TAG, "Achievement check failed for $id", e)
                 }
@@ -197,16 +196,15 @@ class GamificationManager(
         tryUnlock(Achievements.XP_1000, newTotalXp >= 1000)
         tryUnlock(Achievements.XP_5000, newTotalXp >= 5000)
 
-        // Actually persist only newly unlocked achievements
-        val alreadyUnlocked = gamificationDao.getUnlockedIds().toSet()
-        val trulyNew = newAchievements.filter { it !in alreadyUnlocked }
-        for (id in trulyNew) {
-            gamificationDao.unlockAchievement(Achievement(achievementId = id))
-        }
+        // Persist the profile and newly unlocked achievements in one Room transaction.
+        val trulyNew = gamificationDao.updateProfileAndUnlockAchievements(
+            profile = updatedProfile,
+            candidateAchievementIds = candidateAchievements
+        )
 
         Log.d(TAG, "Quiz processed: +${xpEarned}XP, level $oldLevel->$newLevel, streak=$newStreak, new achievements=$trulyNew")
 
-        return GamificationResult(
+        GamificationResult(
             xpEarned = xpEarned,
             newTotalXp = newTotalXp,
             oldLevel = oldLevel,
