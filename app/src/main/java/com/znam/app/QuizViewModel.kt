@@ -201,7 +201,8 @@ class QuizViewModel(
                         smartSelector.selectQuestions(
                             allQuestions = allQuestions,
                             quizType = quizType,
-                            count = MAX_QUESTIONS_PER_SESSION
+                            count = MAX_QUESTIONS_PER_SESSION,
+                            excludeIds = answeredQuestionIds.toSet()
                         )
                     } else {
                         val filtered = allQuestions.filterNot { it.id in answeredQuestionIds }

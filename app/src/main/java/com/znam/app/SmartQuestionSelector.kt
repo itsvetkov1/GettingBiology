@@ -34,7 +34,8 @@ class SmartQuestionSelector(
     suspend fun selectQuestions(
         allQuestions: List<Question>,
         quizType: String,
-        count: Int
+        count: Int,
+        excludeIds: Set<Int> = emptySet()
     ): List<Question> {
         if (allQuestions.isEmpty()) return emptyList()
         val needed = minOf(count, allQuestions.size)
@@ -45,7 +46,12 @@ class SmartQuestionSelector(
         // If no history, just shuffle (first-time user)
         if (performanceMap.isEmpty()) {
             Log.d(TAG, "No performance history — shuffling $needed questions")
-            return allQuestions.shuffled().take(needed)
+            val preferred = allQuestions.filter { it.id !in excludeIds }.shuffled()
+            return if (preferred.size >= needed) {
+                preferred.take(needed)
+            } else {
+                (preferred + allQuestions.filter { it.id in excludeIds }.shuffled()).take(needed)
+            }
         }
 
         val now = System.currentTimeMillis()
@@ -53,13 +59,16 @@ class SmartQuestionSelector(
         val selected = mutableListOf<Question>()
         val usedIds = mutableSetOf<Int>()
 
+        fun isPreferredCandidate(question: Question): Boolean =
+            question.id !in usedIds && question.id !in excludeIds
+
         // 1. Due for review
         val dueCount = (needed * DUE_REVIEW_RATIO).toInt().coerceAtLeast(1)
         val duePerformances = performanceDao.getDueForReview(quizType, now)
         for (perf in duePerformances) {
             if (selected.size >= dueCount) break
             val q = questionMap[perf.questionId]
-            if (q != null && q.id !in usedIds) {
+            if (q != null && isPreferredCandidate(q)) {
                 selected.add(q)
                 usedIds.add(q.id)
             }
@@ -73,7 +82,7 @@ class SmartQuestionSelector(
         for (perf in weakPerformances) {
             if (weakAdded >= weakCount) break
             val q = questionMap[perf.questionId]
-            if (q != null && q.id !in usedIds) {
+            if (q != null && isPreferredCandidate(q)) {
                 selected.add(q)
                 usedIds.add(q.id)
                 weakAdded++
@@ -83,7 +92,7 @@ class SmartQuestionSelector(
 
         // 3. Unseen questions
         val unseenCount = (needed * UNSEEN_RATIO).toInt().coerceAtLeast(1)
-        val unseenQuestions = allQuestions.filter { it.id !in performanceMap && it.id !in usedIds }.shuffled()
+        val unseenQuestions = allQuestions.filter { it.id !in performanceMap && isPreferredCandidate(it) }.shuffled()
         var unseenAdded = 0
         for (q in unseenQuestions) {
             if (unseenAdded >= unseenCount) break
@@ -96,8 +105,9 @@ class SmartQuestionSelector(
         // 4. Random fill for the rest
         val remaining = needed - selected.size
         if (remaining > 0) {
-            val pool = allQuestions.filter { it.id !in usedIds }.shuffled()
-            for (q in pool) {
+            val preferredPool = allQuestions.filter { isPreferredCandidate(it) }.shuffled()
+            val fallbackPool = allQuestions.filter { it.id !in usedIds && it.id in excludeIds }.shuffled()
+            for (q in preferredPool + fallbackPool) {
                 if (selected.size >= needed) break
                 selected.add(q)
                 usedIds.add(q.id)
