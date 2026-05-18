@@ -113,7 +113,10 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/dailyChallengeButton"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
                     android:layout_marginBottom="8dp"
                     android:text="@string/daily_challenge_placeholder"
                     android:textColor="@color/white"
