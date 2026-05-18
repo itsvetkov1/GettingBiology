@@ -1,8 +1,11 @@
 package com.znam.app.data
 
+import android.content.Context
+import androidx.annotation.StringRes
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.znam.app.R
 
 /**
  * Tracks the user's gamification profile: XP, level, streaks.
@@ -51,7 +54,7 @@ object Achievements {
     // Performance achievements
     const val FIRST_PERFECT = "first_perfect"
     const val FIVE_PERFECTS = "five_perfects"
-    const val SPEED_DEMON = "speed_demon"       // quiz < 60s
+    const val SPEED_DEMON = "speed_demon"       // quiz < 90s
     const val NO_HINTS = "no_hints"             // perfect score, 0 hints
 
     // XP/Level achievements
@@ -61,25 +64,24 @@ object Achievements {
     const val XP_1000 = "xp_1000"
     const val XP_5000 = "xp_5000"
 
-    /** Human-readable names for display. */
-    val displayNames = mapOf(
-        FIRST_QUIZ to "Първи стъпки",
-        TEN_QUIZZES to "Добро начало",
-        FIFTY_QUIZZES to "Отдаден ученик",
-        HUNDRED_QUIZZES to "Майстор на тестовете",
-        STREAK_3 to "В серия",
-        STREAK_7 to "Седмичен воин",
-        STREAK_14 to "Двуседмична сила",
-        STREAK_30 to "Месечна легенда",
-        FIRST_PERFECT to "Перфекционист",
-        FIVE_PERFECTS to "Безгрешна петица",
-        SPEED_DEMON to "Скоростен демон",
-        NO_HINTS to "Самостоятелен гений",
-        LEVEL_5 to "Изгряваща звезда",
-        LEVEL_10 to "Търсач на знание",
-        LEVEL_25 to "Експерт по биология",
-        XP_1000 to "Колекционер на XP",
-        XP_5000 to "Трупач на XP"
+    private val displayNameResIds = mapOf(
+        FIRST_QUIZ to R.string.achievement_first_quiz_name,
+        TEN_QUIZZES to R.string.achievement_ten_quizzes_name,
+        FIFTY_QUIZZES to R.string.achievement_fifty_quizzes_name,
+        HUNDRED_QUIZZES to R.string.achievement_hundred_quizzes_name,
+        STREAK_3 to R.string.achievement_streak_3_name,
+        STREAK_7 to R.string.achievement_streak_7_name,
+        STREAK_14 to R.string.achievement_streak_14_name,
+        STREAK_30 to R.string.achievement_streak_30_name,
+        FIRST_PERFECT to R.string.achievement_first_perfect_name,
+        FIVE_PERFECTS to R.string.achievement_five_perfects_name,
+        SPEED_DEMON to R.string.achievement_speed_demon_name,
+        NO_HINTS to R.string.achievement_no_hints_name,
+        LEVEL_5 to R.string.achievement_level_5_name,
+        LEVEL_10 to R.string.achievement_level_10_name,
+        LEVEL_25 to R.string.achievement_level_25_name,
+        XP_1000 to R.string.achievement_xp_1000_name,
+        XP_5000 to R.string.achievement_xp_5000_name
     )
 
     /** Emoji icons for each achievement. */
@@ -103,24 +105,41 @@ object Achievements {
         XP_5000 to "💎"          // gem
     )
 
-    /** Description of how to earn each achievement. */
-    val descriptions = mapOf(
-        FIRST_QUIZ to "Завърши първия си тест",
-        TEN_QUIZZES to "Завърши 10 теста",
-        FIFTY_QUIZZES to "Завърши 50 теста",
-        HUNDRED_QUIZZES to "Завърши 100 теста",
-        STREAK_3 to "Поддържай 3-дневна поредица",
-        STREAK_7 to "Поддържай 7-дневна поредица",
-        STREAK_14 to "Поддържай 14-дневна поредица",
-        STREAK_30 to "Поддържай 30-дневна поредица",
-        FIRST_PERFECT to "Постигни перфектен резултат",
-        FIVE_PERFECTS to "Постигни 5 перфектни резултата",
-        SPEED_DEMON to "Завърши тест за под 90 секунди",
-        NO_HINTS to "Постигни перфектен резултат без подсказки",
-        LEVEL_5 to "Достигни ниво 5",
-        LEVEL_10 to "Достигни ниво 10",
-        LEVEL_25 to "Достигни ниво 25",
-        XP_1000 to "Спечели 1 000 XP",
-        XP_5000 to "Спечели 5 000 XP"
+    private val descriptionResIds = mapOf(
+        FIRST_QUIZ to R.string.achievement_first_quiz_description,
+        TEN_QUIZZES to R.string.achievement_ten_quizzes_description,
+        FIFTY_QUIZZES to R.string.achievement_fifty_quizzes_description,
+        HUNDRED_QUIZZES to R.string.achievement_hundred_quizzes_description,
+        STREAK_3 to R.string.achievement_streak_3_description,
+        STREAK_7 to R.string.achievement_streak_7_description,
+        STREAK_14 to R.string.achievement_streak_14_description,
+        STREAK_30 to R.string.achievement_streak_30_description,
+        FIRST_PERFECT to R.string.achievement_first_perfect_description,
+        FIVE_PERFECTS to R.string.achievement_five_perfects_description,
+        SPEED_DEMON to R.string.achievement_speed_demon_description,
+        NO_HINTS to R.string.achievement_no_hints_description,
+        LEVEL_5 to R.string.achievement_level_5_description,
+        LEVEL_10 to R.string.achievement_level_10_description,
+        LEVEL_25 to R.string.achievement_level_25_description,
+        XP_1000 to R.string.achievement_xp_1000_description,
+        XP_5000 to R.string.achievement_xp_5000_description
     )
+
+    @StringRes
+    fun displayNameResId(achievementId: String): Int? = displayNameResIds[achievementId]
+
+    @StringRes
+    fun descriptionResId(achievementId: String): Int? = descriptionResIds[achievementId]
+
+}
+
+
+fun Context.achievementDisplayName(achievementId: String): String {
+    val resId = Achievements.displayNameResId(achievementId) ?: return achievementId
+    return getString(resId)
+}
+
+fun Context.achievementDescription(achievementId: String): String {
+    val resId = Achievements.descriptionResId(achievementId) ?: return ""
+    return getString(resId)
 }

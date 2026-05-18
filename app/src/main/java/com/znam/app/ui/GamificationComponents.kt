@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.sp
 import com.znam.app.GamificationManager
 import com.znam.app.R
 import com.znam.app.data.Achievements
+import com.znam.app.data.achievementDescription
+import com.znam.app.data.achievementDisplayName
 
 /**
  * Animated XP progress bar showing current level progress.
@@ -341,50 +344,10 @@ fun QuizRewardSummary(
 
 @Composable
 private fun achievementName(achievementId: String): String {
-    val resId = when (achievementId) {
-        Achievements.FIRST_QUIZ -> R.string.achievement_first_quiz_name
-        Achievements.TEN_QUIZZES -> R.string.achievement_ten_quizzes_name
-        Achievements.FIFTY_QUIZZES -> R.string.achievement_fifty_quizzes_name
-        Achievements.HUNDRED_QUIZZES -> R.string.achievement_hundred_quizzes_name
-        Achievements.STREAK_3 -> R.string.achievement_streak_3_name
-        Achievements.STREAK_7 -> R.string.achievement_streak_7_name
-        Achievements.STREAK_14 -> R.string.achievement_streak_14_name
-        Achievements.STREAK_30 -> R.string.achievement_streak_30_name
-        Achievements.FIRST_PERFECT -> R.string.achievement_first_perfect_name
-        Achievements.FIVE_PERFECTS -> R.string.achievement_five_perfects_name
-        Achievements.SPEED_DEMON -> R.string.achievement_speed_demon_name
-        Achievements.NO_HINTS -> R.string.achievement_no_hints_name
-        Achievements.LEVEL_5 -> R.string.achievement_level_5_name
-        Achievements.LEVEL_10 -> R.string.achievement_level_10_name
-        Achievements.LEVEL_25 -> R.string.achievement_level_25_name
-        Achievements.XP_1000 -> R.string.achievement_xp_1000_name
-        Achievements.XP_5000 -> R.string.achievement_xp_5000_name
-        else -> null
-    }
-    return resId?.let { stringResource(it) } ?: achievementId
+    return LocalContext.current.achievementDisplayName(achievementId)
 }
 
 @Composable
 private fun achievementDescription(achievementId: String): String {
-    val resId = when (achievementId) {
-        Achievements.FIRST_QUIZ -> R.string.achievement_first_quiz_description
-        Achievements.TEN_QUIZZES -> R.string.achievement_ten_quizzes_description
-        Achievements.FIFTY_QUIZZES -> R.string.achievement_fifty_quizzes_description
-        Achievements.HUNDRED_QUIZZES -> R.string.achievement_hundred_quizzes_description
-        Achievements.STREAK_3 -> R.string.achievement_streak_3_description
-        Achievements.STREAK_7 -> R.string.achievement_streak_7_description
-        Achievements.STREAK_14 -> R.string.achievement_streak_14_description
-        Achievements.STREAK_30 -> R.string.achievement_streak_30_description
-        Achievements.FIRST_PERFECT -> R.string.achievement_first_perfect_description
-        Achievements.FIVE_PERFECTS -> R.string.achievement_five_perfects_description
-        Achievements.SPEED_DEMON -> R.string.achievement_speed_demon_description
-        Achievements.NO_HINTS -> R.string.achievement_no_hints_description
-        Achievements.LEVEL_5 -> R.string.achievement_level_5_description
-        Achievements.LEVEL_10 -> R.string.achievement_level_10_description
-        Achievements.LEVEL_25 -> R.string.achievement_level_25_description
-        Achievements.XP_1000 -> R.string.achievement_xp_1000_description
-        Achievements.XP_5000 -> R.string.achievement_xp_5000_description
-        else -> null
-    }
-    return resId?.let { stringResource(it) } ?: ""
+    return LocalContext.current.achievementDescription(achievementId)
 }
